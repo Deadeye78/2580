@@ -343,11 +343,11 @@ buildUI=function()
  NM:AddButton("○  关闭穿墙",function() NC:Disable() end)
  local NSet=NT:AddSection("速度设置")
  local sb={}
- local function updSel(s) for n,data in pairs(sb) do data.Button.Text=data.Button._base..(n==s and "  ✓" or "") end end
- local s1=NSet:AddButton("🐢  慢速",function() NC.S=20 updSel("s1") end) s1._base="🐢  慢速" sb.s1={Button=s1}
- local s2=NSet:AddButton("🚶  中速",function() NC.S=50 updSel("s2") end) s2._base="🚶  中速" sb.s2={Button=s2}
- local s3=NSet:AddButton("🏃  快速",function() NC.S=100 updSel("s3") end) s3._base="🏃  快速" sb.s3={Button=s3}
- local s4=NSet:AddButton("🚀  极速",function() NC.S=200 updSel("s4") end) s4._base="🚀  极速" sb.s4={Button=s4}
+ local function updSel(s) for n,data in pairs(sb) do data.Button.Text=data.Base..(n==s and "  ✓" or "") end end
+ local s1=NSet:AddButton("🐢  慢速",function() NC.S=20 updSel("s1") end) sb.s1={Button=s1,Base="🐢  慢速"}
+ local s2=NSet:AddButton("🚶  中速",function() NC.S=50 updSel("s2") end) sb.s2={Button=s2,Base="🚶  中速"}
+ local s3=NSet:AddButton("🏃  快速",function() NC.S=100 updSel("s3") end) sb.s3={Button=s3,Base="🏃  快速"}
+ local s4=NSet:AddButton("🚀  极速",function() NC.S=200 updSel("s4") end) sb.s4={Button=s4,Base="🚀  极速"}
  updSel("s2")
  local ET=W:AddTab("ESP","👁")
  local EM=ET:AddSection("ESP 开关")
