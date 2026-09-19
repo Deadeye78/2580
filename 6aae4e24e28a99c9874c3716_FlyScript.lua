@@ -1,10 +1,7 @@
--- 磊脚本 v3.0
 local TS=game:GetService("TweenService") local UIS=game:GetService("UserInputService")
 local RS=game:GetService("RunService") local Plrs=game:GetService("Players")
 local LP=Plrs.LocalPlayer local CG=game:GetService("CoreGui")
 local cam=workspace.CurrentCamera
-
--- ===== 加载动画 =====
 local LG=Instance.new("ScreenGui") LG.Name="LS_Load" LG.Parent=CG LG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
 local LB=Instance.new("Frame") LB.Parent=LG LB.BackgroundColor3=Color3.fromRGB(10,10,10) LB.Size=UDim2.new(1,0,1,0) LB.ZIndex=1 LB.BackgroundTransparency=1
 local LF=Instance.new("Frame") LF.Parent=LG LF.BackgroundColor3=Color3.fromRGB(20,20,20) LF.Position=UDim2.new(0.5,-180,0.5,-100) LF.Size=UDim2.new(0,360,0,200) LF.ZIndex=2 LF.BackgroundTransparency=1
@@ -47,7 +44,7 @@ TS:Create(PBg,TweenInfo.new(0.4),{BackgroundTransparency=0}):Play()
 TS:Create(PT,TweenInfo.new(0.4),{TextTransparency=0}):Play()
 TS:Create(ST,TweenInfo.new(0.4),{TextTransparency=0}):Play()
 TS:Create(NT,TweenInfo.new(0.4),{TextTransparency=0}):Play()
-local Done=Instance.new("BindableEvent")
+local buildUI=nil
 task.spawn(function()
  local sp={{15,"正在加载 UI 库..."},{35,"正在初始化窗口..."},{55,"正在创建控件..."},{75,"加载功能模块..."},{90,"加载脚本资源..."},{100,"加载完成！"}}
  for _,s in ipairs(sp) do setPct(s[1],s[2]) task.wait(0.3+math.random()*0.2) end
@@ -60,10 +57,11 @@ task.spawn(function()
  TS:Create(ST,TweenInfo.new(0.4),{TextTransparency=1}):Play()
  TS:Create(NT,TweenInfo.new(0.4),{TextTransparency=1}):Play()
  TS:Create(LB,TweenInfo.new(0.6),{BackgroundTransparency=1}):Play()
- task.wait(0.6) LG:Destroy() Done:Fire()
+ task.wait(0.6) LG:Destroy()
+ while not buildUI do task.wait() end
+ local ok,err=pcall(buildUI)
+ if not ok then warn("[磊脚本] 加载失败:",err) end
 end)
-
--- ===== UI 库 =====
 local Lib={}
 local function drag(gui,handle)
  local dg,di,ds,sp=false,nil,nil,nil
@@ -189,8 +187,6 @@ function Lib:CreateWindow(title)
  end
  return W
 end
-
--- ===== 穿墙 =====
 local NC={E=false,S=50,C=nil,D=nil,OC={},BV=nil,OG=nil}
 function NC:Enable()
  if self.E then return end self.E=true
@@ -238,8 +234,6 @@ function NC:Disable()
  if ch then local h=ch:FindFirstChild("Humanoid") if h then h.PlatformStand=false h.WalkSpeed=16 h.JumpPower=50 h.JumpHeight=7.2 end end
  self.OC={} print("[穿墙] 已关闭")
 end
-
--- ===== ESP =====
 local ESP={E=false,SN=true,SD=true,SH=true,SB=true,TC=false,D={},C=nil}
 local function nd(t) local d=Drawing.new(t) d.Visible=false return d end
 local function cESP(plr)
@@ -304,8 +298,6 @@ function ESP:Disable()
  for plr,e in pairs(self.D) do for _,d in pairs(e) do pcall(function() d:Remove() end) end end
  self.D={} print("[ESP] 已关闭")
 end
-
--- ===== 工具函数 =====
 local function runLS(name,url)
  print("["..name.."] 正在加载...")
  local ok,err=pcall(function() loadstring(game:HttpGet(url))() end)
@@ -321,11 +313,8 @@ local function runLSA(name,url)
  local ok,err=pcall(function() loadstring(game:HttpGetAsync(url))() end)
  if ok then print("["..name.."] 加载成功！") else warn("["..name.."] 失败:",err) end
 end
-
--- ===== 主程序 =====
-local function buildUI()
+buildUI=function()
  local W=Lib:CreateWindow("磊脚本")
- -- Main
  local MT=W:AddTab("Main","🏠")
  local NS=MT:AddSection("📢 重要公告")
  NS:AddButton("此脚本由 TRAE 制造",function() end)
@@ -333,7 +322,6 @@ local function buildUI()
  NS:AddButton("如已付费请向买家退款",function() end)
  local FS=MT:AddSection("飞行功能")
  FS:AddButton("✈  开启飞行",function() runLS("飞行","https://raw.githubusercontent.com/kongbaNB/9178/refs/heads/main/fly.lua") end)
- -- 穿墙
  local NT=W:AddTab("穿墙","🧱")
  local NM=NT:AddSection("穿墙开关")
  NM:AddButton("●  开启穿墙",function() NC:Enable() end)
@@ -346,7 +334,6 @@ local function buildUI()
  local s3=NSet:AddButton("🏃  快速",function() NC.S=100 updSel("s3") end) s3._base="🏃  快速" sb.s3={Button=s3}
  local s4=NSet:AddButton("🚀  极速",function() NC.S=200 updSel("s4") end) s4._base="🚀  极速" sb.s4={Button=s4}
  updSel("s2")
- -- ESP
  local ET=W:AddTab("ESP","👁")
  local EM=ET:AddSection("ESP 开关")
  EM:AddButton("●  开启 ESP",function() ESP:Enable() end)
@@ -357,7 +344,6 @@ local function buildUI()
  ES:AddButton("❤️  显示血条: 开",function() ESP.SH=not ESP.SH end)
  ES:AddButton("📦  显示框线: 开",function() ESP.SB=not ESP.SB end)
  ES:AddButton("👥  队伍检查: 关",function() ESP.TC=not ESP.TC end)
- -- 甩飞炸服
  local FT=W:AddTab("甩飞炸服","💥")
  local ExS=FT:AddSection("炸服")
  ExS:AddButton("💣  启动炸服",function()
@@ -416,7 +402,6 @@ local function buildUI()
   end)
   print("[超级甩飞] 执行成功！")
  end)
- -- 脚本
  local OT=W:AddTab("脚本","📦")
  local CS=OT:AddSection("通用脚本")
  CS:AddButton("🌐  翻译脚本",function() runLSA("翻译脚本","https://raw.githubusercontent.com/dream6-e/rbx/refs/heads/main/%E7%BF%BB%E8%AF%91%E8%84%9A%E6%9C%AC.lua") end)
@@ -448,8 +433,6 @@ local function buildUI()
  QS:AddButton("💙  运行空情脚本",function() runLS("空情脚本","https://ayangwp.cn/api/v3/file/get/8628/%E9%9D%99?sign=uxlt7ravTFmP3TZLNgN7zImLHxJWhH93SEbKgFA_PRc%3D%3A0") end)
  local XAS=OT:AddSection("XA Hub")
  XAS:AddButton("🌀  运行 XA Hub",function() runLS("XA Hub","https://raw.gitcode.com/Xingtaiduan/Scripts/raw/main/Loader.lua") end)
-
- -- === 知名脚本集合 ===
     local ZMScripts = {}
 
     ZMScripts['XK脚本'] = [=[
@@ -2577,8 +2560,6 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
             end
         end)
     end
-
- -- 服务器
  local SV=W:AddTab("服务器","🖥")
  local ZQS=SV:AddSection("最强战场")
  ZQS:AddButton("⚔  运行最强战场",function() runLS("最强战场","https://raw.githubusercontent.com/Nicuse/RobloxScripts/main/SaitamaBattlegrounds.lua") end)
@@ -2589,10 +2570,7 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
  local DDS=SV:AddSection("亡命速递")
  DDS:AddButton("🚚  运行亡命速递",function() runLS("亡命速递","https://raw.githubusercontent.com/JanseJYC/Script/refs/heads/main/Deadly-Deliver.lua") end)
  local BLS=SV:AddSection("盲射")
- BLS:AddButton("🎯  运行盲射",function() runLS("盲射","https://raw.githubusercontent.com/gumanba/Scripts/main/BlindShot") end)
-
- -- === Aero 合集 ===
-    local AeroScripts = {}
+ BLS:AddButton("🎯  运行盲射",function() runLS("盲射","https://raw.githubusercontent.com/gumanba/Scripts/main/BlindShot") end)    local AeroScripts = {}
 
     AeroScripts['8个球池经典'] = [=[
 local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Yisan886/Aero/refs/heads/main/ui.lua.txt"))()
@@ -42263,13 +42241,9 @@ end)
             end
         end)
     end
-
- -- Info
  local IT=W:AddTab("Info","ℹ")
  IT:AddButton("磊脚本 v3.0",function() print("磊脚本 v3.0") end)
  IT:AddButton("Lei Script",function() print("磊脚本 - 多功能辅助脚本") end)
  W:Show()
  print("[磊脚本] 加载完成！")
 end
-
-Done.Event:Connect(buildUI)
