@@ -60,7 +60,22 @@ task.spawn(function()
  task.wait(0.6) LG:Destroy()
  while not buildUI do task.wait() end
  local ok,err=pcall(buildUI)
- if not ok then warn("[磊脚本] 加载失败:",err) end
+ if not ok then
+  warn("[磊脚本] 加载失败:",err)
+  local EG=Instance.new("ScreenGui") EG.Parent=CG EG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+  local EF=Instance.new("Frame") EF.Parent=EG EF.BackgroundColor3=Color3.fromRGB(30,20,20) EF.Position=UDim2.new(0.5,-180,0.5,-80) EF.Size=UDim2.new(0,360,0,160) EF.ZIndex=1
+  Instance.new("UICorner",EF).CornerRadius=UDim.new(0,10)
+  local ET=Instance.new("TextLabel") ET.Parent=EF ET.BackgroundTransparency=1 ET.Position=UDim2.new(0,0,0,15) ET.Size=UDim2.new(1,0,0,30)
+  ET.Font=Enum.Font.GothamBold ET.Text="❌ 加载失败" ET.TextColor3=Color3.fromRGB(255,80,80) ET.TextSize=20 ET.ZIndex=2
+  local EM=Instance.new("TextLabel") EM.Parent=EF EM.BackgroundTransparency=1 EM.Position=UDim2.new(0,20,0,55) EM.Size=UDim2.new(1,-40,0,70)
+  EM.Font=Enum.Font.Gotham EM.Text=tostring(err) EM.TextColor3=Color3.fromRGB(220,220,220) EM.TextSize=12 EM.ZIndex=2 EM.TextWrapped=true EM.TextXAlignment=Enum.TextXAlignment.Left
+  local EB=Instance.new("TextButton") EB.Parent=EF EB.BackgroundColor3=Color3.fromRGB(80,40,40) EB.Position=UDim2.new(0.5,-50,1,-40) EB.Size=UDim2.new(0,100,0,28) EB.AutoButtonColor=false EB.ZIndex=2
+  EB.Font=Enum.Font.GothamSemibold EB.Text="知道了" EB.TextColor3=Color3.fromRGB(255,255,255) EB.TextSize=12 EB.ZIndex=3
+  Instance.new("UICorner",EB).CornerRadius=UDim.new(0,6)
+  EB.MouseButton1Click:Connect(function() EG:Destroy() end)
+  EB.MouseEnter:Connect(function() EB.BackgroundColor3=Color3.fromRGB(100,50,50) end)
+  EB.MouseLeave:Connect(function() EB.BackgroundColor3=Color3.fromRGB(80,40,40) end)
+ end
 end)
 local Lib={}
 local function drag(gui,handle)
@@ -109,7 +124,7 @@ function Lib:CreateWindow(title)
  end)
  local SB=Instance.new("Frame") SB.Parent=MF SB.BackgroundColor3=Color3.fromRGB(22,22,22) SB.Position=UDim2.new(0,0,0,45) SB.Size=UDim2.new(0,170,1,-45) SB.ClipsDescendants=true SB.ZIndex=2
  local SBL=Instance.new("UIListLayout") SBL.Parent=SB SBL.Padding=UDim.new(0,2) SBL.HorizontalAlignment=Enum.HorizontalAlignment.Center SBL.VerticalAlignment=Enum.VerticalAlignment.Top
- local SBP=Instance.new("UIPadding") SBP.Parent=SBP SBP.Parent=SB SBP.PaddingTop=UDim.new(0,10)
+ local SBP=Instance.new("UIPadding") SBP.Parent=SB SBP.PaddingTop=UDim.new(0,10)
  local CC=Instance.new("Frame") CC.Parent=MF CC.BackgroundColor3=Color3.fromRGB(20,20,20) CC.Position=UDim2.new(0,170,0,45) CC.Size=UDim2.new(1,-170,1,-45) CC.ClipsDescendants=true CC.ZIndex=2
  local PC=Instance.new("ScrollingFrame") PC.Parent=CC PC.BackgroundTransparency=1 PC.Size=UDim2.new(1,0,1,0) PC.ScrollBarThickness=3 PC.ScrollBarImageColor3=Color3.fromRGB(80,80,80) PC.CanvasSize=UDim2.new(0,0,0,0) PC.ZIndex=2
  drag(MF,TB)
@@ -2548,7 +2563,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/sharksharksharkshark/
 loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,112,115,58,47,47,112,97,115,116,101,98,105,110,46,99,111,109,47,114,97,119,47,81,89,49,113,112,99,115,106})end)())))()
 ]=]
 
-    local ZMSection = OtherTab:AddSection("知名脚本集合")
+    local ZMSection = OT:AddSection("知名脚本集合")
     for sname, scontent in pairs(ZMScripts) do
         ZMSection:AddButton("⭐  " .. sname, function()
             print("[" .. sname .. "] 正在加载...")
@@ -42229,7 +42244,7 @@ end)
 
 ]=]
 
-    local AeroSection = ServerTab:AddSection("Aero 合集")
+    local AeroSection = SV:AddSection("Aero 合集")
     for sname, scontent in pairs(AeroScripts) do
         AeroSection:AddButton("🎮  " .. sname, function()
             print("[" .. sname .. "] 正在加载...")
