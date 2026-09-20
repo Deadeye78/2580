@@ -207,9 +207,10 @@ function Lib:CreateWindow(title)
   mini=not mini
   TS:Create(MF,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Size=mini and UDim2.new(0,580,0,48) or UDim2.new(0,580,0,380)}):Play()
  end)
- local SB=Instance.new("Frame") SB.Parent=MF SB.BackgroundColor3=Color3.fromRGB(18,18,24) SB.Position=UDim2.new(0,0,0,48) SB.Size=UDim2.new(0,175,1,-48) SB.ClipsDescendants=true SB.ZIndex=2
- local SBL=Instance.new("UIListLayout") SBL.Parent=SB SBL.Padding=UDim.new(0,3) SBL.HorizontalAlignment=Enum.HorizontalAlignment.Center SBL.VerticalAlignment=Enum.VerticalAlignment.Top
- local SBP=Instance.new("UIPadding") SBP.Parent=SB SBP.PaddingTop=UDim.new(0,10)
+ local SB=Instance.new("ScrollingFrame") SB.Parent=MF SB.BackgroundColor3=Color3.fromRGB(18,18,24) SB.Position=UDim2.new(0,0,0,48) SB.Size=UDim2.new(0,175,1,-48) SB.ClipsDescendants=true SB.ZIndex=2 SB.ScrollBarThickness=3 SB.ScrollBarImageColor3=Settings.Accent SB.CanvasSize=UDim2.new(0,0,0,0) SB.AutomaticCanvasSize=Enum.AutomaticSize.Y
+ local SBC=Instance.new("Frame") SBC.Parent=SB SBC.BackgroundTransparency=1 SBC.Size=UDim2.new(1,0,1,0) SBC.AutomaticSize=Enum.AutomaticSize.Y
+ local SBL=Instance.new("UIListLayout") SBL.Parent=SBC SBL.Padding=UDim.new(0,3) SBL.HorizontalAlignment=Enum.HorizontalAlignment.Center SBL.VerticalAlignment=Enum.VerticalAlignment.Top
+ local SBP=Instance.new("UIPadding") SBP.Parent=SBC SBP.PaddingTop=UDim.new(0,10)
  local CC=Instance.new("Frame") CC.Parent=MF CC.BackgroundColor3=Color3.fromRGB(15,15,20) CC.Position=UDim2.new(0,175,0,48) CC.Size=UDim2.new(1,-175,1,-48) CC.ClipsDescendants=true CC.ZIndex=2
  local PC=Instance.new("ScrollingFrame") PC.Parent=CC PC.BackgroundTransparency=1 PC.Size=UDim2.new(1,0,1,0) PC.ScrollBarThickness=3 PC.ScrollBarImageColor3=Settings.Accent PC.CanvasSize=UDim2.new(0,0,0,0) PC.ZIndex=2
  drag(MF,TB)
@@ -345,7 +346,7 @@ function Lib:CreateWindow(title)
  end
  local W={ApplyAccent=applyAccent,ApplyBG=applyBG,ToggleRainbow=toggleRainbow,ToggleMeteor=toggleMeteor}
  function W:AddTab(name,icon)
-  local btn=Instance.new("TextButton") btn.Parent=SB btn.BackgroundColor3=Color3.fromRGB(24,24,30) btn.Size=UDim2.new(0,155,0,36)
+  local btn=Instance.new("TextButton") btn.Parent=SBC btn.BackgroundColor3=Color3.fromRGB(24,24,30) btn.Size=UDim2.new(0,155,0,36)
   btn.Font=Enum.Font.GothamSemibold btn.Text=(icon and icon.."  " or "")..name btn.TextColor3=Color3.fromRGB(190,190,210) btn.TextSize=13 btn.TextXAlignment=Enum.TextXAlignment.Left btn.AutoButtonColor=false btn.ZIndex=3
   Instance.new("UICorner",btn).CornerRadius=UDim.new(0,6)
   local BP=Instance.new("UIPadding") BP.Parent=btn BP.PaddingLeft=UDim.new(0,12)
