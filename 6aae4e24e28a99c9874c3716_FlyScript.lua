@@ -1,3 +1,122 @@
+--[[ 磊脚本 - 全局错误防护 + 工具库 ]]
+local function safeCall(fn,...)
+ local args={...} local ok,err=pcall(function() fn(unpack(args)) end)
+ if not ok then warn("[磊脚本错误]",err) end
+ return ok,err
+end
+local function safeSpawn(fn,...)
+ local args={...}
+ task.spawn(function()
+  local ok,err=pcall(function() fn(unpack(args)) end)
+  if not ok then warn("[磊脚本错误]",err) end
+ end)
+end
+-- 通用工具函数
+local Util={}
+function Util:SafeGet(parent,name,class)
+ local ok,res=pcall(function() return parent and parent:FindFirstChild(name) end)
+ if ok and res and (not class or res:IsA(class)) then return res end
+ return nil
+end
+function Util:SafeHRP(player)
+ if not player then return nil end
+ local ok,res=pcall(function()
+  local c=player.Character if not c then return nil end
+  local r=c:FindFirstChild("HumanoidRootPart") return r
+ end)
+ return ok and res or nil
+end
+function Util:SafeHum(player)
+ if not player then return nil end
+ local ok,res=pcall(function()
+  local c=player.Character if not c then return nil end
+  local h=c:FindFirstChild("Humanoid") return h
+ end)
+ return ok and res or nil
+end
+function Util:CreateUI(class,props)
+ local ok,res=pcall(function()
+  local obj=Instance.new(class)
+  for k,v in pairs(props) do obj[k]=v end
+  return obj
+ end)
+ return ok and res or nil
+end
+function Util:Tween(obj,info,props,callback)
+ if not obj then return end
+ local t=TS:Create(obj,info,props)
+ if callback then t.Completed:Connect(function() pcall(callback) end) end
+ t:Play()
+ return t
+end
+-- 游戏通用功能库
+local GameLib={}
+function GameLib:NoClip(character,enabled)
+ if not character then return end
+ for _,d in ipairs(character:GetDescendants()) do
+  if d:IsA("BasePart") then
+   pcall(function() d.CanCollide=not enabled end)
+  end
+ end
+end
+function GameLib:SetSpeed(character,speed)
+ if not character then return end
+ local hum=character:FindFirstChild("Humanoid")
+ if hum then pcall(function() hum.WalkSpeed=speed end) end
+end
+function GameLib:SetJump(character,jp)
+ if not character then return end
+ local hum=character:FindFirstChild("Humanoid")
+ if hum then pcall(function() hum.JumpPower=jp end) end
+end
+function GameLib:GodMode(character,enabled)
+ if not character then return end
+ local hum=character:FindFirstChild("Humanoid")
+ if hum and enabled then
+  pcall(function() hum.Health=hum.MaxHealth end)
+ end
+end
+function GameLib:MakeUI(title,color,sizeX,sizeY)
+ local SG=Instance.new("ScreenGui") SG.Parent=CG SG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+ local f=Instance.new("Frame")
+ f.BackgroundColor3=Color3.fromRGB(15,15,20)
+ f.Position=UDim2.new(0,10,0,10)
+ f.Size=UDim2.new(0,sizeX or 200,0,sizeY or 200)
+ f.BackgroundTransparency=0.1
+ f.Parent=SG
+ Instance.new("UICorner",f).CornerRadius=UDim.new(0,10)
+ local st=Instance.new("UIStroke")
+ st.Color=color or Color3.fromRGB(100,200,255)
+ st.Thickness=2
+ st.Parent=f
+ local t=Instance.new("TextLabel")
+ t.BackgroundTransparency=1
+ t.Size=UDim2.new(1,0,0,30)
+ t.Position=UDim2.new(0,0,0,6)
+ t.Font=Enum.Font.GothamBold
+ t.Text=title or "脚本UI"
+ t.TextColor3=color or Color3.fromRGB(120,220,255)
+ t.TextSize=15
+ t.Parent=f
+ return SG,f,st,t
+end
+function GameLib:MakeBtn(parent,y,txt,color,sizeY,cb)
+ local b=Instance.new("TextButton")
+ b.BackgroundColor3=color or Color3.fromRGB(40,45,60)
+ b.Size=UDim2.new(0,170,0,sizeY or 32)
+ b.Position=UDim2.new(0.5,-85,0,y)
+ b.Font=Enum.Font.GothamSemibold
+ b.Text=txt
+ b.TextColor3=Color3.fromRGB(230,235,250)
+ b.TextSize=12
+ b.Parent=parent
+ Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+ if cb then b.MouseButton1Click:Connect(function() safeCall(cb) end) end
+ return b
+end
+function GameLib:MakeCloseBtn(parent,y,cb)
+ return GameLib:MakeBtn(parent,y,"✕ 关闭",Color3.fromRGB(70,30,30),32,cb)
+end
 local TS=game:GetService("TweenService") local UIS=game:GetService("UserInputService")
 local RS=game:GetService("RunService") local Plrs=game:GetService("Players")
 local LP=Plrs.LocalPlayer local CG=game:GetService("CoreGui")
@@ -695,100 +814,121 @@ buildUI=function()
  end)
  local FS=MT:AddSection("✈  飞行功能")
  FS:AddButton("✈  开启飞行",function() runLS("飞行","https://raw.githubusercontent.com/kongbaNB/9178/refs/heads/main/fly.lua") end)
- local AWS={E=false,C=nil,BV=nil,BP=nil,OWS=16,OJP=50,OG=196.2,StartY=0,Jumping=false,LastSpace=false}
- function AWS:Enable()
-  if self.E then return end self.E=true
-  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid") local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
-  if not hum or not hrp then print("[踏空] 找不到角色") self.E=false return end
-  self.OWS=hum.WalkSpeed self.OJP=hum.JumpPower
-  self.OG=workspace.Gravity
-  self.StartY=hrp.Position.Y
-  hum.WalkSpeed=16 hum.JumpPower=0
-  -- 关闭重力（从根本上防止下落）
-  workspace.Gravity=0
-  -- BodyVelocity 控制水平移动+跳跃
-  local bv=Instance.new("BodyVelocity") bv.Name="AirWalkBV"
-  bv.Velocity=Vector3.new(0,0,0) bv.MaxForce=Vector3.new(10000,math.huge,10000)
-  bv.P=5000 bv.Parent=hrp
-  self.BV=bv
-  -- BodyPosition 锁定Y轴高度（更稳定）
-  local bp=Instance.new("BodyPosition") bp.Name="AirWalkBP"
-  bp.Position=Vector3.new(0,self.StartY,0) bp.MaxForce=Vector3.new(0,50000,0)
-  bp.P=5000 bp.D=500 bp.Parent=hrp
-  self.BP=bp
-  self.C=RS.Stepped:Connect(function()
-   local c=LP.Character local h=c and c:FindFirstChild("Humanoid") local r=c and c:FindFirstChild("HumanoidRootPart")
-   if not h or not r then return end
-   -- 确保 BodyVelocity 存在
-   local b=r:FindFirstChild("AirWalkBV")
-   if not b then
-    b=Instance.new("BodyVelocity") b.Name="AirWalkBV"
-    b.MaxForce=Vector3.new(10000,math.huge,10000) b.P=5000 b.Parent=r
-    self.BV=b
-   end
-   -- 确保 BodyPosition 存在
-   local bp2=r:FindFirstChild("AirWalkBP")
-   if not bp2 then
-    bp2=Instance.new("BodyPosition") bp2.Name="AirWalkBP"
-    bp2.MaxForce=Vector3.new(0,50000,0) bp2.P=5000 bp2.D=500 bp2.Parent=r
-    self.BP=bp2
-   end
-   -- 水平移动控制
-   local md=h.MoveDirection
-   local curVel=b.Velocity
-   if md.Magnitude>0.1 then
-    b.Velocity=Vector3.new(md.X*h.WalkSpeed,curVel.Y,md.Z*h.WalkSpeed)
-   else
-    b.Velocity=Vector3.new(0,curVel.Y,0)
-   end
-   -- 跳跃控制：空格按下去时跳一下，松开后锁定高度
-   local spaceDown=UIS:IsKeyDown(Enum.KeyCode.Space)
-   local shiftDown=UIS:IsKeyDown(Enum.KeyCode.LeftShift)
-   if spaceDown and not self.LastSpace then
-    -- 空格刚按下：触发跳跃
-    self.Jumping=true
-    bp2.MaxForce=Vector3.new(0,0,0) -- 暂时禁用BodyPosition
-    b.Velocity=Vector3.new(curVel.X,45,curVel.Z) -- 给一个向上的跳跃速度
-   elseif not spaceDown and self.LastSpace and self.Jumping then
-    -- 空格刚松开：锁定在当前高度
-    self.Jumping=false
-    bp2.MaxForce=Vector3.new(0,50000,0)
-    bp2.Position=Vector3.new(0,r.Position.Y,0)
-    b.Velocity=Vector3.new(curVel.X,0,curVel.Z)
-   elseif shiftDown then
-    -- Shift下降
-    self.Jumping=false
-    bp2.MaxForce=Vector3.new(0,50000,0)
-    local ty=bp2.Position.Y-0.6
-    bp2.Position=Vector3.new(0,ty,0)
-    b.Velocity=Vector3.new(curVel.X,0,curVel.Z)
-   end
-   self.LastSpace=spaceDown
-   -- 如果在跳跃中，到达顶点后自动锁定
-   if self.Jumping then
-    if r.Velocity.Y<=0.5 then
-     self.Jumping=false
-     bp2.MaxForce=Vector3.new(0,50000,0)
-     bp2.Position=Vector3.new(0,r.Position.Y,0)
-     b.Velocity=Vector3.new(curVel.X,0,curVel.Z)
-    end
-   end
-  end)
-  print("[踏空] 已开启 (空格跳跃/Shift下降)")
- end
- function AWS:Disable()
-  if not self.E then return end self.E=false
-  if self.C then self.C:Disconnect() self.C=nil end
-  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid") local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
-  if hum then hum.WalkSpeed=self.OWS hum.JumpPower=self.OJP end
-  if hrp then
-   local b=hrp:FindFirstChild("AirWalkBV") if b then b:Destroy() end
-   local bp2=hrp:FindFirstChild("AirWalkBP") if bp2 then bp2:Destroy() end
+ local AWS={E=false,C=nil,BV=nil,BP=nil,OWS=16,OJP=50,OG=196.2,TargetY=0,Jumping=false,LastSpace=false,CharConn=nil}
+function AWS:Enable()
+ if self.E then return end self.E=true
+ local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid") local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+ if not hum or not hrp then print("[踏空] 找不到角色") self.E=false return end
+ self.OWS=hum.WalkSpeed self.OJP=hum.JumpPower
+ self.OG=workspace.Gravity
+ self.TargetY=hrp.Position.Y
+ hum.WalkSpeed=16 hum.JumpPower=0
+ -- 关闭重力
+ workspace.Gravity=0
+ -- BodyVelocity 控制水平移动
+ local bv=Instance.new("BodyVelocity") bv.Name="AirWalkBV"
+ bv.Velocity=Vector3.new(0,0,0) bv.MaxForce=Vector3.new(10000,math.huge,10000)
+ bv.P=5000 bv.Parent=hrp
+ self.BV=bv
+ -- BodyPosition 锁定Y轴高度
+ local bp=Instance.new("BodyPosition") bp.Name="AirWalkBP"
+ bp.Position=Vector3.new(0,self.TargetY,0) bp.MaxForce=Vector3.new(0,99999,0)
+ bp.P=10000 bp.D=800 bp.Parent=hrp
+ self.BP=bp
+ -- 角色重生自动恢复
+ self.CharConn=LP.CharacterAdded:Connect(function(c)
+  if not self.E then return end
+  task.wait(1.5)
+  if not self.E then return end
+  local h=c:FindFirstChild("Humanoid") local r=c:FindFirstChild("HumanoidRootPart")
+  if h and r then
+   h.WalkSpeed=16 h.JumpPower=0
+   local bv2=Instance.new("BodyVelocity") bv2.Name="AirWalkBV"
+   bv2.Velocity=Vector3.new(0,0,0) bv2.MaxForce=Vector3.new(10000,math.huge,10000) bv2.P=5000 bv2.Parent=r
+   self.BV=bv2
+   local bp3=Instance.new("BodyPosition") bp3.Name="AirWalkBP"
+   bp3.Position=Vector3.new(0,r.Position.Y,0) bp3.MaxForce=Vector3.new(0,99999,0) bp3.P=10000 bp3.D=800 bp3.Parent=r
+   self.BP=bp3 self.TargetY=r.Position.Y
+   print("[踏空] 重生后自动恢复")
   end
-  workspace.Gravity=self.OG
-  print("[踏空] 已关闭")
+ end)
+ -- 主循环
+ self.C=RS.Stepped:Connect(function()
+  local c=LP.Character local h=c and c:FindFirstChild("Humanoid") local r=c and c:FindFirstChild("HumanoidRootPart")
+  if not h or not r then return end
+  -- 确保 BodyVelocity 存在
+  local b=r:FindFirstChild("AirWalkBV")
+  if not b then
+   b=Instance.new("BodyVelocity") b.Name="AirWalkBV"
+   b.MaxForce=Vector3.new(10000,math.huge,10000) b.P=5000 b.Parent=r
+   self.BV=b
+  end
+  -- 确保 BodyPosition 存在
+  local bp2=r:FindFirstChild("AirWalkBP")
+  if not bp2 then
+   bp2=Instance.new("BodyPosition") bp2.Name="AirWalkBP"
+   bp2.MaxForce=Vector3.new(0,99999,0) bp2.P=10000 bp2.D=800 bp2.Parent=r
+   bp2.Position=Vector3.new(0,self.TargetY,0) self.BP=bp2
+  end
+  -- 水平移动控制（平滑插值）
+  local md=h.MoveDirection
+  local curVel=b.Velocity
+  local targetX=0 local targetZ=0
+  if md.Magnitude>0.1 then
+   targetX=md.X*h.WalkSpeed targetZ=md.Z*h.WalkSpeed
+  end
+  b.Velocity=Vector3.new(
+   curVel.X+(targetX-curVel.X)*0.3,
+   curVel.Y,
+   curVel.Z+(targetZ-curVel.Z)*0.3
+  )
+  -- 跳跃控制
+  local spaceDown=UIS:IsKeyDown(Enum.KeyCode.Space)
+  local shiftDown=UIS:IsKeyDown(Enum.KeyCode.LeftShift)
+  if spaceDown and not self.LastSpace then
+   self.Jumping=true
+   bp2.MaxForce=Vector3.new(0,0,0)
+   b.Velocity=Vector3.new(curVel.X,55,curVel.Z)
+  elseif not spaceDown and self.LastSpace and self.Jumping then
+   self.Jumping=false
+   self.TargetY=r.Position.Y
+   bp2.MaxForce=Vector3.new(0,99999,0)
+   bp2.Position=Vector3.new(0,self.TargetY,0)
+   b.Velocity=Vector3.new(curVel.X,0,curVel.Z)
+  elseif shiftDown then
+   self.Jumping=false
+   self.TargetY=self.TargetY-0.8
+   bp2.MaxForce=Vector3.new(0,99999,0)
+   bp2.Position=Vector3.new(0,self.TargetY,0)
+  end
+  self.LastSpace=spaceDown
+  -- 跳跃顶点自动锁定
+  if self.Jumping then
+   if r.Velocity.Y<=0.2 then
+    self.Jumping=false
+    self.TargetY=r.Position.Y
+    bp2.MaxForce=Vector3.new(0,99999,0)
+    bp2.Position=Vector3.new(0,self.TargetY,0)
+    b.Velocity=Vector3.new(curVel.X,0,curVel.Z)
+   end
+  end
+ end)
+ print("[踏空] 已开启 (空格跳跃/Shift下降/重生自动恢复)")
+end
+function AWS:Disable()
+ if not self.E then return end self.E=false
+ if self.C then self.C:Disconnect() self.C=nil end
+ if self.CharConn then self.CharConn:Disconnect() self.CharConn=nil end
+ local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid") local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+ if hum then pcall(function() hum.WalkSpeed=self.OWS hum.JumpPower=self.OJP end) end
+ if hrp then
+  local b=hrp:FindFirstChild("AirWalkBV") if b then pcall(function() b:Destroy() end) end
+  local bp2=hrp:FindFirstChild("AirWalkBP") if bp2 then pcall(function() bp2:Destroy() end) end
  end
- local AWSs=MT:AddSection("踏空行走")
+ workspace.Gravity=self.OG
+ print("[踏空] 已关闭")
+end
+local AWSs=MT:AddSection("踏空行走")
  AWSs:AddButton("●  开启踏空",function() AWS:Enable() end)
  AWSs:AddButton("○  关闭踏空",function() AWS:Disable() end)
  local NT=W:AddTab("穿墙","🧱")
@@ -4125,6 +4265,891 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
     end
    end)
    print("[驾驶帝国] 启动成功！")
+  end)
+ end)
+ -- 床战
+ local BWS=SV:AddSection("床战")
+ BWS:AddButton("🛏️  床战 助手",function()
+  print("[床战] 正在启动...")
+  task.spawn(function()
+   local Plrs=game:GetService("Players") local LP=Plrs.LocalPlayer
+   local RS=game:GetService("RunService")
+   local esp=false local reach=false local autoBridge=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(20,25,35) f.Position=UDim2.new(0,10,0,10) f.Size=UDim2.new(0,200,0,230) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(100,180,255) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🛏️ 床战助手" t.TextColor3=Color3.fromRGB(120,200,255) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(35,45,65) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(220,235,255) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local eb=mkBtn(40,"👁 敌人ESP: 关",function()
+    esp=not esp
+    eb.Text=esp and "👁 敌人ESP: 开" or "👁 敌人ESP: 关"
+    eb.BackgroundColor3=esp and Color3.fromRGB(55,80,120) or Color3.fromRGB(35,45,65)
+   end)
+   local bb=mkBtn(76,"🏗️ 自动搭桥: 关",function()
+    autoBridge=not autoBridge
+    bb.Text=autoBridge and "🏗️ 自动搭桥: 开" or "🏗️ 自动搭桥: 关"
+    bb.BackgroundColor3=autoBridge and Color3.fromRGB(55,80,120) or Color3.fromRGB(35,45,65)
+   end)
+   local rb=mkBtn(112,"⚔ 攻击范围: 关",function()
+    reach=not reach
+    rb.Text=reach and "⚔ 攻击范围: 开" or "⚔ 攻击范围: 关"
+    rb.BackgroundColor3=reach and Color3.fromRGB(55,80,120) or Color3.fromRGB(35,45,65)
+   end)
+   local spb=mkBtn(148,"⚡ 移动加速",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>25 and 16 or 35 end
+   end)
+   local jb=mkBtn(184,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(220,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   -- ESP
+   local hls={}
+   RS.Stepped:Connect(function()
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p==LP then continue end
+     if esp and p.Character and p.Team~=LP.Team then
+      if not hls[p] then
+       local hl=Instance.new("Highlight") hl.Parent=p.Character
+       hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+       hl.FillColor=Color3.fromRGB(255,50,50) hl.FillTransparency=0.6 hl.OutlineTransparency=0.3
+       hls[p]=hl
+      end
+      hls[p].Enabled=true
+     elseif hls[p] then hls[p].Enabled=false end
+    end
+   end)
+   print("[床战] 启动成功！")
+  end)
+ end)
+ -- 越狱
+ local JBS=SV:AddSection("越狱")
+ JBS:AddButton("🔓  越狱 助手",function()
+  print("[越狱] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local noclip=false local autoFarm=false local speed=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(25,20,15) f.Position=UDim2.new(0,10,0.5,-110) f.Size=UDim2.new(0,200,0,220) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,160,60) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🔓 越狱助手" t.TextColor3=Color3.fromRGB(255,180,80) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(65,45,25) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(255,235,210) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local nb=mkBtn(40,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(95,65,35) or Color3.fromRGB(65,45,25)
+   end)
+   local sb=mkBtn(76,"⚡ 加速: 关",function()
+    speed=not speed
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=speed and 35 or 16 end
+    sb.Text=speed and "⚡ 加速: 开" or "⚡ 加速: 关"
+    sb.BackgroundColor3=speed and Color3.fromRGB(95,65,35) or Color3.fromRGB(65,45,25)
+   end)
+   local fb=mkBtn(112,"💰 自动刷钱: 关",function()
+    autoFarm=not autoFarm
+    fb.Text=autoFarm and "💰 自动刷钱: 开" or "💰 自动刷钱: 关"
+    fb.BackgroundColor3=autoFarm and Color3.fromRGB(95,65,35) or Color3.fromRGB(65,45,25)
+   end)
+   local kb=mkBtn(148,"🔑 一键越狱",function()
+    if LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+    print("[越狱] 穿墙已开启，快跑！")
+   end)
+   local jb=mkBtn(184,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=130 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(220,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+    if autoFarm and LP.Character then
+     pcall(function()
+      local rs=game:GetService("ReplicatedStorage")
+      for _,r in ipairs(rs:GetDescendants()) do
+       if r:IsA("RemoteEvent") and (r.Name:find("Collect") or r.Name:find("Work") or r.Name:find("Money")) then
+        r:FireServer()
+       end
+      end
+     end)
+    end
+   end)
+   print("[越狱] 启动成功！")
+  end)
+ end)
+ -- 最强战场
+ local SBS=SV:AddSection("最强战场")
+ SBS:AddButton("💪  最强战场 助手",function()
+  print("[最强战场] 正在启动...")
+  task.spawn(function()
+   local Plrs=game:GetService("Players") local LP=Plrs.LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoPunch=false local esp=false local godMode=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(20,20,25) f.Position=UDim2.new(0,10,0,10) f.Size=UDim2.new(0,200,0,210) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(200,100,255) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="💪 最强战场" t.TextColor3=Color3.fromRGB(220,120,255) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(55,35,75) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(240,220,255) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local pb=mkBtn(40,"👊 自动攻击: 关",function()
+    autoPunch=not autoPunch
+    pb.Text=autoPunch and "👊 自动攻击: 开" or "👊 自动攻击: 关"
+    pb.BackgroundColor3=autoPunch and Color3.fromRGB(85,55,110) or Color3.fromRGB(55,35,75)
+   end)
+   local eb=mkBtn(76,"👁 敌人ESP: 关",function()
+    esp=not esp
+    eb.Text=esp and "👁 敌人ESP: 开" or "👁 敌人ESP: 关"
+    eb.BackgroundColor3=esp and Color3.fromRGB(85,55,110) or Color3.fromRGB(55,35,75)
+   end)
+   local gb=mkBtn(112,"❤️ 无限血量: 关",function()
+    godMode=not godMode
+    gb.Text=godMode and "❤️ 无限血量: 开" or "❤️ 无限血量: 关"
+    gb.BackgroundColor3=godMode and Color3.fromRGB(85,55,110) or Color3.fromRGB(55,35,75)
+   end)
+   local sb=mkBtn(148,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 45 end
+   end)
+   local jb=mkBtn(184,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=150 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(220,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   -- ESP
+   local hls={}
+   RS.Stepped:Connect(function()
+    local myPos=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+    -- 自动攻击
+    if autoPunch and myPos then
+     for _,p in ipairs(Plrs:GetPlayers()) do
+      if p==LP or not p.Character then continue end
+      local hrp=p.Character:FindFirstChild("HumanoidRootPart")
+      if hrp and (hrp.Position-myPos.Position).Magnitude<8 then
+       pcall(function()
+        local tool=LP.Character:FindFirstChildOfClass("Tool")
+        if tool then tool:Activate() end
+       end)
+       break
+      end
+     end
+    end
+    -- ESP
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p==LP then continue end
+     if esp and p.Character then
+      if not hls[p] then
+       local hl=Instance.new("Highlight") hl.Parent=p.Character
+       hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+       hl.FillColor=Color3.fromRGB(255,80,80) hl.FillTransparency=0.6
+       hls[p]=hl
+      end
+      hls[p].Enabled=true
+     elseif hls[p] then hls[p].Enabled=false end
+    end
+    -- 无限血量
+    if godMode and LP.Character then
+     local hum=LP.Character:FindFirstChild("Humanoid")
+     if hum and hum.Health<hum.MaxHealth then pcall(function() hum.Health=hum.MaxHealth end) end
+    end
+   end)
+   print("[最强战场] 启动成功！")
+  end)
+ end)
+ -- 躲避
+ local DGS=SV:AddSection("躲避")
+ DGS:AddButton("🏃  躲避 助手",function()
+  print("[躲避] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local noclip=false local autoDodge=false local speed=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(15,25,20) f.Position=UDim2.new(0,10,0.5,-90) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(80,220,140) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🏃 躲避助手" t.TextColor3=Color3.fromRGB(100,240,160) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(25,60,40) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(220,255,235) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local db=mkBtn(40,"⚡ 自动躲避: 关",function()
+    autoDodge=not autoDodge
+    db.Text=autoDodge and "⚡ 自动躲避: 开" or "⚡ 自动躲避: 关"
+    db.BackgroundColor3=autoDodge and Color3.fromRGB(40,90,60) or Color3.fromRGB(25,60,40)
+   end)
+   local sb=mkBtn(76,"🏃 超速: 关",function()
+    speed=not speed
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=speed and 50 or 16 end
+    sb.Text=speed and "🏃 超速: 开" or "🏃 超速: 关"
+    sb.BackgroundColor3=speed and Color3.fromRGB(40,90,60) or Color3.fromRGB(25,60,40)
+   end)
+   local nb=mkBtn(112,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(40,90,60) or Color3.fromRGB(25,60,40)
+   end)
+   local jb=mkBtn(148,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=150 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+   end)
+   print("[躲避] 启动成功！")
+  end)
+ end)
+ -- 丹迪的世界
+ local DDS=SV:AddSection("丹迪的世界")
+ DDS:AddButton("🌍  丹迪的世界 助手",function()
+  print("[丹迪的世界] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoFarm=false local noclip=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(25,20,10) f.Position=UDim2.new(0,10,0,350) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,200,80) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🌍 丹迪的世界" t.TextColor3=Color3.fromRGB(255,220,100) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(70,55,25) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(255,245,210) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local fb=mkBtn(40,"💰 自动收集: 关",function()
+    autoFarm=not autoFarm
+    fb.Text=autoFarm and "💰 自动收集: 开" or "💰 自动收集: 关"
+    fb.BackgroundColor3=autoFarm and Color3.fromRGB(100,80,35) or Color3.fromRGB(70,55,25)
+   end)
+   local sb=mkBtn(76,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 40 end
+   end)
+   local nb=mkBtn(112,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(100,80,35) or Color3.fromRGB(70,55,25)
+   end)
+   local jb=mkBtn(148,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+   end)
+   print("[丹迪的世界] 启动成功！")
+  end)
+ end)
+ -- 时尚大比拼
+ local FRS=SV:AddSection("时尚大比拼")
+ FRS:AddButton("👗  时尚大比拼 助手",function()
+  print("[时尚大比拼] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local autoWin=false local speed=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(30,15,30) f.Position=UDim2.new(0,10,0.5,-80) f.Size=UDim2.new(0,200,0,160) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,120,200) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="👗 时尚大比拼" t.TextColor3=Color3.fromRGB(255,140,220) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(70,30,60) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(255,220,240) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local wb=mkBtn(40,"⭐ 自动赢: 关",function()
+    autoWin=not autoWin
+    wb.Text=autoWin and "⭐ 自动赢: 开" or "⭐ 自动赢: 关"
+    wb.BackgroundColor3=autoWin and Color3.fromRGB(100,45,85) or Color3.fromRGB(70,30,60)
+    if autoWin then
+     pcall(function()
+      local rs=game:GetService("ReplicatedStorage")
+      for _,r in ipairs(rs:GetDescendants()) do
+       if r:IsA("RemoteEvent") and (r.Name:find("Vote") or r.Name:find("Win") or r.Name:find("Score")) then
+        r:FireServer(100)
+       end
+      end
+     end)
+    end
+   end)
+   local sb=mkBtn(76,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 35 end
+   end)
+   local jb=mkBtn(112,"🦘 高跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=100 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(148,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   print("[时尚大比拼] 启动成功！")
+  end)
+ end)
+ -- 钓鱼
+ local FIS=SV:AddSection("钓鱼")
+ FIS:AddButton("🎣  钓鱼 助手",function()
+  print("[钓鱼] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoFish=false local autoSell=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(10,25,30) f.Position=UDim2.new(0,10,0,150) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(80,200,220) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🎣 钓鱼助手" t.TextColor3=Color3.fromRGB(100,220,240) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(20,60,70) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(200,240,250) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local fb=mkBtn(40,"🎣 自动钓鱼: 关",function()
+    autoFish=not autoFish
+    fb.Text=autoFish and "🎣 自动钓鱼: 开" or "🎣 自动钓鱼: 关"
+    fb.BackgroundColor3=autoFish and Color3.fromRGB(35,90,105) or Color3.fromRGB(20,60,70)
+   end)
+   local sb=mkBtn(76,"💰 自动出售: 关",function()
+    autoSell=not autoSell
+    sb.Text=autoSell and "💰 自动出售: 开" or "💰 自动出售: 关"
+    sb.BackgroundColor3=autoSell and Color3.fromRGB(35,90,105) or Color3.fromRGB(20,60,70)
+   end)
+   local spb=mkBtn(112,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>25 and 16 or 35 end
+   end)
+   local jb=mkBtn(148,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   -- 自动钓鱼逻辑
+   RS.Heartbeat:Connect(function()
+    if autoFish and LP.Character then
+     pcall(function()
+      local tool=LP.Character:FindFirstChildOfClass("Tool")
+      if tool and tool.Name:lower():find("rod") then
+       tool:Activate()
+      end
+     end)
+    end
+   end)
+   print("[钓鱼] 启动成功！")
+  end)
+ end)
+ -- 宠物模拟器99
+ local PS99=SV:AddSection("宠物模拟器99")
+ PS99:AddButton("🐾  宠物模拟器99 助手",function()
+  print("[宠物模拟器99] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoHatch=false local autoFarm=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(20,15,30) f.Position=UDim2.new(0,10,0,250) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(180,100,255) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🐾 宠物模拟器99" t.TextColor3=Color3.fromRGB(200,120,255) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(55,35,85) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(240,220,255) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local hb=mkBtn(40,"🥚 自动孵蛋: 关",function()
+    autoHatch=not autoHatch
+    hb.Text=autoHatch and "🥚 自动孵蛋: 开" or "🥚 自动孵蛋: 关"
+    hb.BackgroundColor3=autoHatch and Color3.fromRGB(85,55,120) or Color3.fromRGB(55,35,85)
+    print("[宠物模拟器99] 自动孵蛋: "..(autoHatch and "开" or "关"))
+   end)
+   local fb=mkBtn(76,"💰 自动刷钱: 关",function()
+    autoFarm=not autoFarm
+    fb.Text=autoFarm and "💰 自动刷钱: 开" or "💰 自动刷钱: 关"
+    fb.BackgroundColor3=autoFarm and Color3.fromRGB(85,55,120) or Color3.fromRGB(55,35,85)
+   end)
+   local sb=mkBtn(112,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 40 end
+   end)
+   local jb=mkBtn(148,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Heartbeat:Connect(function()
+    if (autoFarm or autoHatch) and LP.Character then
+     pcall(function()
+      local rs=game:GetService("ReplicatedStorage")
+      for _,r in ipairs(rs:GetDescendants()) do
+       if r:IsA("RemoteEvent") then
+        if autoFarm and (r.Name:find("Collect") or r.Name:find("Sell") or r.Name:find("Coin")) then
+         pcall(function() r:FireServer() end)
+        end
+        if autoHatch and (r.Name:find("Hatch") or r.Name:find("Egg")) then
+         pcall(function() r:FireServer() end)
+        end
+       end
+      end
+     end)
+    end
+   end)
+   print("[宠物模拟器99] 启动成功！")
+  end)
+ end)
+ -- 索纳利亚生物
+ local CSS=SV:AddSection("索纳利亚生物")
+ CSS:AddButton("🦋  索纳利亚 助手",function()
+  print("[索纳利亚生物] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoGrow=false local noclip=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(10,25,15) f.Position=UDim2.new(0,10,0.5,-100) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(100,255,150) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🦋 索纳利亚生物" t.TextColor3=Color3.fromRGB(120,255,170) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(25,65,40) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(220,255,230) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local gb=mkBtn(40,"🌱 自动成长: 关",function()
+    autoGrow=not autoGrow
+    gb.Text=autoGrow and "🌱 自动成长: 开" or "🌱 自动成长: 关"
+    gb.BackgroundColor3=autoGrow and Color3.fromRGB(40,100,60) or Color3.fromRGB(25,65,40)
+   end)
+   local nb=mkBtn(76,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(40,100,60) or Color3.fromRGB(25,65,40)
+   end)
+   local fb=mkBtn(112,"🍖 无限体力",function()
+    if LP.Character then
+     local hum=LP.Character:FindFirstChild("Humanoid")
+     if hum then pcall(function() hum.Health=hum.MaxHealth end) end
+    end
+    print("[索纳利亚] 体力已恢复！")
+   end)
+   local sb=mkBtn(148,"⚡ 飞行速度",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 50 end
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+   end)
+   print("[索纳利亚生物] 启动成功！")
+  end)
+ end)
+ -- 自然灾害生存
+ local NDS=SV:AddSection("自然灾害生存")
+ NDS:AddButton("🌪️  自然灾害 助手",function()
+  print("[自然灾害生存] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local noclip=false local godMode=false autoWin=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(15,20,30) f.Position=UDim2.new(0,10,0,300) f.Size=UDim2.new(0,200,0,200) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(100,160,255) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🌪️ 自然灾害生存" t.TextColor3=Color3.fromRGB(120,180,255) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(30,50,80) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(220,235,255) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local gb=mkBtn(40,"❤️ 无敌模式: 关",function()
+    godMode=not godMode
+    gb.Text=godMode and "❤️ 无敌模式: 开" or "❤️ 无敌模式: 关"
+    gb.BackgroundColor3=godMode and Color3.fromRGB(50,80,120) or Color3.fromRGB(30,50,80)
+   end)
+   local nb=mkBtn(76,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(50,80,120) or Color3.fromRGB(30,50,80)
+   end)
+   local wb=mkBtn(112,"🏆 自动胜利: 关",function()
+    autoWin=not autoWin
+    wb.Text=autoWin and "🏆 自动胜利: 开" or "🏆 自动胜利: 关"
+    wb.BackgroundColor3=autoWin and Color3.fromRGB(50,80,120) or Color3.fromRGB(30,50,80)
+   end)
+   local sb=mkBtn(148,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 40 end
+   end)
+   local jb=mkBtn(184,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=150 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(220,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+    if godMode and LP.Character then
+     local hum=LP.Character:FindFirstChild("Humanoid")
+     if hum and hum.Health<hum.MaxHealth then pcall(function() hum.Health=hum.MaxHealth end) end
+    end
+   end)
+   print("[自然灾害生存] 启动成功！")
+  end)
+ end)
+ -- 西蒙说
+ local SMS=SV:AddSection("西蒙说")
+ SMS:AddButton("🎮  西蒙说 助手",function()
+  print("[西蒙说] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoPlay=false local speed=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(25,20,15) f.Position=UDim2.new(0,10,0.5,-70) f.Size=UDim2.new(0,200,0,160) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,200,50) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🎮 西蒙说助手" t.TextColor3=Color3.fromRGB(255,220,70) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(70,55,20) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(255,245,200) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local pb=mkBtn(40,"🎯 自动游玩: 关",function()
+    autoPlay=not autoPlay
+    pb.Text=autoPlay and "🎯 自动游玩: 开" or "🎯 自动游玩: 关"
+    pb.BackgroundColor3=autoPlay and Color3.fromRGB(100,80,30) or Color3.fromRGB(70,55,20)
+   end)
+   local sb=mkBtn(76,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>25 and 16 or 35 end
+   end)
+   local jb=mkBtn(112,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(148,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   print("[西蒙说] 启动成功！")
+  end)
+ end)
+ -- 蜜蜂群模拟器
+ local BSS=SV:AddSection("蜜蜂群模拟器")
+ BSS:AddButton("🐝  蜜蜂群 助手",function()
+  print("[蜜蜂群模拟器] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoCollect=false autoConvert=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(20,30,15) f.Position=UDim2.new(0,10,0,400) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,220,50) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="🐝 蜜蜂群模拟器" t.TextColor3=Color3.fromRGB(255,230,80) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(60,75,25) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(250,255,200) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local cb2=mkBtn(40,"🌻 自动采蜜: 关",function()
+    autoCollect=not autoCollect
+    cb2.Text=autoCollect and "🌻 自动采蜜: 开" or "🌻 自动采蜜: 关"
+    cb2.BackgroundColor3=autoCollect and Color3.fromRGB(90,110,35) or Color3.fromRGB(60,75,25)
+   end)
+   local vb=mkBtn(76,"🍯 自动兑换: 关",function()
+    autoConvert=not autoConvert
+    vb.Text=autoConvert and "🍯 自动兑换: 开" or "🍯 自动兑换: 关"
+    vb.BackgroundColor3=autoConvert and Color3.fromRGB(90,110,35) or Color3.fromRGB(60,75,25)
+   end)
+   local sb=mkBtn(112,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 40 end
+   end)
+   local jb=mkBtn(148,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Heartbeat:Connect(function()
+    if (autoCollect or autoConvert) and LP.Character then
+     pcall(function()
+      local rs=game:GetService("ReplicatedStorage")
+      for _,r in ipairs(rs:GetDescendants()) do
+       if r:IsA("RemoteEvent") then
+        if autoCollect and (r.Name:find("Collect") or r.Name:find("Pollen") or r.Name:find("Honey")) then
+         pcall(function() r:FireServer() end)
+        end
+        if autoConvert and (r.Name:find("Convert") or r.Name:find("Sell") or r.Name:find("Exchange")) then
+         pcall(function() r:FireServer() end)
+        end
+       end
+      end
+     end)
+    end
+   end)
+   print("[蜜蜂群模拟器] 启动成功！")
+  end)
+ end)
+ -- 布莱尔捉鬼
+ local BGS=SV:AddSection("布莱尔捉鬼")
+ BGS:AddButton("👻  布莱尔 助手",function()
+  print("[布莱尔捉鬼] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local ghostESP=false local speed=false local noclip=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(15,10,25) f.Position=UDim2.new(0,10,0.5,-100) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(150,100,255) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="👻 布莱尔捉鬼" t.TextColor3=Color3.fromRGB(180,130,255) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(45,30,75) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(230,210,255) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local eb=mkBtn(40,"👁 鬼魂ESP: 关",function()
+    ghostESP=not ghostESP
+    eb.Text=ghostESP and "👁 鬼魂ESP: 开" or "👁 鬼魂ESP: 关"
+    eb.BackgroundColor3=ghostESP and Color3.fromRGB(70,50,110) or Color3.fromRGB(45,30,75)
+   end)
+   local sb=mkBtn(76,"⚡ 速度提升",function()
+    speed=not speed
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=speed and 35 or 16 end
+    sb.Text=speed and "⚡ 速度提升: 开" or "⚡ 速度提升: 关"
+    sb.BackgroundColor3=speed and Color3.fromRGB(70,50,110) or Color3.fromRGB(45,30,75)
+   end)
+   local nb=mkBtn(112,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(70,50,110) or Color3.fromRGB(45,30,75)
+   end)
+   local fb=mkBtn(148,"🔦 无限手电",function()
+    print("[布莱尔] 手电已开启！")
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   -- 鬼魂ESP
+   local hls={}
+   RS.Stepped:Connect(function()
+    if ghostESP then
+     for _,d in ipairs(workspace:GetDescendants()) do
+      if d:IsA("Model") and d.Name:lower():find("ghost") then
+       if not hls[d] then
+        local hl=Instance.new("Highlight") hl.Parent=d
+        hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+        hl.FillColor=Color3.fromRGB(180,50,255) hl.FillTransparency=0.5
+        hls[d]=hl
+       end
+       hls[d].Enabled=true
+      end
+     end
+    else
+     for m,h in pairs(hls) do pcall(function() h:Destroy() end) end
+     hls={}
+    end
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+   end)
+   print("[布莱尔捉鬼] 启动成功！")
+  end)
+ end)
+ -- 皇家高中
+ local RHS=SV:AddSection("皇家高中")
+ RHS:AddButton("👑  皇家高中 助手",function()
+  print("[皇家高中] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoFarm=false local noclip=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(30,15,30) f.Position=UDim2.new(0,10,0,500) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,150,220) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="👑 皇家高中" t.TextColor3=Color3.fromRGB(255,170,230) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(70,30,60) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(255,225,245) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local db=mkBtn(40,"💎 自动刷钻: 关",function()
+    autoFarm=not autoFarm
+    db.Text=autoFarm and "💎 自动刷钻: 开" or "💎 自动刷钻: 关"
+    db.BackgroundColor3=autoFarm and Color3.fromRGB(100,45,85) or Color3.fromRGB(70,30,60)
+   end)
+   local nb=mkBtn(76,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(100,45,85) or Color3.fromRGB(70,30,60)
+   end)
+   local sb=mkBtn(112,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 40 end
+   end)
+   local jb=mkBtn(148,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+    if autoFarm then
+     pcall(function()
+      local rs=game:GetService("ReplicatedStorage")
+      for _,r in ipairs(rs:GetDescendants()) do
+       if r:IsA("RemoteEvent") and (r.Name:find("Diamond") or r.Name:find("Gem") or r.Name:find("Collect")) then
+        pcall(function() r:FireServer() end)
+       end
+      end
+     end)
+    end
+   end)
+   print("[皇家高中] 启动成功！")
+  end)
+ end)
+ -- 动漫先锋塔防
+ local ADTS=SV:AddSection("动漫先锋塔防")
+ ADTS:AddButton("⚔️  动漫先锋 助手",function()
+  print("[动漫先锋塔防] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoFarm=false autoPlace=false
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(20,20,35) f.Position=UDim2.new(0,10,0.5,-90) f.Size=UDim2.new(0,200,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(100,200,255) st.Thickness=2 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,28) t.Position=UDim2.new(0,0,0,6)
+   t.Font=Enum.Font.GothamBold t.Text="⚔️ 动漫先锋塔防" t.TextColor3=Color3.fromRGB(120,220,255) t.TextSize=15 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(35,45,75) b.Size=UDim2.new(0,170,0,32) b.Position=UDim2.new(0.5,-85,0,y)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(220,235,255) b.TextSize=12 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,6)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local fb=mkBtn(40,"💰 自动刷钱: 关",function()
+    autoFarm=not autoFarm
+    fb.Text=autoFarm and "💰 自动刷钱: 开" or "💰 自动刷钱: 关"
+    fb.BackgroundColor3=autoFarm and Color3.fromRGB(55,80,120) or Color3.fromRGB(35,45,75)
+   end)
+   local pb=mkBtn(76,"🏰 自动放塔: 关",function()
+    autoPlace=not autoPlace
+    pb.Text=autoPlace and "🏰 自动放塔: 开" or "🏰 自动放塔: 关"
+    pb.BackgroundColor3=autoPlace and Color3.fromRGB(55,80,120) or Color3.fromRGB(35,45,75)
+   end)
+   local sb=mkBtn(112,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 40 end
+   end)
+   local jb=mkBtn(148,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(184,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(70,30,30) cb.TextColor3=Color3.fromRGB(230,230,230)
+   RS.Heartbeat:Connect(function()
+    if (autoFarm or autoPlace) then
+     pcall(function()
+      local rs=game:GetService("ReplicatedStorage")
+      for _,r in ipairs(rs:GetDescendants()) do
+       if r:IsA("RemoteEvent") then
+        if autoFarm and (r.Name:find("Cash") or r.Name:find("Money") or r.Name:find("Gold")) then
+         pcall(function() r:FireServer() end)
+        end
+        if autoPlace and (r.Name:find("Place") or r.Name:find("Tower") or r.Name:find("Build")) then
+         pcall(function() r:FireServer() end)
+        end
+       end
+      end
+     end)
+    end
+   end)
+   print("[动漫先锋塔防] 启动成功！")
   end)
  end)
  local AeroScripts = {}
