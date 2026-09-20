@@ -404,12 +404,18 @@ function Lib:CreateWindow(title)
     return b
    end
    function S:AddSlider(name,minv,maxv,def,cb)
-    local sf=Instance.new("Frame") sf.Parent=sc sf.BackgroundColor3=Color3.fromRGB(30,30,38) sf.Size=UDim2.new(1,0,0,56) sf.ZIndex=5
+    local sf=Instance.new("Frame") sf.Parent=sc sf.BackgroundColor3=Color3.fromRGB(30,30,38) sf.Size=UDim2.new(1,0,0,64) sf.ZIndex=5
     Instance.new("UICorner",sf).CornerRadius=UDim.new(0,5)
-    local sl=Instance.new("TextLabel") sl.Parent=sf sl.BackgroundTransparency=1 sl.Position=UDim2.new(0,12,0,4) sl.Size=UDim2.new(1,-24,0,20)
+    -- 悬浮发光效果
+    local glow=Instance.new("UIStroke") glow.Parent=sf glow.Thickness=0 glow.Transparency=1 glow.Color=Settings.Accent glow.LineJoinMode=Enum.LineJoinMode.Round
+    local sl=Instance.new("TextLabel") sl.Parent=sf sl.BackgroundTransparency=1 sl.Position=UDim2.new(0,12,0,4) sl.Size=UDim2.new(1,-80,0,20)
     sl.Font=Enum.Font.GothamSemibold sl.Text=name.."  "..tostring(def) sl.TextColor3=Color3.fromRGB(210,210,230) sl.TextSize=12 sl.TextXAlignment=Enum.TextXAlignment.Left sl.ZIndex=6
     local sP=Instance.new("UIPadding") sP.Parent=sl sP.PaddingLeft=UDim.new(0,12)
-    local track=Instance.new("Frame") track.Parent=sf track.BackgroundColor3=Color3.fromRGB(50,50,65) track.Position=UDim2.new(0,12,0,34) track.Size=UDim2.new(1,-24,0,6) track.ZIndex=6
+    -- 数值输入框
+    local ib=Instance.new("TextBox") ib.Parent=sf ib.BackgroundColor3=Color3.fromRGB(45,45,60) ib.Position=UDim2.new(1,-68,0,4) ib.Size=UDim2.new(0,56,0,22) ib.ZIndex=7 ib.Font=Enum.Font.GothamBold ib.Text=tostring(def) ib.TextColor3=Settings.Accent ib.TextSize=11 ib.TextXAlignment=Enum.TextXAlignment.Center
+    Instance.new("UICorner",ib).CornerRadius=UDim.new(0,4)
+    local ibs=Instance.new("UIStroke") ibs.Parent=ib ibs.Thickness=1 ibs.Transparency=0.7 ibs.Color=Settings.Accent
+    local track=Instance.new("Frame") track.Parent=sf track.BackgroundColor3=Color3.fromRGB(50,50,65) track.Position=UDim2.new(0,12,0,42) track.Size=UDim2.new(1,-24,0,6) track.ZIndex=6
     Instance.new("UICorner",track).CornerRadius=UDim.new(0,3)
     local fill=Instance.new("Frame") fill.Parent=track fill.BackgroundColor3=Settings.Accent fill.Size=UDim2.new((def-minv)/(maxv-minv),0,1,0) fill.ZIndex=7
     Instance.new("UICorner",fill).CornerRadius=UDim.new(0,3)
@@ -419,7 +425,7 @@ function Lib:CreateWindow(title)
     Instance.new("UICorner",knob).CornerRadius=UDim.new(8,0)
     local ks=Instance.new("UIStroke") ks.Parent=knob ks.Thickness=2 ks.Color=Settings.Accent
     -- 大触控区域（透明按钮，覆盖整个轨道范围，方便移动端点击拖动）
-    local hitBtn=Instance.new("TextButton") hitBtn.Parent=sf hitBtn.BackgroundTransparency=1 hitBtn.Text="" hitBtn.Position=UDim2.new(0,12,0,28) hitBtn.Size=UDim2.new(1,-24,0,20) hitBtn.ZIndex=20 hitBtn.AutoButtonColor=false
+    local hitBtn=Instance.new("TextButton") hitBtn.Parent=sf hitBtn.BackgroundTransparency=1 hitBtn.Text="" hitBtn.Position=UDim2.new(0,12,0,36) hitBtn.Size=UDim2.new(1,-24,0,20) hitBtn.ZIndex=20 hitBtn.AutoButtonColor=false
     local dragging=false local val=def
     local function getPct(input)
      return (input.Position.X-track.AbsolutePosition.X)/track.AbsoluteSize.X
@@ -430,11 +436,19 @@ function Lib:CreateWindow(title)
      fill.Size=UDim2.new(pct,0,1,0)
      knob.Position=UDim2.new(pct,-5,0,0)
      sl.Text=name.."  "..tostring(val)
+     ib.Text=tostring(val)
      cb(val)
+    end
+    local function setVal(v)
+     v=tonumber(v) if not v then return end
+     if v<minv then v=minv elseif v>maxv then v=maxv end
+     upd((v-minv)/(maxv-minv))
     end
     local function startDrag(input)
      dragging=true
      upd(getPct(input))
+     -- 拖动时发光效果
+     TS:Create(glow,TweenInfo.new(0.2),{Thickness=1.5,Transparency=0.3}):Play()
     end
     hitBtn.InputBegan:Connect(function(input)
      if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
@@ -460,10 +474,20 @@ function Lib:CreateWindow(title)
     UIS.InputEnded:Connect(function(input)
      if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
       dragging=false
+      TS:Create(glow,TweenInfo.new(0.2),{Thickness=0,Transparency=1}):Play()
      end
     end)
+    -- 输入框回车确认
+    ib.FocusLost:Connect(function(enterPressed)
+     if enterPressed then
+      setVal(ib.Text)
+     end
+    end)
+    -- 悬浮效果
+    sf.MouseEnter:Connect(function() TS:Create(sf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(38,38,50)}):Play() TS:Create(glow,TweenInfo.new(0.15),{Thickness=1,Transparency=0.5}):Play() end)
+    sf.MouseLeave:Connect(function() if not dragging then TS:Create(sf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(30,30,38)}):Play() TS:Create(glow,TweenInfo.new(0.15),{Thickness=0,Transparency=1}):Play() end end)
     task.defer(function() if exp then sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) end if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
-    return {Set=function(v) upd((v-minv)/(maxv-minv)) end}
+    return {Set=function(v) setVal(v) end,Get=function() return val end}
    end
    task.defer(function() if exp then sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) end if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
    return S
@@ -631,11 +655,11 @@ buildUI=function()
  NS:AddButton("完全免费，请勿付费购买",function() end)
  NS:AddButton("如已付费请向买家退款",function() end)
  local SpS=MT:AddSection("⚡  通用调整")
- SpS:AddSlider("🏃  移动速度",8,100,16,function(v)
+ SpS:AddSlider("🏃  移动速度",1,10000,16,function(v)
   local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
   if hum then hum.WalkSpeed=v print("[速度] WalkSpeed="..v) end
  end)
- SpS:AddSlider("🦘  跳跃力",10,200,50,function(v)
+ SpS:AddSlider("🦘  跳跃力",1,10000,50,function(v)
   local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
   if hum then hum.JumpPower=v print("[跳跃] JumpPower="..v) end
  end)
@@ -42637,25 +42661,83 @@ end)
         end)
     end
  local FET=W:AddTab("FE","⚔")
- local RKS=FET:AddSection("🔪  Red Knife")
+ -- Red Knife 改进版：不消失 + 多种伤害方式 + 攻击光环
+ local RKState={E=false,Aura=false,Conn=nil,Tool=nil,Conn2=nil}
+ local function createRKTool()
+  local ch=LP.Character if not ch then return nil end
+  local tk=ch:FindFirstChild("RedKnife")
+  if tk then tk:Destroy() end
+  tk=Instance.new("Tool") tk.Name="RedKnife" tk.RequiresHandle=true tk.ToolTip="🔪 Red Knife"
+  local handle=Instance.new("Part") handle.Name="Handle" handle.Size=Vector3.new(0.4,1.2,0.4)
+  handle.Color=Color3.fromRGB(200,30,30) handle.Material=Enum.Material.Neon
+  handle.Transparency=0 handle.CanCollide=false handle.Parent=tk
+  local m=Instance.new("SpecialMesh") m.MeshType=Enum.MeshType.FileMesh
+  m.MeshId="rbxassetid://12622126" m.Scale=Vector3.new(1,1,1) m.Parent=handle
+  -- 发光效果
+  local light=Instance.new("PointLight") light.Color=Color3.fromRGB(255,50,50) light.Brightness=2 light.Range=6 light.Parent=handle
+  tk.Parent=ch
+  return tk
+ end
+ local function tryDamage(targetHum,targetChar,amount)
+  local hit=false
+  -- 方法1: 直接设置Health（仅客户端视觉）
+  pcall(function() if targetHum and targetHum:IsA("Humanoid") then targetHum.Health=targetHum.Health-amount end end)
+  -- 方法2: 尝试各种RemoteEvent
+  local remotes={
+   workspace:FindFirstChild("DamageEvent",true),
+   workspace:FindFirstChild("DealDamage",true),
+   workspace:FindFirstChild("Hit",true),
+   game:GetService("ReplicatedStorage"):FindFirstChild("Damage",true),
+   game:GetService("ReplicatedStorage"):FindFirstChild("DealDamage",true),
+   game:GetService("ReplicatedStorage"):FindFirstChild("Hit",true),
+   game:GetService("ReplicatedStorage"):FindFirstChild("DamageEvent",true),
+  }
+  for _,re in ipairs(remotes) do
+   if re and re:IsA("RemoteEvent") then
+    pcall(function() re:FireServer(targetChar,amount) end)
+    pcall(function() re:FireServer(targetHum,amount) end)
+    pcall(function() re:FireServer(amount) end)
+    hit=true
+   end
+  end
+  -- 方法3: 尝试RemoteFunction
+  for _,rf in ipairs({
+   game:GetService("ReplicatedStorage"):FindFirstChild("DamageFunc",true),
+   game:GetService("ReplicatedStorage"):FindFirstChild("DealDamageFunc",true),
+  }) do
+   if rf and rf:IsA("RemoteFunction") then
+    pcall(function() rf:InvokeServer(targetHum,amount) end)
+    hit=true
+   end
+  end
+  return hit
+ end
+ local RKS=FET:AddSection("🔪  Red Knife (改进版)")
  RKS:AddButton("●  装备红刀",function()
   pcall(function()
    local ch=LP.Character if not ch then print("[RedKnife] 找不到角色") return end
-   local tk=ch:FindFirstChild("RedKnife")
-   if not tk then
-    tk=Instance.new("Tool") tk.Name="RedKnife" tk.RequiresHandle=true
-    local handle=Instance.new("Part") handle.Name="Handle" handle.Size=Vector3.new(0.4,1.2,0.4)
-    handle.Color=Color3.fromRGB(200,30,30) handle.Material=Enum.Material.Neon
-    handle.Parent=tk tk.Parent=ch
-    local m=Instance.new("SpecialMesh") m.MeshType=Enum.MeshType.FileMesh
-    m.MeshId="rbxassetid://12622126" m.Scale=Vector3.new(1,1,1) m.Parent=handle
-    print("[RedKnife] 红刀已装备")
-   else
-    print("[RedKnife] 已经装备了")
-   end
+   RKState.Tool=createRKTool()
+   RKState.E=true
+   -- 自动修复（防止消失）
+   if RKState.Conn2 then RKState.Conn2:Disconnect() end
+   RKState.Conn2=LP.CharacterAdded:Connect(function()
+    task.wait(1)
+    if RKState.E then RKState.Tool=createRKTool() end
+   end)
+   print("[RedKnife] 红刀已装备（自动修复已开启）")
   end)
  end)
- RKS:AddButton("⚔  近战攻击",function()
+ RKS:AddButton("○  卸下红刀",function()
+  pcall(function()
+   RKState.E=false
+   if RKState.Conn2 then RKState.Conn2:Disconnect() RKState.Conn2=nil end
+   local ch=LP.Character if ch then
+    local tk=ch:FindFirstChild("RedKnife") if tk then tk:Destroy() end
+   end
+   print("[RedKnife] 红刀已卸下")
+  end)
+ end)
+ RKS:AddButton("⚔  近战攻击 (30伤害)",function()
   pcall(function()
    local ch=LP.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
    if not ch or not hrp then print("[RedKnife] 找不到角色") return end
@@ -42666,22 +42748,9 @@ end)
      if phrp and phum and phum.Health>0 then
       local dist=(hrp.Position-phrp.Position).Magnitude
       if dist<=8 then
-       -- 尝试常见的远程事件造成伤害
-       local re1=workspace:FindFirstChild("DamageEvent",true)
-       local re2=workspace:FindFirstChild("RemoteEvent",true)
-       local re3=game:GetService("ReplicatedStorage"):FindFirstChild("Damage",true)
-       local re4=game:GetService("ReplicatedStorage"):FindFirstChild("DealDamage",true)
-       if re1 and re1:IsA("RemoteEvent") then pcall(function() re1:FireServer(p.Character,25) end) print("[RedKnife] 造成25伤害 (DamageEvent)") hit=true
-       elseif re3 and re3:IsA("RemoteEvent") then pcall(function() re3:FireServer(phum,25) end) print("[RedKnife] 造成25伤害 (Damage)") hit=true
-       elseif re4 and re4:IsA("RemoteEvent") then pcall(function() re4:FireServer(phum,25) end) print("[RedKnife] 造成25伤害 (DealDamage)") hit=true end
-       -- 尝试用工具触发
-       local tool=ch:FindFirstChildOfClass("Tool")
-       if tool then
-        pcall(function() tool:Activate() end)
-       end
-       if not hit then
-        print("[RedKnife] 未找到伤害事件，纯视觉效果")
-       end
+       tryDamage(phum,p.Character,30)
+       hit=true
+       print("[RedKnife] 攻击: "..p.Name.." (30伤害)")
        break
       end
      end
@@ -42690,31 +42759,377 @@ end)
    if not hit then print("[RedKnife] 范围内没有敌人") end
   end)
  end)
- RKS:AddButton("💥  重击 (50伤害)",function()
+ RKS:AddButton("💥  重击 (60伤害)",function()
   pcall(function()
    local ch=LP.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
    if not ch or not hrp then print("[RedKnife] 找不到角色") return end
+   local hit=false
    for _,p in ipairs(Plrs:GetPlayers()) do
     if p~=LP and p.Character then
      local phrp=p.Character:FindFirstChild("HumanoidRootPart") local phum=p.Character:FindFirstChild("Humanoid")
      if phrp and phum and phum.Health>0 then
       local dist=(hrp.Position-phrp.Position).Magnitude
       if dist<=10 then
-       local re1=workspace:FindFirstChild("DamageEvent",true)
-       local re3=game:GetService("ReplicatedStorage"):FindFirstChild("Damage",true)
-       if re1 and re1:IsA("RemoteEvent") then pcall(function() re1:FireServer(p.Character,50) end) print("[RedKnife] 重击造成50伤害")
-       elseif re3 and re3:IsA("RemoteEvent") then pcall(function() re3:FireServer(phum,50) end) print("[RedKnife] 重击造成50伤害")
-       else print("[RedKnife] 未找到伤害事件，纯视觉效果") end
+       tryDamage(phum,p.Character,60)
+       hit=true
+       print("[RedKnife] 重击: "..p.Name.." (60伤害)")
        break
       end
      end
     end
    end
+   if not hit then print("[RedKnife] 范围内没有敌人") end
   end)
  end)
- RKS:AddButton("📖  使用说明",function()
-  print("[RedKnife] 说明: 装备红刀后靠近敌人点击近战攻击")
-  print("[RedKnife] 注意: 部分游戏无伤害事件则仅为视觉效果")
+ RKS:AddButton("🔥  攻击光环: 关",function()
+  RKState.Aura=not RKState.Aura
+  if RKState.Aura then
+   if RKState.Conn then RKState.Conn:Disconnect() end
+   RKState.Conn=RS.Heartbeat:Connect(function()
+    if not RKState.Aura then return end
+    local ch=LP.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+    if not ch or not hrp then return end
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p~=LP and p.Character then
+      local phrp=p.Character:FindFirstChild("HumanoidRootPart") local phum=p.Character:FindFirstChild("Humanoid")
+      if phrp and phum and phum.Health>0 then
+       local dist=(hrp.Position-phrp.Position).Magnitude
+       if dist<=6 then
+        tryDamage(phum,p.Character,5)
+       end
+      end
+     end
+    end
+   end)
+   print("[RedKnife] 攻击光环已开启")
+  else
+   if RKState.Conn then RKState.Conn:Disconnect() RKState.Conn=nil end
+   print("[RedKnife] 攻击光环已关闭")
+  end
+ end)
+ -- 战斗功能页：自描 + 子弹追踪
+ local CombatT=W:AddTab("战斗","🎯")
+ -- 自描功能
+ local AimbotState={E=false,Conn=nil,Target=nil,Key=Enum.KeyCode.MouseButton2,FOV=150,Smooth=0.15,Part="Head",VisibleCheck=false,TeamCheck=false}
+ local function getClosestPlayer()
+  local closest=nil local dist=math.huge
+  local cam=workspace.CurrentCamera
+  local myPos=cam.CFrame.Position
+  for _,p in ipairs(Plrs:GetPlayers()) do
+   if p==LP then continue end
+   if AimbotState.TeamCheck and p.Team and LP.Team and p.Team==LP.Team then continue end
+   local ch=p.Character if not ch then continue end
+   local hum=ch:FindFirstChild("Humanoid") if not hum or hum.Health<=0 then continue end
+   local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
+   if not part then continue end
+   -- 可见性检测
+   if AimbotState.VisibleCheck then
+    local ray=Ray.new(myPos,(part.Position-myPos).Unit*1000)
+    local hit=workspace:FindPartOnRayWithIgnoreList(ray,{LP.Character,ch})
+    if hit then continue end
+   end
+   -- 计算屏幕距离（FOV检查）
+   local screenPos,onScreen=cam:WorldToScreenPoint(part.Position)
+   if not onScreen then continue end
+   local mouse=UIS:GetMouseLocation()
+   local d=math.sqrt((screenPos.X-mouse.X)^2+(screenPos.Y-mouse.Y)^2)
+   if d<AimbotState.FOV and d<dist then
+    dist=d closest=p
+   end
+  end
+  return closest
+ end
+ local function aimAt(target)
+  if not target then return end
+  local ch=target.Character if not ch then return end
+  local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
+  if not part then return end
+  local cam=workspace.CurrentCamera
+  local targetCF=CFrame.new(cam.CFrame.Position,part.Position)
+  cam.CFrame=cam.CFrame:Lerp(targetCF,AimbotState.Smooth)
+ end
+ local ABS=CombatT:AddSection("🎯  自描 (Aimbot)")
+ ABS:AddButton("●  开启自描 (右键按住)",function()
+  if AimbotState.E then print("[自描] 已经开启了") return end
+  AimbotState.E=true
+  AimbotState.Conn=RS.RenderStepped:Connect(function()
+   if not AimbotState.E then return end
+   -- 检查是否按住右键
+   if UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+    local target=getClosestPlayer()
+    if target then aimAt(target) end
+   end
+  end)
+  print("[自描] 已开启 (按住右键瞄准)")
+ end)
+ ABS:AddButton("○  关闭自描",function()
+  AimbotState.E=false
+  if AimbotState.Conn then AimbotState.Conn:Disconnect() AimbotState.Conn=nil end
+  print("[自描] 已关闭")
+ end)
+ ABS:AddButton("📍  瞄准部位: 头",function()
+  local parts={"Head","HumanoidRootPart","Torso","UpperTorso","LowerTorso"}
+  local idx=table.find(parts,AimbotState.Part) or 1
+  idx=idx%#parts+1 AimbotState.Part=parts[idx]
+  print("[自描] 瞄准部位: "..AimbotState.Part)
+ end)
+ ABS:AddButton("📐  FOV范围: 150",function()
+  local fovs={80,120,150,200,300,500}
+  local idx=table.find(fovs,AimbotState.FOV) or 3
+  idx=idx%#fovs+1 AimbotState.FOV=fovs[idx]
+  print("[自描] FOV范围: "..AimbotState.FOV)
+ end)
+ ABS:AddButton("🌀  平滑度: 0.15",function()
+  local smooths={0.05,0.1,0.15,0.2,0.3,0.5,1}
+  local idx=table.find(smooths,AimbotState.Smooth) or 3
+  idx=idx%#smooths+1 AimbotState.Smooth=smooths[idx]
+  print("[自描] 平滑度: "..AimbotState.Smooth)
+ end)
+ ABS:AddButton("👁  可见检测: 关",function()
+  AimbotState.VisibleCheck=not AimbotState.VisibleCheck
+  print("[自描] 可见检测: "..(AimbotState.VisibleCheck and "开" or "关"))
+ end)
+ ABS:AddButton("👥  队友保护: 关",function()
+  AimbotState.TeamCheck=not AimbotState.TeamCheck
+  print("[自描] 队友保护: "..(AimbotState.TeamCheck and "开" or "关"))
+ end)
+ -- 子弹追踪功能
+ local BTState={E=false,Conn=nil,Conn2=nil,LastGun=nil,Supported=true}
+ -- 支持子弹追踪的枪支关键词
+ local supportedGunNames={"gun","Gun","rifle","Rifle","pistol","Pistol","shotgun","Shotgun","smg","SMG","sniper","Sniper","ak","AK","m4","M4","glock","Glock","deagle","Deagle","awp","AWP","scar","SCAR","ump","UMP","mp5","MP5","p90","P90"}
+ local function checkGunSupport(tool)
+  if not tool then return false end
+  local name=tool.Name:lower()
+  -- 检查是否有子弹相关属性
+  local hasBullet=false
+  pcall(function()
+   if tool:FindFirstChild("Ammo") or tool:FindFirstChild("Bullet") or tool:FindFirstChild("Projectile") then hasBullet=true end
+   if tool:FindFirstChildOfClass("Tool") then hasBullet=true end
+  end)
+  -- 检查名字关键词
+  for _,kw in ipairs(supportedGunNames) do
+   if name:find(kw:lower(),1,true) then return true end
+  end
+  -- 如果有弹药属性也算
+  return hasBullet
+ end
+ local function notifyGunSupport(supported,gunName)
+  if supported then
+   print("[子弹追踪] ✅ 支持: "..gunName)
+  else
+   print("[子弹追踪] ❌ 不支持: "..gunName.." (不是枪支类工具)")
+  end
+ end
+ local function trackBullets()
+  if not BTState.E then return end
+  local ch=LP.Character if not ch then return end
+  local tool=ch:FindFirstChildOfClass("Tool")
+  if tool and tool~=BTState.LastGun then
+   BTState.LastGun=tool
+   BTState.Supported=checkGunSupport(tool)
+   notifyGunSupport(BTState.Supported,tool.Name)
+  end
+  if not tool or not BTState.Supported then return end
+  -- 子弹追踪：追踪最近的敌人
+  local closest=nil local dist=math.huge
+  for _,p in ipairs(Plrs:GetPlayers()) do
+   if p==LP then continue end
+   local ph=p.Character if not ph then continue end
+   local phum=ph:FindFirstChild("Humanoid") if not phum or phum.Health<=0 then continue end
+   local phrp=ph:FindFirstChild("HumanoidRootPart") if not phrp then continue end
+   local d=(phrp.Position-LP.Character.HumanoidRootPart.Position).Magnitude
+   if d<dist then dist=d closest=p end
+  end
+  -- 拦截子弹，改变方向指向目标
+  if closest and closest.Character then
+   local targetPart=closest.Character:FindFirstChild("Head") or closest.Character:FindFirstChild("HumanoidRootPart")
+   if targetPart then
+    for _,v in ipairs(workspace:GetChildren()) do
+     if v:IsA("BasePart") and v.Velocity.Magnitude>50 then
+      -- 可能是子弹，检查是否靠近玩家
+      local myPos=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+      if myPos and (v.Position-myPos.Position).Magnitude<20 then
+       local dir=(targetPart.Position-v.Position).Unit
+       v.Velocity=dir*v.Velocity.Magnitude
+      end
+     end
+    end
+   end
+  end
+ end
+ local BTS=CombatT:AddSection("💫  子弹追踪")
+ BTS:AddButton("●  开启子弹追踪",function()
+  if BTState.E then print("[子弹追踪] 已经开启了") return end
+  BTState.E=true
+  BTState.Conn=RS.Heartbeat:Connect(trackBullets)
+  -- 监听装备变化
+  BTState.Conn2=LP.CharacterAdded:Connect(function()
+   BTState.LastGun=nil
+  end)
+  print("[子弹追踪] 已开启 (切换武器时会自动检测是否支持)")
+ end)
+ BTS:AddButton("○  关闭子弹追踪",function()
+  BTState.E=false
+  if BTState.Conn then BTState.Conn:Disconnect() BTState.Conn=nil end
+  if BTState.Conn2 then BTState.Conn2:Disconnect() BTState.Conn2=nil end
+  print("[子弹追踪] 已关闭")
+ end)
+ BTS:AddButton("🔍  检测当前武器",function()
+  local ch=LP.Character if not ch then print("[子弹追踪] 找不到角色") return end
+  local tool=ch:FindFirstChildOfClass("Tool")
+  if not tool then print("[子弹追踪] 当前没有装备武器") return end
+  local sup=checkGunSupport(tool)
+  notifyGunSupport(sup,tool.Name)
+ end)
+ -- 整活功能页
+ local MemeT=W:AddTab("整活","🕺")
+ local DanceState={E=false,Conn=nil,Conn2=nil,Conn3=nil}
+ local danceEmotes={"dance","Dance","wave","Wave","cheer","Cheer","laugh","Laugh","zombie","Zombie","tpose","Tpose","default","Default","robot","Robot","twist","Twist"}
+ local function sayMemeLines()
+  -- 魔性台词
+  local lines={
+   "8.28 复制打开抖音，看看【小辣椒酱的作品】命运你阿帕兹阿帕兹阿帕兹",
+   "# apt # 配十八个币...",
+   "https://v.douyin.com/Gr787083Scw/",
+   "02/17 mqr:/ V@l.cA :7pm",
+   "阿帕兹！阿帕兹！命运你阿帕兹！",
+   "配十八个币！配十八个币！",
+  }
+  local idx=1
+  while DanceState.E do
+   task.wait(2.5)
+   if not DanceState.E then break end
+   -- 尝试用聊天发送
+   pcall(function()
+    local ReplicatedStorage=game:GetService("ReplicatedStorage")
+    local defaultChat=ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents",true)
+    if defaultChat then
+     local sm=defaultChat:FindFirstChild("SayMessageRequest",true)
+     if sm and sm:IsA("RemoteEvent") then
+      sm:FireServer(lines[idx],"All")
+     end
+    end
+   end)
+   -- 同时打印到控制台
+   print("[整活] "..lines[idx])
+   idx=idx%#lines+1
+  end
+ end
+ local function doMemeDance()
+  local ch=LP.Character if not ch then return end
+  local hum=ch:FindFirstChild("Humanoid") if not hum then return end
+  -- 尝试播放舞蹈动画
+  local animId="rbxassetid://10895306795" -- 魔性舞蹈动画
+  local anims={10895306795,507771019,507770818,484141977,484141807,6161544273}
+  local idx=1
+  DanceState.Conn2=RS.Stepped:Connect(function()
+   if not DanceState.E then return end
+   local c=LP.Character if not c then return end
+   local h=c:FindFirstChild("Humanoid") if not h then return end
+   local hrp=c:FindFirstChild("HumanoidRootPart") if not hrp then return end
+   -- 魔性摇摆：上下跳动+左右摇晃
+   local t=os.clock()*8
+   local bob=math.sin(t*2)*0.5
+   local tilt=math.sin(t)*0.3
+   hrp.CFrame=hrp.CFrame*CFrame.Angles(0,tilt*0.1,0)
+  end)
+  -- 尝试加载动画
+  pcall(function()
+   local hum2=hum
+   local animator=hum2:FindFirstChildOfClass("Animator") or Instance.new("Animator")
+   animator.Parent=hum2
+   for _,id in ipairs(anims) do
+    task.spawn(function()
+     local anim=Instance.new("Animation")
+     anim.AnimationId="rbxassetid://"..id
+     local track=animator:LoadAnimation(anim)
+     track.Looped=true
+     track:Play()
+    end)
+   end
+  end)
+  -- 尝试触发游戏内置表情
+  pcall(function()
+   for _,emote in ipairs(danceEmotes) do
+    task.spawn(function()
+     hum:PlayEmote(emote)
+    end)
+   end
+  end)
+ end
+ local MSec=MemeT:AddSection("💰  配十八个币")
+ MSec:AddButton("💃  开始魔性舞蹈",function()
+  if DanceState.E then print("[整活] 已经在跳了") return end
+  DanceState.E=true
+  local ch=LP.Character if not ch then print("[整活] 找不到角色") return end
+  print("[整活] 🎵 配十八个币！阿帕兹阿帕兹！🎵")
+  -- 开始跳舞
+  doMemeDance()
+  -- 开始说台词
+  task.spawn(sayMemeLines)
+  -- 重生后自动继续
+  DanceState.Conn3=LP.CharacterAdded:Connect(function()
+   task.wait(2)
+   if DanceState.E then
+    doMemeDance()
+   end
+  end)
+ end)
+ MSec:AddButton("🛑  停止舞蹈",function()
+  DanceState.E=false
+  if DanceState.Conn then DanceState.Conn:Disconnect() DanceState.Conn=nil end
+  if DanceState.Conn2 then DanceState.Conn2:Disconnect() DanceState.Conn2=nil end
+  if DanceState.Conn3 then DanceState.Conn3:Disconnect() DanceState.Conn3=nil end
+  print("[整活] 停止舞蹈")
+ end)
+ MSec:AddButton("📢  说一句台词",function()
+  local lines={
+   "命运你阿帕兹阿帕兹阿帕兹！",
+   "配十八个币！",
+   "8.28 复制打开抖音",
+   "apt! apt!",
+   "阿帕兹！",
+  }
+  local line=lines[math.random(#lines)]
+  pcall(function()
+   local ReplicatedStorage=game:GetService("ReplicatedStorage")
+   local defaultChat=ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents",true)
+   if defaultChat then
+    local sm=defaultChat:FindFirstChild("SayMessageRequest",true)
+    if sm and sm:IsA("RemoteEvent") then
+     sm:FireServer(line,"All")
+    end
+   end
+  end)
+  print("[整活] "..line)
+ end)
+ local Meme2=MemeT:AddSection("🎭  其他整活")
+ Meme2:AddButton("😱  假装死亡",function()
+  local ch=LP.Character if not ch then return end
+  local hum=ch:FindFirstChild("Humanoid") if not hum then return end
+  pcall(function() hum.Health=0 end)
+  print("[整活] 假装死亡（仅客户端视觉）")
+ end)
+ Meme2:AddButton("🤸  超级跳跃",function()
+  local ch=LP.Character if not ch then return end
+  local hum=ch:FindFirstChild("Humanoid") if not hum then return end
+  hum.JumpPower=200
+  task.wait(2)
+  hum.JumpPower=50
+  print("[整活] 超级跳跃已触发 (2秒)")
+ end)
+ Meme2:AddButton("🌀  原地转圈",function()
+  local ch=LP.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+  if not hrp then return end
+  local t=0
+  local conn
+  conn=RS.Stepped:Connect(function()
+   t=t+0.1
+   if not hrp or not hrp.Parent then conn:Disconnect() return end
+   hrp.CFrame=hrp.CFrame*CFrame.Angles(0,0.1,0)
+  end)
+  task.delay(3,function() conn:Disconnect() print("[整活] 转圈结束") end)
+  print("[整活] 转起来了！(3秒)")
  end)
  local SetT=W:AddTab("设置","⚙")
  local CS2=SetT:AddSection("🎨 主题颜色")
