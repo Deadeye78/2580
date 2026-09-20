@@ -173,7 +173,12 @@ end
 function Lib:CreateWindow(title)
  local SG=Instance.new("ScreenGui") SG.Name="LS_Main" SG.Parent=CG SG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling SG.ResetOnSpawn=false SG.Enabled=false
  local BGL=Instance.new("Frame") BGL.Parent=SG BGL.BackgroundColor3=Color3.fromRGB(15,15,20) BGL.BackgroundTransparency=1 BGL.Size=UDim2.new(1,0,1,0) BGL.ZIndex=0
- local BGImg=Instance.new("ImageLabel") BGImg.Parent=BGL BGImg.BackgroundTransparency=1 BGImg.Size=UDim2.new(1,0,1,0) BGImg.ImageTransparency=0.7
+ local BGG=Instance.new("UIGradient") BGG.Parent=BGL BGG.Rotation=90 BGG.Enabled=false BGG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.15),NumberSequenceKeypoint.new(1,0.15)}
+ -- 暗角效果层（增加高级感）
+ local Vignette=Instance.new("Frame") Vignette.Parent=SG Vignette.BackgroundTransparency=1 Vignette.Size=UDim2.new(1,0,1,0) Vignette.ZIndex=0 Vignette.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+ local VG=Instance.new("UIGradient") VG.Parent=Vignette VG.Rotation=0 VG.Enabled=false
+ VG.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,0,0))}
+ VG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.7),NumberSequenceKeypoint.new(0.5,0.95),NumberSequenceKeypoint.new(1,0.7)}
  local MF=Instance.new("Frame") MF.Parent=SG MF.BackgroundColor3=Color3.fromRGB(15,15,20) MF.Position=UDim2.new(0.5,-290,0.5,-190) MF.Size=UDim2.new(0,580,0,380) MF.ClipsDescendants=true MF.Active=true MF.ZIndex=1
  Instance.new("UICorner",MF).CornerRadius=UDim.new(0,12)
  local MS=Instance.new("UIStroke") MS.Parent=MF MS.Thickness=1.5 MS.Transparency=0.6 MS.Color=Settings.Accent MS.LineJoinMode=Enum.LineJoinMode.Round
@@ -209,17 +214,22 @@ function Lib:CreateWindow(title)
  local PC=Instance.new("ScrollingFrame") PC.Parent=CC PC.BackgroundTransparency=1 PC.Size=UDim2.new(1,0,1,0) PC.ScrollBarThickness=3 PC.ScrollBarImageColor3=Settings.Accent PC.CanvasSize=UDim2.new(0,0,0,0) PC.ZIndex=2
  drag(MF,TB)
  local pages={} local cur=nil
- -- UI特效层
- local FXLayer=Instance.new("Frame") FXLayer.Parent=MF FXLayer.BackgroundTransparency=1 FXLayer.Size=UDim2.new(1,0,1,0) FXLayer.ZIndex=10
+ -- UI特效层（放在MF外面，避免被裁剪）
+ local FXLayer=Instance.new("Frame") FXLayer.Parent=SG FXLayer.BackgroundTransparency=1 FXLayer.Size=UDim2.new(1,0,1,0) FXLayer.ZIndex=100
  -- 流星环绕
- local MeteorLayer=Instance.new("Frame") MeteorLayer.Parent=FXLayer MeteorLayer.BackgroundTransparency=1 MeteorLayer.Size=UDim2.new(1,0,1,0) MeteorLayer.ZIndex=10 MeteorLayer.ClipsDescendants=false
+ local MeteorLayer=Instance.new("Frame") MeteorLayer.Parent=FXLayer MeteorLayer.BackgroundTransparency=1 MeteorLayer.Size=UDim2.new(1,0,1,0) MeteorLayer.ZIndex=100
  local fxMeteors={}
  for i=1,12 do
   local m=Instance.new("Frame") m.Parent=MeteorLayer m.BackgroundColor3=Settings.Accent m.Visible=false
-  m.Size=UDim2.new(0,2,0,50) m.ZIndex=10 m.BackgroundTransparency=0.4
-  Instance.new("UICorner",m).CornerRadius=UDim.new(0,1)
-  local mg=Instance.new("UIGradient") mg.Parent=m mg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,0)}
-  table.insert(fxMeteors,{Obj=m,Delay=i*0.3,Spd=1+math.random()*0.5,Len=40+math.random(30),Grad=mg})
+  m.Size=UDim2.new(0,4,0,60) m.ZIndex=100 m.BackgroundTransparency=0
+  Instance.new("UICorner",m).CornerRadius=UDim.new(0,2)
+  -- 渐变：头部亮白→中间主题色→尾部透明消失
+  local mg=Instance.new("UIGradient") mg.Parent=m
+  mg.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.3,Settings.Accent),ColorSequenceKeypoint.new(1,Settings.Accent)}
+  mg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.2,0),NumberSequenceKeypoint.new(0.7,0.5),NumberSequenceKeypoint.new(1,1)}
+  -- 发光效果
+  local gs=Instance.new("UIStroke") gs.Parent=m gs.Thickness=2 gs.Transparency=0.6 gs.Color=Settings.Accent gs.LineJoinMode=Enum.LineJoinMode.Round
+  table.insert(fxMeteors,{Obj=m,Delay=i*0.25,Spd=1+math.random()*0.6,Len=55+math.random(40),Grad=mg,Stroke=gs})
  end
  -- 特效状态
  local fxState={Rainbow=false,Meteor=false,RainbowConn=nil,MeteorConn=nil,AccentBase=Settings.Accent}
@@ -237,31 +247,36 @@ function Lib:CreateWindow(title)
   end
   -- 流星环绕
   if fxState.Meteor then
+   local mfx=MF.AbsolutePosition.X local mfy=MF.AbsolutePosition.Y
    local w=MF.AbsoluteSize.X local h=MF.AbsoluteSize.Y
    local perimeter=2*(w+h)
    for i,md in ipairs(fxMeteors) do
     local pos=((t*md.Spd*100+md.Delay*80)%perimeter)/perimeter
     md.Obj.Visible=true
-    local len=md.Len/perimeter
-    local startP=(pos-len+1)%1
-    -- 计算流星头位置
+    -- 计算流星位置（屏幕绝对坐标），流星头朝前
     local px,py,rot
-    if pos<0.25 then -- 上边
-     local pf=pos/0.25 px=pf*w py=0 rot=0
-    elseif pos<0.5 then -- 右边
-     local pf=(pos-0.25)/0.25 px=w py=pf*h rot=90
-    elseif pos<0.75 then -- 下边
-     local pf=(pos-0.5)/0.25 px=w-pf*w py=h rot=180
-    else -- 左边
-     local pf=(pos-0.75)/0.25 px=0 py=h-pf*h rot=270
+    if pos<0.25 then -- 上边 左→右
+     local pf=pos/0.25 px=mfx+pf*w py=mfy-2 rot=90
+    elseif pos<0.5 then -- 右边 上→下
+     local pf=(pos-0.25)/0.25 px=mfx+w+2 py=mfy+pf*h rot=180
+    elseif pos<0.75 then -- 下边 右→左
+     local pf=(pos-0.5)/0.25 px=mfx+w-pf*w py=mfy+h+2 rot=270
+    else -- 左边 下→上
+     local pf=(pos-0.75)/0.25 px=mfx-2 py=mfy+h-pf*h rot=0
     end
-    md.Obj.Position=UDim2.new(0,px-1,0,py-1)
+    md.Obj.Position=UDim2.new(0,px,0,py)
     md.Obj.Rotation=rot
-    md.Obj.Size=UDim2.new(0,3,0,md.Len)
+    md.Obj.Size=UDim2.new(0,4,0,md.Len)
+    local c
     if fxState.Rainbow then
-     local hue2=((t*0.15)+i*0.05)%1 md.Obj.BackgroundColor3=Color3.fromHSV(hue2,0.7,1)
+     local hue2=((t*0.15)+i*0.05)%1 c=Color3.fromHSV(hue2,0.7,1)
+     md.Obj.BackgroundColor3=c
+     md.Grad.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.3,c),ColorSequenceKeypoint.new(1,c)}
+     md.Stroke.Color=c
     else
-     md.Obj.BackgroundColor3=fxState.AccentBase
+     c=fxState.AccentBase md.Obj.BackgroundColor3=c
+     md.Grad.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.3,c),ColorSequenceKeypoint.new(1,c)}
+     md.Stroke.Color=c
     end
    end
   else
@@ -278,15 +293,28 @@ function Lib:CreateWindow(title)
    end
   end
  end
- local function applyBG(imgid,color,trans)
-  if color then
+ local function applyBG(imgid,color,trans,gradient,rot)
+  if gradient then
+   -- 渐变背景 + 暗角效果
+   BGG.Enabled=true
+   BGG.Color=ColorSequence.new(gradient)
+   BGG.Rotation=rot or 90
+   BGL.BackgroundTransparency=0
+   BGL.BackgroundColor3=gradient[1]
+   VG.Enabled=true
+   Vignette.BackgroundTransparency=0
+  elseif color then
+   -- 纯色背景
+   BGG.Enabled=false
    BGL.BackgroundColor3=color BGL.BackgroundTransparency=trans or 0.5
-   BGImg.Image="" BGImg.ImageTransparency=1
-  elseif imgid and imgid~="" then
-   BGL.BackgroundTransparency=1
-   BGImg.Image=imgid BGImg.ImageTransparency=trans or 0.65
+   VG.Enabled=false
+   Vignette.BackgroundTransparency=1
   else
-   BGL.BackgroundTransparency=1 BGImg.Image="" BGImg.ImageTransparency=1
+   -- 无背景
+   BGG.Enabled=false
+   BGL.BackgroundTransparency=1
+   VG.Enabled=false
+   Vignette.BackgroundTransparency=1
   end
  end
  local function toggleRainbow(enable)
@@ -387,33 +415,52 @@ function Lib:CreateWindow(title)
     Instance.new("UICorner",fill).CornerRadius=UDim.new(0,3)
     local fg=Instance.new("UIGradient") fg.Parent=fill fg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.1),NumberSequenceKeypoint.new(1,0)}
     local knob=Instance.new("Frame") knob.Parent=track knob.BackgroundColor3=Color3.fromRGB(255,255,255)
-    knob.Size=UDim2.new(0,14,0,14) knob.Position=UDim2.new((def-minv)/(maxv-minv),-4,0,0) knob.ZIndex=8
-    Instance.new("UICorner",knob).CornerRadius=UDim.new(7,0)
+    knob.Size=UDim2.new(0,16,0,16) knob.Position=UDim2.new((def-minv)/(maxv-minv),-5,0,0) knob.ZIndex=8
+    Instance.new("UICorner",knob).CornerRadius=UDim.new(8,0)
     local ks=Instance.new("UIStroke") ks.Parent=knob ks.Thickness=2 ks.Color=Settings.Accent
+    -- 大触控区域（透明按钮，覆盖整个轨道范围，方便移动端点击拖动）
+    local hitBtn=Instance.new("TextButton") hitBtn.Parent=sf hitBtn.BackgroundTransparency=1 hitBtn.Text="" hitBtn.Position=UDim2.new(0,12,0,28) hitBtn.Size=UDim2.new(1,-24,0,20) hitBtn.ZIndex=20 hitBtn.AutoButtonColor=false
     local dragging=false local val=def
+    local function getPct(input)
+     return (input.Position.X-track.AbsolutePosition.X)/track.AbsoluteSize.X
+    end
     local function upd(pct)
      if pct<0 then pct=0 elseif pct>1 then pct=1 end
      val=math.floor(minv+pct*(maxv-minv)+0.5)
      fill.Size=UDim2.new(pct,0,1,0)
-     knob.Position=UDim2.new(pct,-7,0,0)
+     knob.Position=UDim2.new(pct,-5,0,0)
      sl.Text=name.."  "..tostring(val)
      cb(val)
     end
+    local function startDrag(input)
+     dragging=true
+     upd(getPct(input))
+    end
+    hitBtn.InputBegan:Connect(function(input)
+     if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+      startDrag(input)
+     end
+    end)
+    knob.InputBegan:Connect(function(input)
+     if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+      startDrag(input)
+     end
+    end)
     track.InputBegan:Connect(function(input)
-     if input.UserInputType==Enum.UserInputType.MouseButton1 then
-      dragging=true
-      local pct=(input.Position.X-track.AbsolutePosition.X)/track.AbsoluteSize.X
-      upd(pct)
+     if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+      startDrag(input)
      end
     end)
     UIS.InputChanged:Connect(function(input)
-     if dragging and input.UserInputType==Enum.UserInputType.MouseMovement then
-      local pct=(input.Position.X-track.AbsolutePosition.X)/track.AbsoluteSize.X
-      upd(pct)
+     if not dragging then return end
+     if input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch then
+      upd(getPct(input))
      end
     end)
     UIS.InputEnded:Connect(function(input)
-     if input.UserInputType==Enum.UserInputType.MouseButton1 then dragging=false end
+     if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+      dragging=false
+     end
     end)
     task.defer(function() if exp then sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) end if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
     return {Set=function(v) upd((v-minv)/(maxv-minv)) end}
@@ -598,32 +645,72 @@ buildUI=function()
  end)
  local FS=MT:AddSection("✈  飞行功能")
  FS:AddButton("✈  开启飞行",function() runLS("飞行","https://raw.githubusercontent.com/kongbaNB/9178/refs/heads/main/fly.lua") end)
- local AWS={E=false,C=nil,OWS=16,OJP=50}
+ local AWS={E=false,C=nil,BV=nil,BP=nil,OWS=16,OJP=50,OG=196.2,StartY=0}
  function AWS:Enable()
   if self.E then return end self.E=true
-  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
-  if not hum then print("[踏空] 找不到角色") self.E=false return end
+  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid") local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+  if not hum or not hrp then print("[踏空] 找不到角色") self.E=false return end
   self.OWS=hum.WalkSpeed self.OJP=hum.JumpPower
-  hum.WalkSpeed=16 hum.JumpPower=50
+  self.OG=workspace.Gravity
+  self.StartY=hrp.Position.Y
+  hum.WalkSpeed=16 hum.JumpPower=0
+  -- 关闭重力（从根本上防止下落）
+  workspace.Gravity=0
+  -- BodyVelocity 控制水平移动
+  local bv=Instance.new("BodyVelocity") bv.Name="AirWalkBV"
+  bv.Velocity=Vector3.new(0,0,0) bv.MaxForce=Vector3.new(10000,0,10000)
+  bv.P=5000 bv.Parent=hrp
+  self.BV=bv
+  -- BodyPosition 锁定Y轴高度（更稳定）
+  local bp=Instance.new("BodyPosition") bp.Name="AirWalkBP"
+  bp.Position=Vector3.new(0,self.StartY,0) bp.MaxForce=Vector3.new(0,50000,0)
+  bp.P=5000 bp.D=500 bp.Parent=hrp
+  self.BP=bp
   self.C=RS.Stepped:Connect(function()
-   local c=LP.Character local h=c and c:FindFirstChild("Humanoid") local hrp=c and c:FindFirstChild("HumanoidRootPart")
-   if not h or not hrp then return end
-   if h.FloorMaterial==Enum.Material.Air then
-    if h.MoveDirection.Magnitude>0.1 then
-     local mv=h.MoveDirection*h.WalkSpeed
-     hrp.Velocity=Vector3.new(mv.X,0.5,mv.Z)
-    else
-     hrp.Velocity=Vector3.new(hrp.Velocity.X*0.9,0.5,hrp.Velocity.Z*0.9)
-    end
+   local c=LP.Character local h=c and c:FindFirstChild("Humanoid") local r=c and c:FindFirstChild("HumanoidRootPart")
+   if not h or not r then return end
+   -- 确保 BodyVelocity 存在
+   local b=r:FindFirstChild("AirWalkBV")
+   if not b then
+    b=Instance.new("BodyVelocity") b.Name="AirWalkBV"
+    b.MaxForce=Vector3.new(10000,0,10000) b.P=5000 b.Parent=r
+    self.BV=b
    end
+   -- 确保 BodyPosition 存在
+   local bp2=r:FindFirstChild("AirWalkBP")
+   if not bp2 then
+    bp2=Instance.new("BodyPosition") bp2.Name="AirWalkBP"
+    bp2.MaxForce=Vector3.new(0,50000,0) bp2.P=5000 bp2.D=500 bp2.Parent=r
+    self.BP=bp2
+   end
+   -- 水平移动控制
+   local md=h.MoveDirection
+   if md.Magnitude>0.1 then
+    b.Velocity=Vector3.new(md.X*h.WalkSpeed,0,md.Z*h.WalkSpeed)
+   else
+    b.Velocity=Vector3.new(0,0,0)
+   end
+   -- 高度控制：空格上升，左Shift下降
+   local targetY=bp2.Position.Y
+   if UIS:IsKeyDown(Enum.KeyCode.Space) then
+    targetY=targetY+0.5
+   elseif UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
+    targetY=targetY-0.5
+   end
+   bp2.Position=Vector3.new(0,targetY,0)
   end)
-  print("[踏空] 已开启")
+  print("[踏空] 已开启 (空格上升/Shift下降)")
  end
  function AWS:Disable()
   if not self.E then return end self.E=false
   if self.C then self.C:Disconnect() self.C=nil end
-  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
+  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid") local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
   if hum then hum.WalkSpeed=self.OWS hum.JumpPower=self.OJP end
+  if hrp then
+   local b=hrp:FindFirstChild("AirWalkBV") if b then b:Destroy() end
+   local bp2=hrp:FindFirstChild("AirWalkBP") if bp2 then bp2:Destroy() end
+  end
+  workspace.Gravity=self.OG
   print("[踏空] 已关闭")
  end
  local AWSs=MT:AddSection("踏空行走")
@@ -42677,17 +42764,22 @@ end)
  for _,bg in ipairs(solidBgs) do
   BGS:AddButton(bg.Name,function() W.ApplyBG("",bg.Color,0.4) print("[设置] 背景:"..bg.Name) end)
  end
- local BGS2=SetT:AddSection("🖼  图片背景")
- local bgs={
-  {Name="🐱  可爱猫猫",ID="rbxassetid://15465870245",DY="抖音: LoeTing20140224"},
-  {Name="🐑  喜羊羊",ID="rbxassetid://15465872785",DY="抖音: 43257824802"},
-  {Name="☁️  天空涂鸦",ID="rbxassetid://15465874217",DY="抖音: 43257824802"},
-  {Name="🌊  水下雏菊",ID="rbxassetid://15465875604",DY="抖音: 43257824802"},
-  {Name="🌸  唯美少女",ID="rbxassetid://15465876943",DY="抖音: 43257824802"},
+ local BGS2=SetT:AddSection("🌈  渐变背景")
+ local gradBgs={
+  {Name="🌅  日落霞光",Grad={Color3.fromRGB(255,140,80),Color3.fromRGB(220,80,130),Color3.fromRGB(120,40,100)},Rot=90},
+  {Name="🌊  深海蓝调",Grad={Color3.fromRGB(30,80,150),Color3.fromRGB(15,45,90),Color3.fromRGB(5,20,50)},Rot=90},
+  {Name="🌌  宇宙星辰",Grad={Color3.fromRGB(50,20,100),Color3.fromRGB(25,10,55),Color3.fromRGB(8,3,20)},Rot=90},
+  {Name="🌸  粉樱浪漫",Grad={Color3.fromRGB(255,180,200),Color3.fromRGB(230,130,170),Color3.fromRGB(180,90,140)},Rot=45},
+  {Name="🌿  森林秘境",Grad={Color3.fromRGB(40,100,60),Color3.fromRGB(20,60,35),Color3.fromRGB(10,30,18)},Rot=90},
+  {Name="🔥  烈焰燃烧",Grad={Color3.fromRGB(255,150,50),Color3.fromRGB(255,80,30),Color3.fromRGB(150,20,10)},Rot=45},
+  {Name="💎  冰川极光",Grad={Color3.fromRGB(100,220,240),Color3.fromRGB(60,140,180),Color3.fromRGB(30,80,130)},Rot=90},
+  {Name="🌙  午夜霓虹",Grad={Color3.fromRGB(10,10,30),Color3.fromRGB(50,20,80),Color3.fromRGB(10,10,30)},Rot=90},
+  {Name="🍊  橙光暮色",Grad={Color3.fromRGB(255,200,100),Color3.fromRGB(255,120,60),Color3.fromRGB(200,60,40)},Rot=60},
+  {Name="🦄  彩虹梦境",Grad={Color3.fromRGB(255,100,150),Color3.fromRGB(150,100,255),Color3.fromRGB(100,150,255)},Rot=45},
  }
- for _,bg in ipairs(bgs) do
+ for _,bg in ipairs(gradBgs) do
   BGS2:AddButton(bg.Name,function()
-   W.ApplyBG(bg.ID,nil,0.65) print("[设置] 背景:"..bg.Name.." ("..bg.DY..")")
+   W.ApplyBG("",nil,nil,bg.Grad,bg.Rot) print("[设置] 渐变背景:"..bg.Name)
   end)
  end
  local DYInfo=SetT:AddSection("📱  抖音号")
