@@ -794,7 +794,7 @@ local function runLSA(name,url)
 end
 buildUI=function()
  local W=Lib:CreateWindow("磊脚本")
- local MT=W:AddTab("Main","🏠")
+ local MT=W:AddTab("主页","🏠")
  local NS=MT:AddSection("📢 重要公告")
  NS:AddButton("此脚本由 TRAE 制造",function() end)
  NS:AddButton("完全免费，请勿付费购买",function() end)
@@ -943,10 +943,10 @@ local AWSs=MT:AddSection("踏空行走")
  local s3=NSet:AddButton("🏃  快速",function() NC.S=100 updSel("s3") end) sb.s3={Button=s3,Base="🏃  快速"}
  local s4=NSet:AddButton("🚀  极速",function() NC.S=200 updSel("s4") end) sb.s4={Button=s4,Base="🚀  极速"}
  updSel("s2")
- local ET=W:AddTab("ESP","👁")
- local EM=ET:AddSection("ESP 开关")
- EM:AddButton("●  开启 ESP",function() ESP:Enable() end)
- EM:AddButton("○  关闭 ESP",function() ESP:Disable() end)
+ local ET=W:AddTab("透视","👁")
+ local EM=ET:AddSection("透视开关")
+ EM:AddButton("●  开启透视",function() ESP:Enable() end)
+ EM:AddButton("○  关闭透视",function() ESP:Disable() end)
  local ES=ET:AddSection("显示设置")
  ES:AddButton("👤  显示名字: 开",function() ESP.SN=not ESP.SN end)
  ES:AddButton("📏  显示距离: 开",function() ESP.SD=not ESP.SD end)
@@ -1231,7 +1231,7 @@ local AWSs=MT:AddSection("踏空行走")
  CS:AddButton("🦸  无敌少侠飞行",function() runLS("无敌少侠飞行","https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414") end)
  local BS=OT:AddSection("黑脚本")
  BS:AddButton("⚫  运行黑脚本",function() runLS("黑脚本","https://raw.githubusercontent.com/hgvuyguyg/HEIJIAOBEN/main/aaa") end)
- local DBS=OT:AddSection("DB 脚本")
+ local DBS=OT:AddSection("DB脚本")
  DBS:AddButton("🔵  运行 DB 脚本",function() runLS("DB脚本","https://raw.githubusercontent.com/dish-rr/DB-scriptnb/main/DB-script101.lua") end)
  local CeS=OT:AddSection("脚本中心")
  CeS:AddButton("🏠  运行脚本中心",function()
@@ -1253,8 +1253,8 @@ local AWSs=MT:AddSection("踏空行走")
  GaS:AddButton("💚  运行甘脚本",function() runLST("甘脚本","https://raw.githubusercontent.com/CN1919810/de2/main/77_0M1VK6VF%20(1).lua") end)
  local QS=OT:AddSection("空情脚本")
  QS:AddButton("💙  运行空情脚本",function() runLS("空情脚本","https://ayangwp.cn/api/v3/file/get/8628/%E9%9D%99?sign=uxlt7ravTFmP3TZLNgN7zImLHxJWhH93SEbKgFA_PRc%3D%3A0") end)
- local XAS=OT:AddSection("XA Hub")
- XAS:AddButton("🌀  运行 XA Hub",function() runLS("XA Hub","https://raw.gitcode.com/Xingtaiduan/Scripts/raw/main/Loader.lua") end)
+ local XAS=OT:AddSection("XA 枢纽")
+ XAS:AddButton("🌀  运行 XA 枢纽",function() runLS("XA枢纽","https://raw.gitcode.com/Xingtaiduan/Scripts/raw/main/Loader.lua") end)
     local ZMScripts = {}
 
     ZMScripts['XK脚本'] = [=[
@@ -1298,8 +1298,8 @@ local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shle
 
 local Window = Rayfield:CreateWindow({
 	Name = "小黑子 | 使用的执行器："..(identifyexecutor and identifyexecutor() or syn and "Synapse X" or "Unknown"),
-	LoadingTitle = "正在加载",
-	LoadingSubtitle = "作者夜（黑子)【源码Sponguss+Zepssy】",
+	加载中Title = "正在加载",
+	加载中Subtitle = "作者夜（黑子)【源码Sponguss+Zepssy】",
 	ConfigurationSaving = {
 		Enabled = true,
 		FolderName = nil, -- Create a custom folder for your hub/game
@@ -3605,122 +3605,122 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
  end)
  -- 热门脚本枢纽
  local Hubs=SV:AddSection("🔥 热门脚本枢纽")
- Hubs:AddButton("🌐  Delta Hub",function() runLS("Delta Hub","https://raw.githubusercontent.com/zkC0/ZetaHub/main/Loader.lua") end)
- Hubs:AddButton("🌐  Nezur Hub",function() runLS("Nezur Hub","https://raw.githubusercontent.com/ne-zur/nezur/main/main.lua") end)
- Hubs:AddButton("🌐  Vynixus",function() runLS("Vynixus","https://raw.githubusercontent.com/7GrandDadPGN/Vynixus/main/Vynixus.lua") end)
- Hubs:AddButton("🌐  Solar Scripts",function() runLS("Solar Scripts","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- Hubs:AddButton("🌐  Dark Hub",function() runLS("Dark Hub","https://raw.githubusercontent.com/RobloxHaxors/DarkHub/main/DarkHub.lua") end)
- Hubs:AddButton("🌐  Infinite Yield",function() runLS("Infinite Yield","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
- Hubs:AddButton("🌐  Dex Explorer",function() runLS("Dex","https://raw.githubusercontent.com/infyiff/backup/main/dex.lua") end)
- Hubs:AddButton("🌐  Unnamed ESP",function() runLS("Unnamed ESP","https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua") end)
+ Hubs:AddButton("🌐  德尔塔枢纽",function() runLS("德尔塔枢纽","https://raw.githubusercontent.com/zkC0/ZetaHub/main/Loader.lua") end)
+ Hubs:AddButton("🌐  尼祖尔枢纽",function() runLS("尼祖尔枢纽","https://raw.githubusercontent.com/ne-zur/nezur/main/main.lua") end)
+ Hubs:AddButton("🌐  维尼克斯",function() runLS("维尼克斯","https://raw.githubusercontent.com/7GrandDadPGN/Vynixus/main/Vynixus.lua") end)
+ Hubs:AddButton("🌐  索拉脚本",function() runLS("索拉脚本","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ Hubs:AddButton("🌐  黑暗枢纽",function() runLS("黑暗枢纽","https://raw.githubusercontent.com/RobloxHaxors/DarkHub/main/DarkHub.lua") end)
+ Hubs:AddButton("🌐  无限收益",function() runLS("无限收益","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ Hubs:AddButton("🌐  Dex 浏览器",function() runLS("Dex浏览器","https://raw.githubusercontent.com/infyiff/backup/main/dex.lua") end)
+ Hubs:AddButton("🌐  无名透视",function() runLS("无名透视","https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua") end)
  -- 床战
  local BWS=SV:AddSection("🛏️ 床战")
- BWS:AddButton("⚔️  Solara Bedwars",function() runLS("Solara Bedwars","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- BWS:AddButton("🛡️  Infinite Yield",function() runLS("IY Bedwars","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ BWS:AddButton("⚔️  索拉床战",function() runLS("索拉床战","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ BWS:AddButton("🛡️  无限收益",function() runLS("无限收益-床战","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 越狱
  local JBS=SV:AddSection("🔓 越狱")
- JBS:AddButton("🚔  Vynixus Jailbreak",function() runLS("Vynixus","https://raw.githubusercontent.com/7GrandDadPGN/Vynixus/main/Vynixus.lua") end)
- JBS:AddButton("💰  Infinite Yield",function() runLS("IY Jailbreak","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ JBS:AddButton("🚔  维尼克斯越狱",function() runLS("维尼克斯","https://raw.githubusercontent.com/7GrandDadPGN/Vynixus/main/Vynixus.lua") end)
+ JBS:AddButton("💰  无限收益",function() runLS("无限收益-越狱","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 最强战场
  local SBS=SV:AddSection("💪 最强战场")
- SBS:AddButton("👊  Saitama Battlegrounds",function() runLS("Saitama","https://raw.githubusercontent.com/Nicuse/RobloxScripts/main/SaitamaBattlegrounds.lua") end)
- SBS:AddButton("⚡  Infinite Yield",function() runLS("IY Saitama","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ SBS:AddButton("👊  埼玉战场",function() runLS("埼玉战场","https://raw.githubusercontent.com/Nicuse/RobloxScripts/main/SaitamaBattlegrounds.lua") end)
+ SBS:AddButton("⚡  无限收益",function() runLS("无限收益-埼玉","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 杀手谜案2
  local MM2S=SV:AddSection("🔪 杀手谜案2")
- MM2S:AddButton("🎯  Solara MM2",function() runLS("Solara MM2","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- MM2S:AddButton("👁  MM2 ESP",function() runLS("MM2 ESP","https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua") end)
+ MM2S:AddButton("🎯  索拉杀手谜案",function() runLS("索拉-MM2","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ MM2S:AddButton("👁  杀手谜案透视",function() runLS("MM2透视","https://raw.githubusercontent.com/ic3w0lf22/Unnamed-ESP/master/UnnamedESP.lua") end)
  -- 躲避
  local DGS=SV:AddSection("🏃 躲避")
- DGS:AddButton("🏃  Evade Script",function() runLS("Evade","https://raw.githubusercontent.com/7GrandDadPGN/Vynixus/main/Vynixus.lua") end)
- DGS:AddButton("👻  Infinite Yield",function() runLS("IY Evade","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ DGS:AddButton("🏃  躲避脚本",function() runLS("躲避","https://raw.githubusercontent.com/7GrandDadPGN/Vynixus/main/Vynixus.lua") end)
+ DGS:AddButton("👻  无限收益",function() runLS("无限收益-躲避","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 丹迪的世界
  local DDS=SV:AddSection("🌍 丹迪的世界")
- DDS:AddButton("🌍  Dandy's World",function() runLS("Dandy World","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- DDS:AddButton("⚡  Infinite Yield",function() runLS("IY Dandy","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ DDS:AddButton("🌍  丹迪的世界",function() runLS("丹迪世界","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ DDS:AddButton("⚡  无限收益",function() runLS("无限收益-丹迪","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 时尚大比拼
  local FRS=SV:AddSection("👗 时尚大比拼")
- FRS:AddButton("👗  Fashion Frenzy",function() runLS("Fashion","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- FRS:AddButton("⭐  Infinite Yield",function() runLS("IY Fashion","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ FRS:AddButton("👗  时尚狂热",function() runLS("时尚","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ FRS:AddButton("⭐  无限收益",function() runLS("无限收益-时尚","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 钓鱼
  local FIS=SV:AddSection("🎣 钓鱼")
- FIS:AddButton("🎣  Fishing Script",function() runLS("Fishing","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- FIS:AddButton("💰  Infinite Yield",function() runLS("IY Fishing","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ FIS:AddButton("🎣  钓鱼脚本",function() runLS("钓鱼","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ FIS:AddButton("💰  无限收益",function() runLS("无限收益-钓鱼","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 宠物模拟器99
  local PS99=SV:AddSection("🐾 宠物模拟器99")
- PS99:AddButton("🥚  Pet Sim 99 Script",function() runLS("Pet Sim 99","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- PS99:AddButton("💎  Infinite Yield",function() runLS("IY PetSim","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ PS99:AddButton("🥚  宠物模拟器99",function() runLS("宠物模拟99","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ PS99:AddButton("💎  无限收益",function() runLS("无限收益-宠模","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 索纳利亚生物
  local CSS=SV:AddSection("🦋 索纳利亚生物")
- CSS:AddButton("🦋  Sonaria Script",function() runLS("Sonaria","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- CSS:AddButton("⚡  Infinite Yield",function() runLS("IY Sonaria","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ CSS:AddButton("🦋  索纳利亚脚本",function() runLS("索纳利亚","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ CSS:AddButton("⚡  无限收益",function() runLS("无限收益-索纳","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 自然灾害生存
  local NDS=SV:AddSection("🌪️ 自然灾害生存")
- NDS:AddButton("🏆  Natural Disaster",function() runLS("Natural Disaster","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- NDS:AddButton("❤️  Infinite Yield",function() runLS("IY Disaster","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ NDS:AddButton("🏆  自然灾害",function() runLS("自然灾害","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ NDS:AddButton("❤️  无限收益",function() runLS("无限收益-灾难","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 西蒙说
  local SMS=SV:AddSection("🎮 西蒙说")
- SMS:AddButton("🎯  Simon Says",function() runLS("Simon Says","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- SMS:AddButton("⚡  Infinite Yield",function() runLS("IY Simon","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ SMS:AddButton("🎯  西蒙说",function() runLS("西蒙说","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ SMS:AddButton("⚡  无限收益",function() runLS("无限收益-西蒙","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 蜜蜂群模拟器
  local BSS=SV:AddSection("🐝 蜜蜂群模拟器")
- BSS:AddButton("🍯  Bee Swarm Script",function() runLS("Bee Swarm","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- BSS:AddButton("🌻  Infinite Yield",function() runLS("IY BeeSwarm","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ BSS:AddButton("🍯  蜂群模拟器",function() runLS("蜂群","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ BSS:AddButton("🌻  无限收益",function() runLS("无限收益-蜂群","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 布莱尔捉鬼
  local BGS=SV:AddSection("👻 布莱尔捉鬼")
- BGS:AddButton("👻  Blair Script",function() runLS("Blair","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- BGS:AddButton("🔦  Infinite Yield",function() runLS("IY Blair","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ BGS:AddButton("👻  布莱尔脚本",function() runLS("布莱尔","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ BGS:AddButton("🔦  无限收益",function() runLS("无限收益-布莱尔","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 皇家高中
  local RHS=SV:AddSection("👑 皇家高中")
- RHS:AddButton("💎  Royale High",function() runLS("Royale High","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- RHS:AddButton("👑  Infinite Yield",function() runLS("IY Royale","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ RHS:AddButton("💎  皇家高中",function() runLS("皇家高中","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ RHS:AddButton("👑  无限收益",function() runLS("无限收益-皇家","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 动漫先锋塔防
  local ADTS=SV:AddSection("⚔️ 动漫先锋塔防")
- ADTS:AddButton("🏰  Anime Tower Defense",function() runLS("Anime TD","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- ADTS:AddButton("⚡  Infinite Yield",function() runLS("IY AnimeTD","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ ADTS:AddButton("🏰  动漫塔防",function() runLS("动漫塔防","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ ADTS:AddButton("⚡  无限收益",function() runLS("无限收益-动漫TD","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 逃离设施
  local EFS=SV:AddSection("🏃 逃离设施")
- EFS:AddButton("🚪  Escape Facility",function() runLS("Escape Facility","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- EFS:AddButton("⚡  Infinite Yield",function() runLS("IY Escape","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ EFS:AddButton("🚪  逃离设施",function() runLS("逃离设施","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ EFS:AddButton("⚡  无限收益",function() runLS("无限收益-逃离","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 方块果实
  local BFS=SV:AddSection("🍎 方块果实")
- BFS:AddButton("🍎  Blox Fruits",function() runLS("Blox Fruits","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- BFS:AddButton("⚔️  Infinite Yield",function() runLS("IY Blox","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ BFS:AddButton("🍎  方块果实",function() runLS("方块果实","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ BFS:AddButton("⚔️  无限收益",function() runLS("无限收益-方块","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- RIVALS
- local RIVS=SV:AddSection("🎯 RIVALS")
- RIVS:AddButton("🎯  Rivals Script",function() runLS("Rivals","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- RIVS:AddButton("🔫  Infinite Yield",function() runLS("IY Rivals","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ local RIVS=SV:AddSection("🎯 劲敌")
+ RIVS:AddButton("🎯  劲敌脚本",function() runLS("劲敌","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ RIVS:AddButton("🔫  无限收益",function() runLS("无限收益-劲敌","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 弹球对战
  local BBS=SV:AddSection("⚽ 弹球对战")
- BBS:AddButton("⚽  Blade Ball",function() runLS("Blade Ball","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- BBS:AddButton("🏃  Infinite Yield",function() runLS("IY BladeBall","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ BBS:AddButton("⚽  剑刃球",function() runLS("剑刃球","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ BBS:AddButton("🏃  无限收益",function() runLS("无限收益-剑刃球","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 布鲁克海文RP
- local BHVS=SV:AddSection("🏘️ 布鲁克海文RP")
- BHVS:AddButton("🏘️  Brookhaven Script",function() runLS("Brookhaven","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- BHVS:AddButton("🚗  Infinite Yield",function() runLS("IY Brookhaven","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ local BHVS=SV:AddSection("🏘️ 布鲁克海文")
+ BHVS:AddButton("🏘️  布鲁克海文",function() runLS("布鲁克海文","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ BHVS:AddButton("🚗  无限收益",function() runLS("无限收益-布鲁克","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 领养我
  local AMS=SV:AddSection("🐾 领养我！")
- AMS:AddButton("🐾  Adopt Me Script",function() runLS("Adopt Me","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- AMS:AddButton("💰  Infinite Yield",function() runLS("IY AdoptMe","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ AMS:AddButton("🐾  领养我",function() runLS("领养我","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ AMS:AddButton("💰  无限收益",function() runLS("无限收益-领养","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 门 DOORS
- local DRS=SV:AddSection("🚪 门 DOORS")
- DRS:AddButton("🚪  Doors Script",function() runLS("Doors","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- DRS:AddButton("👻  Infinite Yield",function() runLS("IY Doors","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ local DRS=SV:AddSection("🚪 门")
+ DRS:AddButton("🚪  门 脚本",function() runLS("门","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ DRS:AddButton("👻  无限收益",function() runLS("无限收益-门","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 森林里的99个夜晚
  local FNS=SV:AddSection("🌲 99个夜晚")
- FNS:AddButton("🌲  99 Nights Script",function() runLS("99 Nights","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- FNS:AddButton("👁  Infinite Yield",function() runLS("IY 99Nights","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ FNS:AddButton("🌲  99个夜晚脚本",function() runLS("99个夜晚","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ FNS:AddButton("👁  无限收益",function() runLS("无限收益-99夜","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 塔防模拟器
  local TDS=SV:AddSection("🏰 塔防模拟器")
- TDS:AddButton("🏰  Tower Defense Sim",function() runLS("TDS","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- TDS:AddButton("💰  Infinite Yield",function() runLS("IY TDS","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ TDS:AddButton("🏰  塔防模拟器",function() runLS("塔防模拟器","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ TDS:AddButton("💰  无限收益",function() runLS("无限收益-塔防","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 地狱之塔
  local THS=SV:AddSection("🗼 地狱之塔")
- THS:AddButton("🗼  Hell Tower",function() runLS("Hell Tower","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- THS:AddButton("⚡  Infinite Yield",function() runLS("IY HellTower","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ THS:AddButton("🗼  地狱之塔",function() runLS("地狱之塔","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ THS:AddButton("⚡  无限收益",function() runLS("无限收益-地狱塔","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  -- 驾驶帝国
  local DES=SV:AddSection("🚗 驾驶帝国")
- DES:AddButton("🚗  Driving Empire",function() runLS("Driving Empire","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
- DES:AddButton("💨  Infinite Yield",function() runLS("IY Driving","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
+ DES:AddButton("🚗  驾驶帝国",function() runLS("驾驶帝国","https://raw.githubusercontent.com/SolarScripts/SolarHub/main/Loader.lua") end)
+ DES:AddButton("💨  无限收益",function() runLS("无限收益-驾驶","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source") end)
  local AeroScripts = {}
 
     AeroScripts['8个球池经典'] = [=[
@@ -43380,7 +43380,7 @@ end)
 
 ]=]
 
-    local AeroSection = SV:AddSection("Aero 合集")
+    local AeroSection = SV:AddSection("Aero合集")
     for sname, scontent in pairs(AeroScripts) do
         AeroSection:AddButton("🎮  " .. sname, function()
             print("[" .. sname .. "] 正在加载...")
@@ -43392,14 +43392,14 @@ end)
             end
         end)
     end
- local FET=W:AddTab("FE","⚔")
+ local FET=W:AddTab("特效","⚔")
  -- Red Knife 改进版：不消失 + 多种伤害方式 + 攻击光环
  local RKState={E=false,Aura=false,Conn=nil,Tool=nil,Conn2=nil}
  local function createRKTool()
   local ch=LP.Character if not ch then return nil end
   local tk=ch:FindFirstChild("RedKnife")
   if tk then tk:Destroy() end
-  tk=Instance.new("Tool") tk.Name="RedKnife" tk.RequiresHandle=true tk.ToolTip="🔪 Red Knife"
+  tk=Instance.new("Tool") tk.Name="RedKnife" tk.RequiresHandle=true tk.ToolTip="🔪 红刀"
   local handle=Instance.new("Part") handle.Name="Handle" handle.Size=Vector3.new(0.4,1.2,0.4)
   handle.Color=Color3.fromRGB(200,30,30) handle.Material=Enum.Material.Neon
   handle.Transparency=0 handle.CanCollide=false handle.Parent=tk
@@ -43444,10 +43444,10 @@ end)
   end
   return hit
  end
- local RKS=FET:AddSection("🔪  Red Knife (改进版)")
+ local RKS=FET:AddSection("🔪  红刀（改进版）")
  RKS:AddButton("●  装备红刀",function()
   pcall(function()
-   local ch=LP.Character if not ch then print("[RedKnife] 找不到角色") return end
+   local ch=LP.Character if not ch then print("[红刀] 找不到角色") return end
    RKState.Tool=createRKTool()
    RKState.E=true
    -- 自动修复（防止消失）
@@ -43456,7 +43456,7 @@ end)
     task.wait(1)
     if RKState.E then RKState.Tool=createRKTool() end
    end)
-   print("[RedKnife] 红刀已装备（自动修复已开启）")
+   print("[红刀] 红刀已装备（自动修复已开启）")
   end)
  end)
  RKS:AddButton("○  卸下红刀",function()
@@ -43466,13 +43466,13 @@ end)
    local ch=LP.Character if ch then
     local tk=ch:FindFirstChild("RedKnife") if tk then tk:Destroy() end
    end
-   print("[RedKnife] 红刀已卸下")
+   print("[红刀] 红刀已卸下")
   end)
  end)
- RKS:AddButton("⚔  近战攻击 (30伤害)",function()
+ RKS:AddButton("⚔  近战攻击（30伤害）",function()
   pcall(function()
    local ch=LP.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
-   if not ch or not hrp then print("[RedKnife] 找不到角色") return end
+   if not ch or not hrp then print("[红刀] 找不到角色") return end
    local hit=false
    for _,p in ipairs(Plrs:GetPlayers()) do
     if p~=LP and p.Character then
@@ -43482,19 +43482,19 @@ end)
       if dist<=8 then
        tryDamage(phum,p.Character,30)
        hit=true
-       print("[RedKnife] 攻击: "..p.Name.." (30伤害)")
+       print("[红刀] 攻击: "..p.Name.." (30伤害)")
        break
       end
      end
     end
    end
-   if not hit then print("[RedKnife] 范围内没有敌人") end
+   if not hit then print("[红刀] 范围内没有敌人") end
   end)
  end)
  RKS:AddButton("💥  重击 (60伤害)",function()
   pcall(function()
    local ch=LP.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
-   if not ch or not hrp then print("[RedKnife] 找不到角色") return end
+   if not ch or not hrp then print("[红刀] 找不到角色") return end
    local hit=false
    for _,p in ipairs(Plrs:GetPlayers()) do
     if p~=LP and p.Character then
@@ -43504,13 +43504,13 @@ end)
       if dist<=10 then
        tryDamage(phum,p.Character,60)
        hit=true
-       print("[RedKnife] 重击: "..p.Name.." (60伤害)")
+       print("[红刀] 重击: "..p.Name.." (60伤害)")
        break
       end
      end
     end
    end
-   if not hit then print("[RedKnife] 范围内没有敌人") end
+   if not hit then print("[红刀] 范围内没有敌人") end
   end)
  end)
  RKS:AddButton("🔥  攻击光环: 关",function()
@@ -43533,10 +43533,10 @@ end)
      end
     end
    end)
-   print("[RedKnife] 攻击光环已开启")
+   print("[红刀] 攻击光环已开启")
   else
    if RKState.Conn then RKState.Conn:Disconnect() RKState.Conn=nil end
-   print("[RedKnife] 攻击光环已关闭")
+   print("[红刀] 攻击光环已关闭")
   end
  end)
  -- 战斗功能页：自描 + 子弹追踪
@@ -43580,7 +43580,7 @@ end)
   local targetCF=CFrame.new(cam.CFrame.Position,part.Position)
   cam.CFrame=cam.CFrame:Lerp(targetCF,AimbotState.Smooth)
  end
- local ABS=CombatT:AddSection("🎯  自描 (Aimbot)")
+ local ABS=CombatT:AddSection("🎯  自瞄")
  ABS:AddButton("●  开启自描 (右键按住)",function()
   if AimbotState.E then print("[自描] 已经开启了") return end
   AimbotState.E=true
@@ -43953,7 +43953,7 @@ end)
  local DYInfo=SetT:AddSection("📱  抖音号")
  DYInfo:AddButton("🎵  关注 LoeTing20140224",function() print("抖音号: LoeTing20140224") end)
  DYInfo:AddButton("🎵  关注 43257824802",function() print("抖音号: 43257824802") end)
- local IT=W:AddTab("Info","ℹ")
+ local IT=W:AddTab("关于","ℹ")
  IT:AddButton("磊脚本 v4.0 PREMIUM",function() print("磊脚本 v4.0 尊享版") end)
  IT:AddButton("✨  PREMIUM · 尊享版",function() print("磊脚本 - 高端多功能辅助脚本") end)
  IT:AddButton("🎨  支持7种主题色",function() print("在设置页可切换主题颜色") end)
