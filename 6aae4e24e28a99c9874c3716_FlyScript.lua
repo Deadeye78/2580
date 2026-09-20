@@ -175,7 +175,7 @@ function Lib:CreateWindow(title)
  local BGL=Instance.new("Frame") BGL.Parent=SG BGL.BackgroundColor3=Color3.fromRGB(15,15,20) BGL.BackgroundTransparency=1 BGL.Size=UDim2.new(1,0,1,0) BGL.ZIndex=0
  local BGG=Instance.new("UIGradient") BGG.Parent=BGL BGG.Rotation=90 BGG.Enabled=false BGG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.15),NumberSequenceKeypoint.new(1,0.15)}
  -- 暗角效果层（增加高级感）
- local Vignette=Instance.new("Frame") Vignette.Parent=SG Vignette.BackgroundTransparency=1 Vignette.Size=UDim2.new(1,0,1,0) Vignette.ZIndex=0 Vignette.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+ local Vignette=Instance.new("Frame") Vignette.Parent=SG Vignette.BackgroundTransparency=1 Vignette.Size=UDim2.new(1,0,1,0) Vignette.ZIndex=0
  local VG=Instance.new("UIGradient") VG.Parent=Vignette VG.Rotation=0 VG.Enabled=false
  VG.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,0,0))}
  VG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.7),NumberSequenceKeypoint.new(0.5,0.95),NumberSequenceKeypoint.new(1,0.7)}
