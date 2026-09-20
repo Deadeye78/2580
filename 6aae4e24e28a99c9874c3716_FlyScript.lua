@@ -2,55 +2,102 @@ local TS=game:GetService("TweenService") local UIS=game:GetService("UserInputSer
 local RS=game:GetService("RunService") local Plrs=game:GetService("Players")
 local LP=Plrs.LocalPlayer local CG=game:GetService("CoreGui")
 local cam=workspace.CurrentCamera
-local Settings={Accent=Color3.fromRGB(100,200,255),BGImg="",BGT=0.3}
+local Settings={Accent=Color3.fromRGB(100,200,255),BGImg="",BGT=0.3,FX={Rainbow=false,Meteor=false}}
 local LG=Instance.new("ScreenGui") LG.Name="LS_Load" LG.Parent=CG LG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-local LB=Instance.new("Frame") LB.Parent=LG LB.BackgroundColor3=Color3.fromRGB(5,5,10) LB.Size=UDim2.new(1,0,1,0) LB.ZIndex=1 LB.BackgroundTransparency=1
-local LG2=Instance.new("Frame") LG2.Parent=LB LG2.BackgroundTransparency=1 LG2.Size=UDim2.new(1,0,1,0) LG2.ZIndex=2
-for i=1,30 do
- local p=Instance.new("Frame") p.Parent=LG2 p.BackgroundColor3=Color3.fromRGB(100,200,255)
- p.Size=UDim2.new(0,math.random(2,4),0,math.random(2,4)) p.Position=UDim2.new(math.random(),0,math.random(),0)
- p.BackgroundTransparency=math.random(70,90)/100 p.ZIndex=2 Instance.new("UICorner",p).CornerRadius=UDim.new(1,0)
- p.Name="P"..i
+-- 朦胧背景层
+local LB=Instance.new("Frame") LB.Parent=LG LB.BackgroundColor3=Color3.fromRGB(5,5,12) LB.Size=UDim2.new(1,0,1,0) LB.ZIndex=1 LB.BackgroundTransparency=1
+local Vignette=Instance.new("Frame") Vignette.Parent=LB Vignette.BackgroundColor3=Color3.fromRGB(0,0,0) Vignette.Size=UDim2.new(1,0,1,0) Vignette.ZIndex=2 Vignette.BackgroundTransparency=1
+local VG=Instance.new("UIGradient") VG.Parent=Vignette VG.Rotation=0 VG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.7),NumberSequenceKeypoint.new(0.5,0.95),NumberSequenceKeypoint.new(1,0.7)}
+-- 星星层
+local Stars=Instance.new("Frame") Stars.Parent=LB Stars.BackgroundTransparency=1 Stars.Size=UDim2.new(1,0,1,0) Stars.ZIndex=3
+local starData={}
+for i=1,50 do
+ local s=Instance.new("Frame") s.Parent=Stars s.BackgroundColor3=Color3.fromRGB(255,255,255)
+ s.Size=UDim2.new(0,math.random(1,3),0,math.random(1,3)) s.Position=UDim2.new(math.random(),0,math.random(),0)
+ s.BackgroundTransparency=math.random(50,90)/100 s.ZIndex=3 Instance.new("UICorner",s).CornerRadius=UDim.new(1,0)
+ table.insert(starData,{Obj=s,BaseT=math.random()*10,Spd=0.5+math.random()*1.5})
 end
-local LF=Instance.new("Frame") LF.Parent=LG LF.BackgroundColor3=Color3.fromRGB(15,15,20) LF.Position=UDim2.new(0.5,-200,0.5,-120) LF.Size=UDim2.new(0,400,0,240) LF.ZIndex=3 LF.BackgroundTransparency=1
-Instance.new("UICorner",LF).CornerRadius=UDim.new(0,16)
-local Glow=Instance.new("Frame") Glow.Parent=LF Glow.BackgroundTransparency=1 Glow.Size=UDim2.new(1,40,1,40) Glow.Position=UDim2.new(0,-20,0,-20) Glow.ZIndex=2
-local UIStroke=Instance.new("UIStroke") UIStroke.Parent=LF UIStroke.Thickness=1.5 UIStroke.Transparency=0.7 UIStroke.Color=Color3.fromRGB(100,200,255) UIStroke.LineJoinMode=Enum.LineJoinMode.Round
-local TL=Instance.new("TextLabel") TL.Parent=LF TL.BackgroundTransparency=1 TL.Position=UDim2.new(0,0,0,40) TL.Size=UDim2.new(1,0,0,48)
-TL.Font=Enum.Font.GothamBold TL.Text="磊脚本" TL.TextColor3=Color3.fromRGB(255,255,255) TL.TextSize=40 TL.ZIndex=4 TL.TextTransparency=1
-local TS2=Instance.new("UIStroke") TS2.Parent=TL TS2.Thickness=2 TS2.Transparency=0.8 TS2.Color=Color3.fromRGB(100,200,255)
-local SL=Instance.new("TextLabel") SL.Parent=LF SL.BackgroundTransparency=1 SL.Position=UDim2.new(0,0,0,92) SL.Size=UDim2.new(1,0,0,22)
-SL.Font=Enum.Font.Gotham SL.Text="LEI SCRIPT PREMIUM" SL.TextColor3=Color3.fromRGB(150,180,220) SL.TextSize=12 SL.ZIndex=4 SL.TextTransparency=1
-local PBg=Instance.new("Frame") PBg.Parent=LF PBg.BackgroundColor3=Color3.fromRGB(25,25,35) PBg.Position=UDim2.new(0.5,-140,0,140) PBg.Size=UDim2.new(0,280,0,8) PBg.ZIndex=4 PBg.BackgroundTransparency=1
-Instance.new("UICorner",PBg).CornerRadius=UDim.new(0,4)
-local PB=Instance.new("Frame") PB.Parent=PBg PB.BackgroundColor3=Color3.fromRGB(100,200,255) PB.Size=UDim2.new(0,0,1,0) PB.ZIndex=5
-Instance.new("UICorner",PB).CornerRadius=UDim.new(0,4)
-local PG=Instance.new("UIGradient") PG.Parent=PB PG.Rotation=90 PG.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.5,0.3),NumberSequenceKeypoint.new(1,0)})
-local Shine=Instance.new("Frame") Shine.Parent=PB Shine.BackgroundColor3=Color3.fromRGB(255,255,255) Shine.BackgroundTransparency=0.5 Shine.Size=UDim2.new(0,30,1,0) Shine.Position=UDim2.new(-0.2,0,0,0) Shine.ZIndex=6
-Instance.new("UICorner",Shine).CornerRadius=UDim.new(0,2)
-local PT=Instance.new("TextLabel") PT.Parent=LF PT.BackgroundTransparency=1 PT.Position=UDim2.new(0,0,0,165) PT.Size=UDim2.new(1,0,0,20)
-PT.Font=Enum.Font.GothamBold PT.Text="0%" PT.TextColor3=Color3.fromRGB(200,220,255) PT.TextSize=14 PT.ZIndex=4 PT.TextTransparency=1
-local ST=Instance.new("TextLabel") ST.Parent=LF ST.BackgroundTransparency=1 ST.Position=UDim2.new(0,0,0,192) ST.Size=UDim2.new(1,0,0,18)
-ST.Font=Enum.Font.Gotham ST.Text="正在初始化..." ST.TextColor3=Color3.fromRGB(140,160,200) ST.TextSize=12 ST.ZIndex=4 ST.TextTransparency=1
-local NT=Instance.new("TextLabel") NT.Parent=LF NT.BackgroundTransparency=1 NT.Position=UDim2.new(0,0,1,-32) NT.Size=UDim2.new(1,0,0,22)
-NT.Font=Enum.Font.GothamSemibold NT.Text="✨ 此脚本由 TRAE 制造 · 完全免费 · 请勿付费 ✨" NT.TextColor3=Color3.fromRGB(255,220,100) NT.TextSize=11 NT.ZIndex=4 NT.TextTransparency=1
+-- 流星雨层
+local Meteors=Instance.new("Frame") Meteors.Parent=LB Meteors.BackgroundTransparency=1 Meteors.Size=UDim2.new(1,0,1,0) Meteors.ZIndex=4 Meteors.ClipsDescendants=false
+local meteorData={}
+for i=1,8 do
+ local m=Instance.new("Frame") m.Parent=Meteors m.BackgroundColor3=Color3.fromRGB(200,230,255)
+ m.Size=UDim2.new(0,2,0,80) m.ZIndex=4 m.BackgroundTransparency=0.5 m.Visible=false
+ Instance.new("UICorner",m).CornerRadius=UDim.new(0,1)
+ local MG=Instance.new("UIGradient") MG.Parent=m MG.Rotation=45 MG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,0)}
+ table.insert(meteorData,{Obj=m,Delay=math.random()*4,Spd=0.8+math.random()*1.2,Len=60+math.random(60),Rot=35+math.random(20)})
+end
+-- 光晕层
+local Halo=Instance.new("Frame") Halo.Parent=LB Halo.BackgroundColor3=Color3.fromRGB(100,200,255) Halo.BackgroundTransparency=0.85
+Halo.Size=UDim2.new(0,520,0,520) Halo.Position=UDim2.new(0.5,-260,0.5,-260) Halo.ZIndex=5
+Instance.new("UICorner",Halo).CornerRadius=UDim.new(260,0)
+local HG=Instance.new("UIGradient") HG.Parent=Halo HG.Rotation=0
+HG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.6,0.5),NumberSequenceKeypoint.new(1,1)}
+-- 主面板
+local LF=Instance.new("Frame") LF.Parent=LG LF.BackgroundColor3=Color3.fromRGB(12,12,18) LF.Position=UDim2.new(0.5,-210,0.5,-130) LF.Size=UDim2.new(0,420,0,260) LF.ZIndex=6 LF.BackgroundTransparency=1
+Instance.new("UICorner",LF).CornerRadius=UDim.new(0,18)
+local UIStroke=Instance.new("UIStroke") UIStroke.Parent=LF UIStroke.Thickness=1.5 UIStroke.Transparency=0.65 UIStroke.Color=Color3.fromRGB(100,200,255) UIStroke.LineJoinMode=Enum.LineJoinMode.Round
+-- 朦胧玻璃效果
+local Glass=Instance.new("Frame") Glass.Parent=LF Glass.BackgroundColor3=Color3.fromRGB(30,40,60) Glass.Size=UDim2.new(1,0,1,0) Glass.BackgroundTransparency=0.85 Glass.ZIndex=1
+Instance.new("UICorner",Glass).CornerRadius=UDim.new(0,18)
+-- 标题
+local TL=Instance.new("TextLabel") TL.Parent=LF TL.BackgroundTransparency=1 TL.Position=UDim2.new(0,0,0,45) TL.Size=UDim2.new(1,0,0,52)
+TL.Font=Enum.Font.GothamBold TL.Text="磊脚本" TL.TextColor3=Color3.fromRGB(255,255,255) TL.TextSize=44 TL.ZIndex=7 TL.TextTransparency=1
+local TS2=Instance.new("UIStroke") TS2.Parent=TL TS2.Thickness=2.5 TS2.Transparency=0.8 TS2.Color=Color3.fromRGB(100,200,255)
+local SL=Instance.new("TextLabel") SL.Parent=LF SL.BackgroundTransparency=1 SL.Position=UDim2.new(0,0,0,100) SL.Size=UDim2.new(1,0,0,24)
+SL.Font=Enum.Font.Gotham SL.Text="✨ LEI SCRIPT PREMIUM ✨" SL.TextColor3=Color3.fromRGB(160,190,230) SL.TextSize=13 SL.ZIndex=7 SL.TextTransparency=1
+-- 进度条
+local PBg=Instance.new("Frame") PBg.Parent=LF PBg.BackgroundColor3=Color3.fromRGB(20,20,30) PBg.Position=UDim2.new(0.5,-150,0,150) PBg.Size=UDim2.new(0,300,0,10) PBg.ZIndex=7 PBg.BackgroundTransparency=1
+Instance.new("UICorner",PBg).CornerRadius=UDim.new(0,5)
+local PB=Instance.new("Frame") PB.Parent=PBg PB.BackgroundColor3=Color3.fromRGB(100,200,255) PB.Size=UDim2.new(0,0,1,0) PB.ZIndex=8
+Instance.new("UICorner",PB).CornerRadius=UDim.new(0,5)
+local PG=Instance.new("UIGradient") PG.Parent=PB PG.Rotation=0 PG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.2),NumberSequenceKeypoint.new(0.5,0),NumberSequenceKeypoint.new(1,0.2)}
+local Shine=Instance.new("Frame") Shine.Parent=PB Shine.BackgroundColor3=Color3.fromRGB(255,255,255) Shine.BackgroundTransparency=0.4 Shine.Size=UDim2.new(0,40,1,0) Shine.Position=UDim2.new(-0.2,0,0,0) Shine.ZIndex=9
+Instance.new("UICorner",Shine).CornerRadius=UDim.new(0,3)
+-- 百分比和状态
+local PT=Instance.new("TextLabel") PT.Parent=LF PT.BackgroundTransparency=1 PT.Position=UDim2.new(0,0,0,178) PT.Size=UDim2.new(1,0,0,22)
+PT.Font=Enum.Font.GothamBold PT.Text="0%" PT.TextColor3=Color3.fromRGB(210,230,255) PT.TextSize=15 PT.ZIndex=7 PT.TextTransparency=1
+local ST=Instance.new("TextLabel") ST.Parent=LF ST.BackgroundTransparency=1 ST.Position=UDim2.new(0,0,0,208) ST.Size=UDim2.new(1,0,0,20)
+ST.Font=Enum.Font.Gotham ST.Text="正在初始化..." ST.TextColor3=Color3.fromRGB(150,170,210) ST.TextSize=12 ST.ZIndex=7 ST.TextTransparency=1
+local NT=Instance.new("TextLabel") NT.Parent=LF NT.BackgroundTransparency=1 NT.Position=UDim2.new(0,0,1,-34) NT.Size=UDim2.new(1,0,0,24)
+NT.Font=Enum.Font.GothamSemibold NT.Text="🌟 此脚本由 TRAE 制造 · 完全免费 · 请勿付费 🌟" NT.TextColor3=Color3.fromRGB(255,225,110) NT.TextSize=11 NT.ZIndex=7 NT.TextTransparency=1
+-- 动画循环
 local t0=os.clock()
 local function hsv(h,s,v) return Color3.fromHSV(h,s,v) end
 RS.RenderStepped:Connect(function()
  if not LG.Parent then return end
  local t=os.clock()-t0
- LF.Position=UDim2.new(0.5,-200,0.5,-120+math.sin(t*1.5)*4)
- local hue=(t*0.08)%1 local c=hsv(hue,0.7,1)
+ local hue=(t*0.06)%1 local c=hsv(hue,0.65,1)
+ local c2=hsv((hue+0.08)%1,0.5,1)
+ -- 主面板浮动
+ LF.Position=UDim2.new(0.5,-210,0.5,-130+math.sin(t*1.2)*5)
+ -- 彩虹边框+标题发光
  UIStroke.Color=c TS2.Color=c PB.BackgroundColor=c
- PG.Color=ColorSequence.new{c,hsv((hue+0.1)%1,0.5,1)}
- Shine.Position=UDim2.new((t*0.5)%1.4-0.2,0,0,0)
- for _,p in ipairs(LG2:GetChildren()) do
-  if p:IsA("Frame") and p.Name:sub(1,1)=="P" then
-   local ox,oy=tonumber(p.Name:sub(2))%10,tonumber(p.Name:sub(2))%7
-   local ny=p.Position.Y.Scale-0.003-0.001*math.sin(t*2+ox)
-   if ny<-0.05 then ny=1.05 end
-   p.Position=UDim2.new(p.Position.X.Scale+math.sin(t+oy)*0.002,0,ny,0)
-   p.BackgroundColor3=c
+ PG.Color=ColorSequence.new{c2,c,c2}
+ Halo.BackgroundColor3=c
+ -- 流光
+ Shine.Position=UDim2.new((t*0.4)%1.4-0.2,0,0,0)
+ -- 星星闪烁
+ for _,sd in ipairs(starData) do
+  local tw=0.7+0.3*math.sin(t*sd.Spd+sd.BaseT)
+  sd.Obj.BackgroundTransparency=1-tw*0.5
+  sd.Obj.BackgroundColor3=c
+ end
+ -- 流星雨
+ for _,md in ipairs(meteorData) do
+  local phase=(t+md.Delay)%5
+  if phase<2.5 then
+   md.Obj.Visible=true
+   local prog=phase/2.5
+   local sx=0.3+prog*0.8 local sy=-0.1+prog*1.3
+   local rad=math.rad(md.Rot)
+   md.Obj.Position=UDim2.new(sx,0,sy,0)
+   md.Obj.Rotation=md.Rot
+   md.Obj.Size=UDim2.new(0,2,0,md.Len)
+   md.Obj.BackgroundTransparency=prog<0.1 and 1-prog/0.1 or (prog>0.8 and (1-prog)/0.2 or 0.3)
+   md.Obj.BackgroundColor3=c
+  else
+   md.Obj.Visible=false
   end
  end
 end)
@@ -59,9 +106,11 @@ local function setPct(p,s)
  TS:Create(PB,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Size=UDim2.new(p/100,0,1,0)}):Play()
  PT.Text=math.floor(p).."%" if s then ST.Text=s end
 end
-TS:Create(LB,TweenInfo.new(0.5,Enum.EasingStyle.Quad),{BackgroundTransparency=0.85}):Play()
-TS:Create(LF,TweenInfo.new(0.6,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
-task.wait(0.25) TS:Create(TL,TweenInfo.new(0.5),{TextTransparency=0}):Play()
+TS:Create(LB,TweenInfo.new(0.6,Enum.EasingStyle.Quad),{BackgroundTransparency=0.7}):Play()
+TS:Create(Vignette,TweenInfo.new(0.6,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
+task.wait(0.3)
+TS:Create(LF,TweenInfo.new(0.7,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
+task.wait(0.3) TS:Create(TL,TweenInfo.new(0.5),{TextTransparency=0}):Play()
 task.wait(0.15) TS:Create(SL,TweenInfo.new(0.4),{TextTransparency=0}):Play()
 task.wait(0.15)
 TS:Create(PBg,TweenInfo.new(0.4),{BackgroundTransparency=0}):Play()
@@ -123,7 +172,8 @@ local function drag(gui,handle)
 end
 function Lib:CreateWindow(title)
  local SG=Instance.new("ScreenGui") SG.Name="LS_Main" SG.Parent=CG SG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling SG.ResetOnSpawn=false SG.Enabled=false
- local BGL=Instance.new("ImageLabel") BGL.Parent=SG BGL.BackgroundTransparency=1 BGL.Size=UDim2.new(1,0,1,0) BGL.ZIndex=0 BGL.ImageTransparency=0.7
+ local BGL=Instance.new("Frame") BGL.Parent=SG BGL.BackgroundColor3=Color3.fromRGB(15,15,20) BGL.BackgroundTransparency=1 BGL.Size=UDim2.new(1,0,1,0) BGL.ZIndex=0
+ local BGImg=Instance.new("ImageLabel") BGImg.Parent=BGL BGImg.BackgroundTransparency=1 BGImg.Size=UDim2.new(1,0,1,0) BGImg.ImageTransparency=0.7
  local MF=Instance.new("Frame") MF.Parent=SG MF.BackgroundColor3=Color3.fromRGB(15,15,20) MF.Position=UDim2.new(0.5,-290,0.5,-190) MF.Size=UDim2.new(0,580,0,380) MF.ClipsDescendants=true MF.Active=true MF.ZIndex=1
  Instance.new("UICorner",MF).CornerRadius=UDim.new(0,12)
  local MS=Instance.new("UIStroke") MS.Parent=MF MS.Thickness=1.5 MS.Transparency=0.6 MS.Color=Settings.Accent MS.LineJoinMode=Enum.LineJoinMode.Round
@@ -159,22 +209,113 @@ function Lib:CreateWindow(title)
  local PC=Instance.new("ScrollingFrame") PC.Parent=CC PC.BackgroundTransparency=1 PC.Size=UDim2.new(1,0,1,0) PC.ScrollBarThickness=3 PC.ScrollBarImageColor3=Settings.Accent PC.CanvasSize=UDim2.new(0,0,0,0) PC.ZIndex=2
  drag(MF,TB)
  local pages={} local cur=nil
- local function applyAccent(color)
-  Settings.Accent=color
-  MS.Color=color TBS.Color=color TLS.Color=color VTS.Color=color
-  TL2.TextColor3=color VT.TextColor3=color PC.ScrollBarImageColor3=color
-  for _,p in ipairs(pages) do
-   if p.Pg==cur then p.Btn.BackgroundColor3=Color3.fromRGB(color.R*40,color.G*40,color.B*40) p.Btn.TextColor3=color end
-  end
+ -- UI特效层
+ local FXLayer=Instance.new("Frame") FXLayer.Parent=MF FXLayer.BackgroundTransparency=1 FXLayer.Size=UDim2.new(1,0,1,0) FXLayer.ZIndex=10
+ -- 流星环绕
+ local MeteorLayer=Instance.new("Frame") MeteorLayer.Parent=FXLayer MeteorLayer.BackgroundTransparency=1 MeteorLayer.Size=UDim2.new(1,0,1,0) MeteorLayer.ZIndex=10 MeteorLayer.ClipsDescendants=false
+ local fxMeteors={}
+ for i=1,12 do
+  local m=Instance.new("Frame") m.Parent=MeteorLayer m.BackgroundColor3=Settings.Accent m.Visible=false
+  m.Size=UDim2.new(0,2,0,50) m.ZIndex=10 m.BackgroundTransparency=0.4
+  Instance.new("UICorner",m).CornerRadius=UDim.new(0,1)
+  local mg=Instance.new("UIGradient") mg.Parent=m mg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,0)}
+  table.insert(fxMeteors,{Obj=m,Delay=i*0.3,Spd=1+math.random()*0.5,Len=40+math.random(30),Grad=mg})
  end
- local function applyBG(imgid,trans)
-  if imgid and imgid~="" then
-   BGL.Image=imgid BGL.ImageTransparency=trans
+ -- 特效状态
+ local fxState={Rainbow=false,Meteor=false,RainbowConn=nil,MeteorConn=nil,AccentBase=Settings.Accent}
+ local function fxTick()
+  if not SG.Parent then return end
+  local t=os.clock()
+  -- 彩虹边框
+  if fxState.Rainbow then
+   local hue=(t*0.15)%1 local c=Color3.fromHSV(hue,0.7,1)
+   MS.Color=c TBS.Color=c TLS.Color=c VTS.Color=c
+   TL2.TextColor3=c VT.TextColor3=c PC.ScrollBarImageColor3=c
+   for _,p in ipairs(pages) do
+    if p.Pg==cur then p.Btn.BackgroundColor3=Color3.fromRGB(c.R*40,c.G*40,c.B*40) p.Btn.TextColor3=c end
+   end
+  end
+  -- 流星环绕
+  if fxState.Meteor then
+   local w=MF.AbsoluteSize.X local h=MF.AbsoluteSize.Y
+   local perimeter=2*(w+h)
+   for i,md in ipairs(fxMeteors) do
+    local pos=((t*md.Spd*100+md.Delay*80)%perimeter)/perimeter
+    md.Obj.Visible=true
+    local len=md.Len/perimeter
+    local startP=(pos-len+1)%1
+    -- 计算流星头位置
+    local px,py,rot
+    if pos<0.25 then -- 上边
+     local pf=pos/0.25 px=pf*w py=0 rot=0
+    elseif pos<0.5 then -- 右边
+     local pf=(pos-0.25)/0.25 px=w py=pf*h rot=90
+    elseif pos<0.75 then -- 下边
+     local pf=(pos-0.5)/0.25 px=w-pf*w py=h rot=180
+    else -- 左边
+     local pf=(pos-0.75)/0.25 px=0 py=h-pf*h rot=270
+    end
+    md.Obj.Position=UDim2.new(0,px-1,0,py-1)
+    md.Obj.Rotation=rot
+    md.Obj.Size=UDim2.new(0,3,0,md.Len)
+    if fxState.Rainbow then
+     local hue2=((t*0.15)+i*0.05)%1 md.Obj.BackgroundColor3=Color3.fromHSV(hue2,0.7,1)
+    else
+     md.Obj.BackgroundColor3=fxState.AccentBase
+    end
+   end
   else
-   BGL.Image="" BGL.ImageTransparency=1
+   for _,md in ipairs(fxMeteors) do md.Obj.Visible=false end
   end
  end
- local W={ApplyAccent=applyAccent,ApplyBG=applyBG}
+ local function applyAccent(color)
+  Settings.Accent=color fxState.AccentBase=color
+  if not fxState.Rainbow then
+   MS.Color=color TBS.Color=color TLS.Color=color VTS.Color=color
+   TL2.TextColor3=color VT.TextColor3=color PC.ScrollBarImageColor3=color
+   for _,p in ipairs(pages) do
+    if p.Pg==cur then p.Btn.BackgroundColor3=Color3.fromRGB(color.R*40,color.G*40,color.B*40) p.Btn.TextColor3=color end
+   end
+  end
+ end
+ local function applyBG(imgid,color,trans)
+  if color then
+   BGL.BackgroundColor3=color BGL.BackgroundTransparency=trans or 0.5
+   BGImg.Image="" BGImg.ImageTransparency=1
+  elseif imgid and imgid~="" then
+   BGL.BackgroundTransparency=1
+   BGImg.Image=imgid BGImg.ImageTransparency=trans or 0.65
+  else
+   BGL.BackgroundTransparency=1 BGImg.Image="" BGImg.ImageTransparency=1
+  end
+ end
+ local function toggleRainbow(enable)
+  fxState.Rainbow=enable
+  if enable then
+   if not fxState.RainbowConn then
+    fxState.RainbowConn=RS.RenderStepped:Connect(fxTick)
+   end
+  else
+   if fxState.RainbowConn and not fxState.Meteor then
+    fxState.RainbowConn:Disconnect() fxState.RainbowConn=nil
+   end
+   applyAccent(fxState.AccentBase)
+  end
+ end
+ local function toggleMeteor(enable)
+  fxState.Meteor=enable
+  if enable then
+   if not fxState.MeteorConn then
+    fxState.MeteorConn=RS.RenderStepped:Connect(fxTick)
+   end
+  else
+   if fxState.MeteorConn and not fxState.Rainbow then
+    fxState.MeteorConn:Disconnect() fxState.MeteorConn=nil
+   end
+   for _,md in ipairs(fxMeteors) do md.Obj.Visible=false end
+  end
+ end
+ local W={ApplyAccent=applyAccent,ApplyBG=applyBG,ToggleRainbow=toggleRainbow,ToggleMeteor=toggleMeteor}
  function W:AddTab(name,icon)
   local btn=Instance.new("TextButton") btn.Parent=SB btn.BackgroundColor3=Color3.fromRGB(24,24,30) btn.Size=UDim2.new(0,155,0,36)
   btn.Font=Enum.Font.GothamSemibold btn.Text=(icon and icon.."  " or "")..name btn.TextColor3=Color3.fromRGB(190,190,210) btn.TextSize=13 btn.TextXAlignment=Enum.TextXAlignment.Left btn.AutoButtonColor=false btn.ZIndex=3
@@ -234,6 +375,49 @@ function Lib:CreateWindow(title)
     task.defer(function() if exp then sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) end if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
     return b
    end
+   function S:AddSlider(name,minv,maxv,def,cb)
+    local sf=Instance.new("Frame") sf.Parent=sc sf.BackgroundColor3=Color3.fromRGB(30,30,38) sf.Size=UDim2.new(1,0,0,56) sf.ZIndex=5
+    Instance.new("UICorner",sf).CornerRadius=UDim.new(0,5)
+    local sl=Instance.new("TextLabel") sl.Parent=sf sl.BackgroundTransparency=1 sl.Position=UDim2.new(0,12,0,4) sl.Size=UDim2.new(1,-24,0,20)
+    sl.Font=Enum.Font.GothamSemibold sl.Text=name.."  "..tostring(def) sl.TextColor3=Color3.fromRGB(210,210,230) sl.TextSize=12 sl.TextXAlignment=Enum.TextXAlignment.Left sl.ZIndex=6
+    local sP=Instance.new("UIPadding") sP.Parent=sl sP.PaddingLeft=UDim.new(0,12)
+    local track=Instance.new("Frame") track.Parent=sf track.BackgroundColor3=Color3.fromRGB(50,50,65) track.Position=UDim2.new(0,12,0,34) track.Size=UDim2.new(1,-24,0,6) track.ZIndex=6
+    Instance.new("UICorner",track).CornerRadius=UDim.new(0,3)
+    local fill=Instance.new("Frame") fill.Parent=track fill.BackgroundColor3=Settings.Accent fill.Size=UDim2.new((def-minv)/(maxv-minv),0,1,0) fill.ZIndex=7
+    Instance.new("UICorner",fill).CornerRadius=UDim.new(0,3)
+    local fg=Instance.new("UIGradient") fg.Parent=fill fg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.1),NumberSequenceKeypoint.new(1,0)}
+    local knob=Instance.new("Frame") knob.Parent=track knob.BackgroundColor3=Color3.fromRGB(255,255,255)
+    knob.Size=UDim2.new(0,14,0,14) knob.Position=UDim2.new((def-minv)/(maxv-minv),-4,0,0) knob.ZIndex=8
+    Instance.new("UICorner",knob).CornerRadius=UDim.new(7,0)
+    local ks=Instance.new("UIStroke") ks.Parent=knob ks.Thickness=2 ks.Color=Settings.Accent
+    local dragging=false local val=def
+    local function upd(pct)
+     if pct<0 then pct=0 elseif pct>1 then pct=1 end
+     val=math.floor(minv+pct*(maxv-minv)+0.5)
+     fill.Size=UDim2.new(pct,0,1,0)
+     knob.Position=UDim2.new(pct,-7,0,0)
+     sl.Text=name.."  "..tostring(val)
+     cb(val)
+    end
+    track.InputBegan:Connect(function(input)
+     if input.UserInputType==Enum.UserInputType.MouseButton1 then
+      dragging=true
+      local pct=(input.Position.X-track.AbsolutePosition.X)/track.AbsoluteSize.X
+      upd(pct)
+     end
+    end)
+    UIS.InputChanged:Connect(function(input)
+     if dragging and input.UserInputType==Enum.UserInputType.MouseMovement then
+      local pct=(input.Position.X-track.AbsolutePosition.X)/track.AbsoluteSize.X
+      upd(pct)
+     end
+    end)
+    UIS.InputEnded:Connect(function(input)
+     if input.UserInputType==Enum.UserInputType.MouseButton1 then dragging=false end
+    end)
+    task.defer(function() if exp then sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) end if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
+    return {Set=function(v) upd((v-minv)/(maxv-minv)) end}
+   end
    task.defer(function() if exp then sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) end if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
    return S
   end
@@ -286,11 +470,11 @@ function NC:Disable()
  end
  self.OC={} print("[穿墙] 已关闭")
 end
-local ESP={E=false,SN=true,SD=true,SH=true,SB=true,TC=false,D={},C=nil}
+local ESP={E=false,SN=true,SD=true,SH=true,SB=true,TC=false,HL=false,D={},C=nil}
 local function nd(t) local d=Drawing.new(t) d.Visible=false return d end
 local function cESP(plr)
  if plr==LP then return end
- ESP.D[plr]={Box=nd("Square"),Name=nd("Text"),Dist=nd("Text"),HP=nd("Square"),HPB=nd("Square")}
+ ESP.D[plr]={Box=nd("Square"),Name=nd("Text"),Dist=nd("Text"),HP=nd("Square"),HPB=nd("Square"),HL=nil}
  local e=ESP.D[plr]
  e.Box.Thickness=1 e.Box.Filled=false e.Box.Transparency=1
  e.Name.Center=true e.Name.Outline=true e.Name.Color=Color3.fromRGB(255,255,255) e.Name.Size=13 e.Name.Font=2
@@ -298,10 +482,26 @@ local function cESP(plr)
  e.HPB.Color=Color3.fromRGB(0,0,0) e.HPB.Filled=true e.HPB.Thickness=1 e.HPB.Transparency=0.7
  e.HP.Filled=true e.HP.Thickness=1 e.HP.Transparency=1 e.HP.Color=Color3.fromRGB(0,255,0)
 end
+local function updateHL(plr,e)
+ local ch=plr.Character local hum=ch and ch:FindFirstChild("Humanoid")
+ if not ch or not hum or hum.Health<=0 then
+  if e.HL then e.HL.Enabled=false end
+  return
+ end
+ if not e.HL then
+  local hl=Instance.new("Highlight") hl.Parent=ch hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+  hl.FillColor=Color3.fromRGB(255,50,50) hl.OutlineColor=Color3.fromRGB(255,255,255)
+  hl.FillTransparency=0.7 hl.OutlineTransparency=0.2 hl.Enabled=false
+  e.HL=hl
+ end
+ e.HL.Enabled=ESP.HL
+ if ESP.TC and plr.Team==LP.Team then e.HL.Enabled=false end
+end
 local function uESP()
  if not ESP.E then return end
  for plr,e in pairs(ESP.D) do
   local ch=plr.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart") local hum=ch and ch:FindFirstChild("Humanoid")
+  pcall(function() updateHL(plr,e) end)
   local function hi() e.Box.Visible=false e.Name.Visible=false e.Dist.Visible=false e.HP.Visible=false e.HPB.Visible=false end
   if not ch or not hrp or not hum or hum.Health<=0 then hi()
   elseif ESP.TC and plr.Team==LP.Team then hi()
@@ -337,7 +537,13 @@ function ESP:Enable()
  for _,p in ipairs(Plrs:GetPlayers()) do if p~=LP then cESP(p) end end
  self.PA=Plrs.PlayerAdded:Connect(function(p) if p~=LP then p.CharacterAdded:Wait() cESP(p) end end)
  self.PR=Plrs.PlayerRemoving:Connect(function(p)
-  if self.D[p] then for _,d in pairs(self.D[p]) do pcall(function() d:Remove() end) end self.D[p]=nil end
+  if self.D[p] then
+   for _,d in pairs(self.D[p]) do
+    if type(d)=="userdata" and pcall(function() return d.Remove end) then pcall(function() d:Remove() end)
+    elseif typeof(d)=="Instance" then pcall(function() d:Destroy() end) end
+   end
+   self.D[p]=nil
+  end
  end)
  self.C=RS.RenderStepped:Connect(function() cam=workspace.CurrentCamera or cam uESP() end)
  print("[ESP] 已开启")
@@ -347,7 +553,12 @@ function ESP:Disable()
  if self.C then self.C:Disconnect() self.C=nil end
  if self.PA then self.PA:Disconnect() self.PA=nil end
  if self.PR then self.PR:Disconnect() self.PR=nil end
- for plr,e in pairs(self.D) do for _,d in pairs(e) do pcall(function() d:Remove() end) end end
+ for plr,e in pairs(self.D) do
+  for _,d in pairs(e) do
+   if type(d)=="userdata" and pcall(function() return d.Remove end) then pcall(function() d:Remove() end)
+   elseif typeof(d)=="Instance" then pcall(function() d:Destroy() end) end
+  end
+ end
  self.D={} print("[ESP] 已关闭")
 end
 local function runLS(name,url)
@@ -372,8 +583,52 @@ buildUI=function()
  NS:AddButton("此脚本由 TRAE 制造",function() end)
  NS:AddButton("完全免费，请勿付费购买",function() end)
  NS:AddButton("如已付费请向买家退款",function() end)
- local FS=MT:AddSection("飞行功能")
+ local SpS=MT:AddSection("⚡  通用调整")
+ SpS:AddSlider("🏃  移动速度",8,100,16,function(v)
+  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
+  if hum then hum.WalkSpeed=v print("[速度] WalkSpeed="..v) end
+ end)
+ SpS:AddSlider("🦘  跳跃力",10,200,50,function(v)
+  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
+  if hum then hum.JumpPower=v print("[跳跃] JumpPower="..v) end
+ end)
+ SpS:AddButton("🔄  恢复默认",function()
+  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
+  if hum then hum.WalkSpeed=16 hum.JumpPower=50 print("[调整] 已恢复默认") end
+ end)
+ local FS=MT:AddSection("✈  飞行功能")
  FS:AddButton("✈  开启飞行",function() runLS("飞行","https://raw.githubusercontent.com/kongbaNB/9178/refs/heads/main/fly.lua") end)
+ local AWS={E=false,C=nil,OWS=16,OJP=50}
+ function AWS:Enable()
+  if self.E then return end self.E=true
+  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
+  if not hum then print("[踏空] 找不到角色") self.E=false return end
+  self.OWS=hum.WalkSpeed self.OJP=hum.JumpPower
+  hum.WalkSpeed=16 hum.JumpPower=50
+  self.C=RS.Stepped:Connect(function()
+   local c=LP.Character local h=c and c:FindFirstChild("Humanoid") local hrp=c and c:FindFirstChild("HumanoidRootPart")
+   if not h or not hrp then return end
+   if h.FloorMaterial==Enum.Material.Air then
+    if h.MoveDirection.Magnitude>0.1 then
+     local mv=h.MoveDirection*h.WalkSpeed
+     hrp.Velocity=Vector3.new(mv.X,0.5,mv.Z)
+    else
+     hrp.Velocity=Vector3.new(hrp.Velocity.X*0.9,0.5,hrp.Velocity.Z*0.9)
+    end
+   end
+  end)
+  print("[踏空] 已开启")
+ end
+ function AWS:Disable()
+  if not self.E then return end self.E=false
+  if self.C then self.C:Disconnect() self.C=nil end
+  local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
+  if hum then hum.WalkSpeed=self.OWS hum.JumpPower=self.OJP end
+  print("[踏空] 已关闭")
+ end
+ local AWSs=MT:AddSection("踏空行走")
+ AWSs:AddButton("●  开启踏空",function() AWS:Enable() end)
+ AWSs:AddButton("○  关闭踏空",function() AWS:Disable() end)
  local NT=W:AddTab("穿墙","🧱")
  local NM=NT:AddSection("穿墙开关")
  NM:AddButton("●  开启穿墙",function() NC:Enable() end)
@@ -395,6 +650,7 @@ buildUI=function()
  ES:AddButton("📏  显示距离: 开",function() ESP.SD=not ESP.SD end)
  ES:AddButton("❤️  显示血条: 开",function() ESP.SH=not ESP.SH end)
  ES:AddButton("📦  显示框线: 开",function() ESP.SB=not ESP.SB end)
+ ES:AddButton("✨  人物高亮: 关",function() ESP.HL=not ESP.HL print("[ESP] 人物高亮:"..(ESP.HL and "开" or "关")) end)
  ES:AddButton("👥  队伍检查: 关",function() ESP.TC=not ESP.TC end)
  local FT=W:AddTab("甩飞炸服","💥")
  local ExS=FT:AddSection("炸服")
@@ -42293,6 +42549,86 @@ end)
             end
         end)
     end
+ local FET=W:AddTab("FE","⚔")
+ local RKS=FET:AddSection("🔪  Red Knife")
+ RKS:AddButton("●  装备红刀",function()
+  pcall(function()
+   local ch=LP.Character if not ch then print("[RedKnife] 找不到角色") return end
+   local tk=ch:FindFirstChild("RedKnife")
+   if not tk then
+    tk=Instance.new("Tool") tk.Name="RedKnife" tk.RequiresHandle=true
+    local handle=Instance.new("Part") handle.Name="Handle" handle.Size=Vector3.new(0.4,1.2,0.4)
+    handle.Color=Color3.fromRGB(200,30,30) handle.Material=Enum.Material.Neon
+    handle.Parent=tk tk.Parent=ch
+    local m=Instance.new("SpecialMesh") m.MeshType=Enum.MeshType.FileMesh
+    m.MeshId="rbxassetid://12622126" m.Scale=Vector3.new(1,1,1) m.Parent=handle
+    print("[RedKnife] 红刀已装备")
+   else
+    print("[RedKnife] 已经装备了")
+   end
+  end)
+ end)
+ RKS:AddButton("⚔  近战攻击",function()
+  pcall(function()
+   local ch=LP.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+   if not ch or not hrp then print("[RedKnife] 找不到角色") return end
+   local hit=false
+   for _,p in ipairs(Plrs:GetPlayers()) do
+    if p~=LP and p.Character then
+     local phrp=p.Character:FindFirstChild("HumanoidRootPart") local phum=p.Character:FindFirstChild("Humanoid")
+     if phrp and phum and phum.Health>0 then
+      local dist=(hrp.Position-phrp.Position).Magnitude
+      if dist<=8 then
+       -- 尝试常见的远程事件造成伤害
+       local re1=workspace:FindFirstChild("DamageEvent",true)
+       local re2=workspace:FindFirstChild("RemoteEvent",true)
+       local re3=game:GetService("ReplicatedStorage"):FindFirstChild("Damage",true)
+       local re4=game:GetService("ReplicatedStorage"):FindFirstChild("DealDamage",true)
+       if re1 and re1:IsA("RemoteEvent") then pcall(function() re1:FireServer(p.Character,25) end) print("[RedKnife] 造成25伤害 (DamageEvent)") hit=true
+       elseif re3 and re3:IsA("RemoteEvent") then pcall(function() re3:FireServer(phum,25) end) print("[RedKnife] 造成25伤害 (Damage)") hit=true
+       elseif re4 and re4:IsA("RemoteEvent") then pcall(function() re4:FireServer(phum,25) end) print("[RedKnife] 造成25伤害 (DealDamage)") hit=true end
+       -- 尝试用工具触发
+       local tool=ch:FindFirstChildOfClass("Tool")
+       if tool then
+        pcall(function() tool:Activate() end)
+       end
+       if not hit then
+        print("[RedKnife] 未找到伤害事件，纯视觉效果")
+       end
+       break
+      end
+     end
+    end
+   end
+   if not hit then print("[RedKnife] 范围内没有敌人") end
+  end)
+ end)
+ RKS:AddButton("💥  重击 (50伤害)",function()
+  pcall(function()
+   local ch=LP.Character local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+   if not ch or not hrp then print("[RedKnife] 找不到角色") return end
+   for _,p in ipairs(Plrs:GetPlayers()) do
+    if p~=LP and p.Character then
+     local phrp=p.Character:FindFirstChild("HumanoidRootPart") local phum=p.Character:FindFirstChild("Humanoid")
+     if phrp and phum and phum.Health>0 then
+      local dist=(hrp.Position-phrp.Position).Magnitude
+      if dist<=10 then
+       local re1=workspace:FindFirstChild("DamageEvent",true)
+       local re3=game:GetService("ReplicatedStorage"):FindFirstChild("Damage",true)
+       if re1 and re1:IsA("RemoteEvent") then pcall(function() re1:FireServer(p.Character,50) end) print("[RedKnife] 重击造成50伤害")
+       elseif re3 and re3:IsA("RemoteEvent") then pcall(function() re3:FireServer(phum,50) end) print("[RedKnife] 重击造成50伤害")
+       else print("[RedKnife] 未找到伤害事件，纯视觉效果") end
+       break
+      end
+     end
+    end
+   end
+  end)
+ end)
+ RKS:AddButton("📖  使用说明",function()
+  print("[RedKnife] 说明: 装备红刀后靠近敌人点击近战攻击")
+  print("[RedKnife] 注意: 部分游戏无伤害事件则仅为视觉效果")
+ end)
  local SetT=W:AddTab("设置","⚙")
  local CS2=SetT:AddSection("🎨 主题颜色")
  local colors={
@@ -42307,8 +42643,41 @@ end)
  for _,c in ipairs(colors) do
   CS2:AddButton(c.Name,function() W.ApplyAccent(c.Color) print("[设置] 主题颜色:"..c.Name) end)
  end
- local BGS=SetT:AddSection("🖼  背景图")
- BGS:AddButton("❌  无背景",function() W.ApplyBG("",0) print("[设置] 已关闭背景图") end)
+ local FXS=SetT:AddSection("✨  UI特效集")
+ FXS:AddButton("🌈  彩虹边框: 关",function()
+  Settings.FX.Rainbow=not Settings.FX.Rainbow
+  W.ToggleRainbow(Settings.FX.Rainbow)
+  print("[特效] 彩虹边框:"..(Settings.FX.Rainbow and "开" or "关"))
+ end)
+ FXS:AddButton("💫  流星环绕: 关",function()
+  Settings.FX.Meteor=not Settings.FX.Meteor
+  W.ToggleMeteor(Settings.FX.Meteor)
+  print("[特效] 流星环绕:"..(Settings.FX.Meteor and "开" or "关"))
+ end)
+ FXS:AddButton("🌟  全部开启",function()
+  Settings.FX.Rainbow=true Settings.FX.Meteor=true
+  W.ToggleRainbow(true) W.ToggleMeteor(true)
+  print("[特效] 全部特效已开启")
+ end)
+ FXS:AddButton("❌  全部关闭",function()
+  Settings.FX.Rainbow=false Settings.FX.Meteor=false
+  W.ToggleRainbow(false) W.ToggleMeteor(false)
+  print("[特效] 全部特效已关闭")
+ end)
+ local BGS=SetT:AddSection("🎨  纯色背景")
+ BGS:AddButton("❌  无背景",function() W.ApplyBG("",nil,1) print("[设置] 已关闭背景") end)
+ local solidBgs={
+  {Name="⚫  深邃黑",Color=Color3.fromRGB(10,10,15)},
+  {Name="🔵  科技蓝",Color=Color3.fromRGB(15,20,40)},
+  {Name="🟣  梦幻紫",Color=Color3.fromRGB(25,15,40)},
+  {Name="🔴  烈焰红",Color=Color3.fromRGB(40,15,15)},
+  {Name="🟢  翡翠绿",Color=Color3.fromRGB(15,35,25)},
+  {Name="🟡  暗金色",Color=Color3.fromRGB(40,35,15)},
+ }
+ for _,bg in ipairs(solidBgs) do
+  BGS:AddButton(bg.Name,function() W.ApplyBG("",bg.Color,0.4) print("[设置] 背景:"..bg.Name) end)
+ end
+ local BGS2=SetT:AddSection("🖼  图片背景")
  local bgs={
   {Name="🐱  可爱猫猫",ID="rbxassetid://15465870245",DY="抖音: LoeTing20140224"},
   {Name="🐑  喜羊羊",ID="rbxassetid://15465872785",DY="抖音: 43257824802"},
@@ -42317,8 +42686,8 @@ end)
   {Name="🌸  唯美少女",ID="rbxassetid://15465876943",DY="抖音: 43257824802"},
  }
  for _,bg in ipairs(bgs) do
-  BGS:AddButton(bg.Name,function()
-   W.ApplyBG(bg.ID,0.65) print("[设置] 背景:"..bg.Name.." ("..bg.DY..")")
+  BGS2:AddButton(bg.Name,function()
+   W.ApplyBG(bg.ID,nil,0.65) print("[设置] 背景:"..bg.Name.." ("..bg.DY..")")
   end)
  end
  local DYInfo=SetT:AddSection("📱  抖音号")
