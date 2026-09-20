@@ -42810,7 +42810,7 @@ end)
  -- 战斗功能页：自描 + 子弹追踪
  local CombatT=W:AddTab("战斗","🎯")
  -- 自描功能
- local AimbotState={E=false,Conn=nil,Target=nil,Key=Enum.KeyCode.MouseButton2,FOV=150,Smooth=0.15,Part="Head",VisibleCheck=false,TeamCheck=false}
+ local AimbotState={E=false,Conn=nil,Target=nil,FOV=150,Smooth=0.15,Part="Head",VisibleCheck=false,TeamCheck=false}
  local function getClosestPlayer()
   local closest=nil local dist=math.huge
   local cam=workspace.CurrentCamera
