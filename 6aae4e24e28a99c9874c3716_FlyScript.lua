@@ -103,54 +103,63 @@ RS.RenderStepped:Connect(function()
 end)
 local function setPct(p,s)
  if p<0 then p=0 end if p>100 then p=100 end
- TS:Create(PB,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Size=UDim2.new(p/100,0,1,0)}):Play()
+ TS:Create(PB,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{Size=UDim2.new(p/100,0,1,0)}):Play()
  PT.Text=math.floor(p).."%" if s then ST.Text=s end
 end
-TS:Create(LB,TweenInfo.new(0.6,Enum.EasingStyle.Quad),{BackgroundTransparency=0.7}):Play()
-TS:Create(Vignette,TweenInfo.new(0.6,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
-task.wait(0.3)
-TS:Create(LF,TweenInfo.new(0.7,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
-task.wait(0.3) TS:Create(TL,TweenInfo.new(0.5),{TextTransparency=0}):Play()
-task.wait(0.15) TS:Create(SL,TweenInfo.new(0.4),{TextTransparency=0}):Play()
-task.wait(0.15)
-TS:Create(PBg,TweenInfo.new(0.4),{BackgroundTransparency=0}):Play()
-TS:Create(PT,TweenInfo.new(0.4),{TextTransparency=0}):Play()
-TS:Create(ST,TweenInfo.new(0.4),{TextTransparency=0}):Play()
-TS:Create(NT,TweenInfo.new(0.4),{TextTransparency=0}):Play()
-local buildUI=nil
+-- 并行启动UI构建和加载动画（更快）
 task.spawn(function()
- local sp={{12,"正在加载核心模块..."},{28,"正在注入 UI 引擎..."},{45,"正在渲染光效..."},{62,"加载功能组件..."},{78,"加载脚本资源..."},{92,"正在收尾..."},{100,"加载完成！"}}
- for _,s in ipairs(sp) do setPct(s[1],s[2]) task.wait(0.35+math.random()*0.2) end
- task.wait(0.5)
- TS:Create(LF,TweenInfo.new(0.6,Enum.EasingStyle.Quad),{BackgroundTransparency=1,Position=UDim2.new(0.5,-200,0.45,-120)}):Play()
- TS:Create(TL,TweenInfo.new(0.5),{TextTransparency=1}):Play()
- TS:Create(SL,TweenInfo.new(0.4),{TextTransparency=1}):Play()
- TS:Create(PBg,TweenInfo.new(0.4),{BackgroundTransparency=1}):Play()
- TS:Create(PT,TweenInfo.new(0.4),{TextTransparency=1}):Play()
- TS:Create(ST,TweenInfo.new(0.4),{TextTransparency=1}):Play()
- TS:Create(NT,TweenInfo.new(0.4),{TextTransparency=1}):Play()
- TS:Create(LB,TweenInfo.new(0.7),{BackgroundTransparency=1}):Play()
- task.wait(0.7) LG:Destroy()
- while not buildUI do task.wait() end
- local ok,err=pcall(buildUI)
- if not ok then
-  warn("[磊脚本] 加载失败:",err)
-  local EG=Instance.new("ScreenGui") EG.Parent=CG EG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-  local EF=Instance.new("Frame") EF.Parent=EG EF.BackgroundColor3=Color3.fromRGB(25,15,20) EF.Position=UDim2.new(0.5,-180,0.5,-80) EF.Size=UDim2.new(0,360,0,160) EF.ZIndex=1
-  Instance.new("UICorner",EF).CornerRadius=UDim.new(0,12)
-  local ES=Instance.new("UIStroke") ES.Parent=EF ES.Thickness=1 ES.Transparency=0.6 ES.Color=Color3.fromRGB(255,80,80)
-  local ET=Instance.new("TextLabel") ET.Parent=EF ET.BackgroundTransparency=1 ET.Position=UDim2.new(0,0,0,15) ET.Size=UDim2.new(1,0,0,30)
-  ET.Font=Enum.Font.GothamBold ET.Text="❌ 加载失败" ET.TextColor3=Color3.fromRGB(255,80,80) ET.TextSize=20 ET.ZIndex=2
-  local EM=Instance.new("TextLabel") EM.Parent=EF EM.BackgroundTransparency=1 EM.Position=UDim2.new(0,20,0,55) EM.Size=UDim2.new(1,-40,0,70)
-  EM.Font=Enum.Font.Gotham EM.Text=tostring(err) EM.TextColor3=Color3.fromRGB(220,220,220) EM.TextSize=12 EM.ZIndex=2 EM.TextWrapped=true EM.TextXAlignment=Enum.TextXAlignment.Left
-  local EB=Instance.new("TextButton") EB.Parent=EF EB.BackgroundColor3=Color3.fromRGB(80,40,40) EB.Position=UDim2.new(0.5,-50,1,-40) EB.Size=UDim2.new(0,100,0,28) EB.AutoButtonColor=false EB.ZIndex=2
-  EB.Font=Enum.Font.GothamSemibold EB.Text="知道了" EB.TextColor3=Color3.fromRGB(255,255,255) EB.TextSize=12 EB.ZIndex=3
-  Instance.new("UICorner",EB).CornerRadius=UDim.new(0,6)
-  EB.MouseButton1Click:Connect(function() EG:Destroy() end)
-  EB.MouseEnter:Connect(function() EB.BackgroundColor3=Color3.fromRGB(100,50,50) end)
-  EB.MouseLeave:Connect(function() EB.BackgroundColor3=Color3.fromRGB(80,40,40) end)
- end
+ -- 先开始构建UI（后台加载，节省时间）
+ task.spawn(function()
+  while not buildUI do task.wait() end
+  local ok,err=pcall(buildUI)
+  if not ok then
+   warn("[磊脚本] 加载失败:",err)
+   local EG=Instance.new("ScreenGui") EG.Parent=CG EG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+   local EF=Instance.new("Frame") EF.Parent=EG EF.BackgroundColor3=Color3.fromRGB(25,15,20) EF.Position=UDim2.new(0.5,-180,0.5,-80) EF.Size=UDim2.new(0,360,0,160) EF.ZIndex=1
+   Instance.new("UICorner",EF).CornerRadius=UDim.new(0,12)
+   local ES=Instance.new("UIStroke") ES.Parent=EF ES.Thickness=1 ES.Transparency=0.6 ES.Color=Color3.fromRGB(255,80,80)
+   local ET=Instance.new("TextLabel") ET.Parent=EF ET.BackgroundTransparency=1 ET.Position=UDim2.new(0,0,0,15) ET.Size=UDim2.new(1,0,0,30)
+   ET.Font=Enum.Font.GothamBold ET.Text="❌ 加载失败" ET.TextColor3=Color3.fromRGB(255,80,80) ET.TextSize=20 ET.ZIndex=2
+   local EM=Instance.new("TextLabel") EM.Parent=EF EM.BackgroundTransparency=1 EM.Position=UDim2.new(0,20,0,55) EM.Size=UDim2.new(1,-40,0,70)
+   EM.Font=Enum.Font.Gotham EM.Text=tostring(err) EM.TextColor3=Color3.fromRGB(220,220,220) EM.TextSize=12 EM.ZIndex=2 EM.TextWrapped=true EM.TextXAlignment=Enum.TextXAlignment.Left
+   local EB=Instance.new("TextButton") EB.Parent=EF EB.BackgroundColor3=Color3.fromRGB(80,40,40) EB.Position=UDim2.new(0.5,-50,1,-40) EB.Size=UDim2.new(0,100,0,28) EB.AutoButtonColor=false EB.ZIndex=2
+   EB.Font=Enum.Font.GothamSemibold EB.Text="知道了" EB.TextColor3=Color3.fromRGB(255,255,255) EB.TextSize=12 EB.ZIndex=3
+   Instance.new("UICorner",EB).CornerRadius=UDim.new(0,6)
+   EB.MouseButton1Click:Connect(function() EG:Destroy() end)
+   EB.MouseEnter:Connect(function() EB.BackgroundColor3=Color3.fromRGB(100,50,50) end)
+   EB.MouseLeave:Connect(function() EB.BackgroundColor3=Color3.fromRGB(80,40,40) end)
+  end
+ end)
+ -- 加载动画（丝滑快速版）
+ TS:Create(LB,TweenInfo.new(0.35,Enum.EasingStyle.Quad),{BackgroundTransparency=0.7}):Play()
+ TS:Create(Vignette,TweenInfo.new(0.35,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
+ task.wait(0.15)
+ TS:Create(LF,TweenInfo.new(0.4,Enum.EasingStyle.Back),{BackgroundTransparency=0}):Play()
+ task.wait(0.15)
+ TS:Create(TL,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ task.wait(0.08)
+ TS:Create(SL,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ task.wait(0.08)
+ TS:Create(PBg,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
+ TS:Create(PT,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ TS:Create(ST,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ TS:Create(NT,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ -- 快速进度条
+ local sp={{10,"初始化..."},{25,"加载UI引擎..."},{42,"渲染特效..."},{60,"加载功能..."},{78,"加载资源..."},{95,"收尾中..."},{100,"完成！"}}
+ for _,s in ipairs(sp) do setPct(s[1],s[2]) task.wait(0.15+math.random()*0.1) end
+ task.wait(0.2)
+ -- 丝滑退出动画
+ TS:Create(LF,TweenInfo.new(0.4,Enum.EasingStyle.Quad),{BackgroundTransparency=1,Position=UDim2.new(0.5,-200,0.45,-120)}):Play()
+ TS:Create(TL,TweenInfo.new(0.3),{TextTransparency=1}):Play()
+ TS:Create(SL,TweenInfo.new(0.25),{TextTransparency=1}):Play()
+ TS:Create(PBg,TweenInfo.new(0.25),{BackgroundTransparency=1}):Play()
+ TS:Create(PT,TweenInfo.new(0.25),{TextTransparency=1}):Play()
+ TS:Create(ST,TweenInfo.new(0.25),{TextTransparency=1}):Play()
+ TS:Create(NT,TweenInfo.new(0.25),{TextTransparency=1}):Play()
+ TS:Create(LB,TweenInfo.new(0.45,Enum.EasingStyle.Quad),{BackgroundTransparency=1}):Play()
+ task.wait(0.45) LG:Destroy()
 end)
+local buildUI=nil
 local Lib={}
 local function drag(gui,handle)
  local dg,di,ds,sp=false,nil,nil,nil
@@ -358,9 +367,22 @@ function Lib:CreateWindow(title)
   btn.MouseLeave:Connect(function() if cur~=pg then TS:Create(btn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(24,24,30)}):Play() end end)
   btn.MouseButton1Click:Connect(function()
    if cur==pg then return end
-   for _,p in ipairs(pages) do p.Btn.BackgroundColor3=Color3.fromRGB(24,24,30) p.Btn.TextColor3=Color3.fromRGB(190,190,210) p.Pg.Visible=false end
-   btn.BackgroundColor3=Color3.fromRGB(Settings.Accent.R*40,Settings.Accent.G*40,Settings.Accent.B*40) btn.TextColor3=Settings.Accent pg.Visible=true cur=pg
-   PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24)
+   -- 丝滑页面切换动画
+   local oldPg=cur
+   for _,p in ipairs(pages) do p.Btn.BackgroundColor3=Color3.fromRGB(24,24,30) p.Btn.TextColor3=Color3.fromRGB(190,190,210) end
+   btn.BackgroundColor3=Color3.fromRGB(Settings.Accent.R*40,Settings.Accent.G*40,Settings.Accent.B*40) btn.TextColor3=Settings.Accent
+   -- 新页面从右侧滑入+淡入
+   pg.Visible=true
+   pg.Position=UDim2.new(1,10,0,0)
+   pg.BackgroundTransparency=1
+   TS:Create(pg,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{Position=UDim2.new(0,0,0,0),BackgroundTransparency=1}):Play()
+   -- 旧页面淡出
+   if oldPg and oldPg~=pg then
+    TS:Create(oldPg,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{Position=UDim2.new(-0.05,0,0,0)}):Play()
+    task.delay(0.2,function() oldPg.Visible=false oldPg.Position=UDim2.new(0,0,0,0) end)
+   end
+   cur=pg
+   task.delay(0.26,function() PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end)
   end)
   local T={Btn=btn,Pg=pg,PL=PL,PC=PC}
   function T:AddButton(txt,cb)
@@ -498,8 +520,12 @@ function Lib:CreateWindow(title)
  end
  function W:Show()
   MF.BackgroundTransparency=1
+  MF.Size=UDim2.new(0,0,0,0)
+  MF.Position=UDim2.new(0.5,0,0.5,0)
   SG.Enabled=true
-  TS:Create(MF,TweenInfo.new(0.4,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
+  -- 丝滑弹出动画：缩放+淡入
+  TS:Create(MF,TweenInfo.new(0.4,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Size=UDim2.new(0,620,0,400),BackgroundTransparency=0}):Play()
+  TS:Create(MF,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Position=UDim2.new(0.5,-310,0.5,-200)}):Play()
  end
  return W
 end
@@ -670,7 +696,7 @@ buildUI=function()
  end)
  local FS=MT:AddSection("✈  飞行功能")
  FS:AddButton("✈  开启飞行",function() runLS("飞行","https://raw.githubusercontent.com/kongbaNB/9178/refs/heads/main/fly.lua") end)
- local AWS={E=false,C=nil,BV=nil,BP=nil,OWS=16,OJP=50,OG=196.2,StartY=0}
+ local AWS={E=false,C=nil,BV=nil,BP=nil,OWS=16,OJP=50,OG=196.2,StartY=0,Jumping=false,LastSpace=false}
  function AWS:Enable()
   if self.E then return end self.E=true
   local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid") local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
@@ -681,9 +707,9 @@ buildUI=function()
   hum.WalkSpeed=16 hum.JumpPower=0
   -- 关闭重力（从根本上防止下落）
   workspace.Gravity=0
-  -- BodyVelocity 控制水平移动
+  -- BodyVelocity 控制水平移动+跳跃
   local bv=Instance.new("BodyVelocity") bv.Name="AirWalkBV"
-  bv.Velocity=Vector3.new(0,0,0) bv.MaxForce=Vector3.new(10000,0,10000)
+  bv.Velocity=Vector3.new(0,0,0) bv.MaxForce=Vector3.new(10000,math.huge,10000)
   bv.P=5000 bv.Parent=hrp
   self.BV=bv
   -- BodyPosition 锁定Y轴高度（更稳定）
@@ -698,7 +724,7 @@ buildUI=function()
    local b=r:FindFirstChild("AirWalkBV")
    if not b then
     b=Instance.new("BodyVelocity") b.Name="AirWalkBV"
-    b.MaxForce=Vector3.new(10000,0,10000) b.P=5000 b.Parent=r
+    b.MaxForce=Vector3.new(10000,math.huge,10000) b.P=5000 b.Parent=r
     self.BV=b
    end
    -- 确保 BodyPosition 存在
@@ -710,21 +736,46 @@ buildUI=function()
    end
    -- 水平移动控制
    local md=h.MoveDirection
+   local curVel=b.Velocity
    if md.Magnitude>0.1 then
-    b.Velocity=Vector3.new(md.X*h.WalkSpeed,0,md.Z*h.WalkSpeed)
+    b.Velocity=Vector3.new(md.X*h.WalkSpeed,curVel.Y,md.Z*h.WalkSpeed)
    else
-    b.Velocity=Vector3.new(0,0,0)
+    b.Velocity=Vector3.new(0,curVel.Y,0)
    end
-   -- 高度控制：空格上升，左Shift下降
-   local targetY=bp2.Position.Y
-   if UIS:IsKeyDown(Enum.KeyCode.Space) then
-    targetY=targetY+0.5
-   elseif UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
-    targetY=targetY-0.5
+   -- 跳跃控制：空格按下去时跳一下，松开后锁定高度
+   local spaceDown=UIS:IsKeyDown(Enum.KeyCode.Space)
+   local shiftDown=UIS:IsKeyDown(Enum.KeyCode.LeftShift)
+   if spaceDown and not self.LastSpace then
+    -- 空格刚按下：触发跳跃
+    self.Jumping=true
+    bp2.MaxForce=Vector3.new(0,0,0) -- 暂时禁用BodyPosition
+    b.Velocity=Vector3.new(curVel.X,45,curVel.Z) -- 给一个向上的跳跃速度
+   elseif not spaceDown and self.LastSpace and self.Jumping then
+    -- 空格刚松开：锁定在当前高度
+    self.Jumping=false
+    bp2.MaxForce=Vector3.new(0,50000,0)
+    bp2.Position=Vector3.new(0,r.Position.Y,0)
+    b.Velocity=Vector3.new(curVel.X,0,curVel.Z)
+   elseif shiftDown then
+    -- Shift下降
+    self.Jumping=false
+    bp2.MaxForce=Vector3.new(0,50000,0)
+    local ty=bp2.Position.Y-0.6
+    bp2.Position=Vector3.new(0,ty,0)
+    b.Velocity=Vector3.new(curVel.X,0,curVel.Z)
    end
-   bp2.Position=Vector3.new(0,targetY,0)
+   self.LastSpace=spaceDown
+   -- 如果在跳跃中，到达顶点后自动锁定
+   if self.Jumping then
+    if r.Velocity.Y<=0.5 then
+     self.Jumping=false
+     bp2.MaxForce=Vector3.new(0,50000,0)
+     bp2.Position=Vector3.new(0,r.Position.Y,0)
+     b.Velocity=Vector3.new(curVel.X,0,curVel.Z)
+    end
+   end
   end)
-  print("[踏空] 已开启 (空格上升/Shift下降)")
+  print("[踏空] 已开启 (空格跳跃/Shift下降)")
  end
  function AWS:Disable()
   if not self.E then return end self.E=false
@@ -764,6 +815,135 @@ buildUI=function()
  ES:AddButton("📦  显示框线: 开",function() ESP.SB=not ESP.SB end)
  ES:AddButton("✨  人物高亮: 关",function() ESP.HL=not ESP.HL print("[ESP] 人物高亮:"..(ESP.HL and "开" or "关")) end)
  ES:AddButton("👥  队伍检查: 关",function() ESP.TC=not ESP.TC end)
+ -- NPC透视
+ local NPC_ESP={E=false,E_Hostile=false,E_Friendly=false,D={},C=nil,Conn=nil}
+ -- 敌方NPC关键词（会攻击的）
+ local hostileKeys={"zombie","Zombie","monster","Monster","enemy","Enemy","boss","Boss","guard","Guard","soldier","Soldier","killer","Killer","demon","Demon","ghost","Ghost","skeleton","Skeleton","bandit","Bandit","pirate","Pirate","warrior","Warrior","knight","Knight","archer","Archer","mage","Mage","wizard","Wizard","villain","Villain","evil","Evil","dark","Dark","undead","Undead","vampire","Vampire","werewolf","Werewolf","dragon","Dragon","spider","Spider","wolf","Wolf","bear","Bear","shark","Shark","crocodile","Crocodile","alien","Alien","robot","Robot","android","Android","security","Security","police","Police","swat","SWAT","hostile","Hostile","aggressive","Aggressive"}
+ -- 友善NPC关键词（不会攻击的）
+ local friendlyKeys={"npc","NPC","shop","Shop","merchant","Merchant","vendor","Vendor","seller","Seller","buyer","Buyer","citizen","Citizen","civilian","Civilian","villager","Villager","farmer","Farmer","worker","Worker","doctor","Doctor","nurse","Nurse","teacher","Teacher","student","Student","kid","Kid","child","Child","baby","Baby","friend","Friend","ally","Ally","friendly","Friendly","peaceful","Peaceful","helper","Helper","guide","Guide","quest","Quest","questgiver","QuestGiver","pet","Pet","cat","Cat","dog","Dog","bunny","Bunny","rabbit","Rabbit"}
+ local function isHostileNPC(model)
+  local name=model.Name:lower()
+  for _,k in ipairs(hostileKeys) do
+   if name:find(k:lower(),1,true) then return true end
+  end
+  -- 检查是否有武器/攻击工具
+  if model:FindFirstChildOfClass("Tool") then return true end
+  if model:FindFirstChild("Sword",true) or model:FindFirstChild("Gun",true) or model:FindFirstChild("Knife",true) then return true end
+  -- 检查是否有攻击脚本
+  for _,d in ipairs(model:GetDescendants()) do
+   if d:IsA("Script") or d:IsA("LocalScript") then
+    local dn=d.Name:lower()
+    if dn:find("attack") or dn:find("damage") or dn:find("kill") or dn:find("fight") then
+     return true
+    end
+   end
+  end
+  return false
+ end
+ local function isFriendlyNPC(model)
+  local name=model.Name:lower()
+  for _,k in ipairs(friendlyKeys) do
+   if name:find(k:lower(),1,true) then return true end
+  end
+  return false
+ end
+ local function classifyNPC(model)
+  if isHostileNPC(model) then return "hostile" end
+  if isFriendlyNPC(model) then return "friendly" end
+  -- 默认根据是否有武器判断
+  if model:FindFirstChildOfClass("Tool") then return "hostile" end
+  return "friendly"
+ end
+ local function addNPCHighlight(model,kind)
+  if not model or not model:IsA("Model") then return end
+  if NPC_ESP.D[model] then return end
+  local hl=Instance.new("Highlight")
+  hl.Parent=model
+  hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+  hl.FillTransparency=0.6
+  hl.OutlineTransparency=0.3
+  hl.OutlineColor=Color3.fromRGB(255,255,255)
+  if kind=="hostile" then
+   hl.FillColor=Color3.fromRGB(255,40,40)
+   hl.OutlineColor=Color3.fromRGB(255,100,100)
+  else
+   hl.FillColor=Color3.fromRGB(40,255,80)
+   hl.OutlineColor=Color3.fromRGB(100,255,130)
+  end
+  hl.Enabled=false
+  NPC_ESP.D[model]={HL=hl,Kind=kind}
+  -- 监听移除
+  model.AncestryChanged:Connect(function()
+   if not model.Parent then
+    if NPC_ESP.D[model] then NPC_ESP.D[model]=nil end
+   end
+  end)
+ end
+ local function updateNPC_ESP()
+  if not NPC_ESP.E then return end
+  -- 扫描工作区内的NPC（有Humanoid的模型）
+  for _,desc in ipairs(workspace:GetDescendants()) do
+   if desc:IsA("Humanoid") and desc.Parent and desc.Parent:IsA("Model") then
+    local model=desc.Parent
+    -- 排除玩家
+    local isPlayer=false
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p.Character==model then isPlayer=true break end
+    end
+    if not isPlayer and not NPC_ESP.D[model] then
+     local kind=classifyNPC(model)
+     addNPCHighlight(model,kind)
+    end
+   end
+  end
+  -- 更新显示状态
+  for model,data in pairs(NPC_ESP.D) do
+   if not model or not model.Parent then
+    NPC_ESP.D[model]=nil
+   else
+    local hum=model:FindFirstChildOfClass("Humanoid")
+    if hum and hum.Health>0 then
+     if data.Kind=="hostile" then
+      data.HL.Enabled=NPC_ESP.E_Hostile
+     else
+      data.HL.Enabled=NPC_ESP.E_Friendly
+     end
+    else
+     data.HL.Enabled=false
+    end
+   end
+  end
+ end
+ local NES=ET:AddSection("👹  NPC透视")
+ NES:AddButton("●  开启NPC透视",function()
+  if NPC_ESP.E then print("[NPC透视] 已经开启了") return end
+  NPC_ESP.E=true NPC_ESP.E_Hostile=true NPC_ESP.E_Friendly=true
+  NPC_ESP.C=RS.Heartbeat:Connect(updateNPC_ESP)
+  -- 初始扫描
+  task.spawn(updateNPC_ESP)
+  print("[NPC透视] 已开启 (敌方红/友善绿)")
+ end)
+ NES:AddButton("○  关闭NPC透视",function()
+  NPC_ESP.E=false NPC_ESP.E_Hostile=false NPC_ESP.E_Friendly=false
+  if NPC_ESP.C then NPC_ESP.C:Disconnect() NPC_ESP.C=nil end
+  for model,data in pairs(NPC_ESP.D) do
+   if data.HL then pcall(function() data.HL:Destroy() end) end
+  end
+  NPC_ESP.D={}
+  print("[NPC透视] 已关闭")
+ end)
+ NES:AddButton("🔴  敌方(红色): 开",function()
+  NPC_ESP.E_Hostile=not NPC_ESP.E_Hostile
+  print("[NPC透视] 敌方显示: "..(NPC_ESP.E_Hostile and "开" or "关"))
+ end)
+ NES:AddButton("🟢  友善(绿色): 开",function()
+  NPC_ESP.E_Friendly=not NPC_ESP.E_Friendly
+  print("[NPC透视] 友善显示: "..(NPC_ESP.E_Friendly and "开" or "关"))
+ end)
+ NES:AddButton("🔍  重新扫描NPC",function()
+  task.spawn(updateNPC_ESP)
+  print("[NPC透视] 正在重新扫描...")
+ end)
  local FT=W:AddTab("甩飞炸服","💥")
  local ExS=FT:AddSection("炸服")
  ExS:AddButton("💣  启动炸服",function()
@@ -795,32 +975,115 @@ buildUI=function()
   end)
   print("[炸服] 已启动！")
  end)
- local SlS=FT:AddSection("甩飞")
- SlS:AddButton("👋  甩飞玩家",function()
+ local SlS=FT:AddSection("甩飞 (优化版)")
+ SlS:AddButton("👋  脉冲甩飞",function()
   pcall(function()
    local mc=LP.Character if not mc then return end
    local mh=mc:FindFirstChild("HumanoidRootPart") if not mh then return end
-   for _,p in ipairs(Plrs:GetPlayers()) do
-    if p~=LP and p.Character then
-     local hrp=p.Character:FindFirstChild("HumanoidRootPart")
-     if hrp then hrp.Velocity=(hrp.Position-mh.Position).Unit*100+Vector3.new(0,50,0) end
+   local count=0
+   local conn
+   conn=RS.Stepped:Connect(function()
+    count=count+1
+    if count>10 then conn:Disconnect() return end
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p~=LP and p.Character then
+      local hrp=p.Character:FindFirstChild("HumanoidRootPart")
+      if hrp then
+       local dir=(hrp.Position-mh.Position).Unit
+       hrp.Velocity=dir*150+Vector3.new(0,80+count*5,0)
+      end
+     end
     end
-   end
+   end)
   end)
-  print("[甩飞] 执行成功！")
+  print("[甩飞] 脉冲甩飞执行！(10次连续推力)")
  end)
- SlS:AddButton("💨  超级甩飞",function()
+ SlS:AddButton("🌪  龙卷风甩飞",function()
+  pcall(function()
+   local mc=LP.Character if not mc then return end
+   local mh=mc:FindFirstChild("HumanoidRootPart") if not mh then return end
+   local t=0
+   local conn
+   conn=RS.Stepped:Connect(function()
+    t=t+0.15
+    if t>3 then conn:Disconnect() return end
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p~=LP and p.Character then
+      local hrp=p.Character:FindFirstChild("HumanoidRootPart")
+      if hrp then
+       local dx=hrp.Position.X-mh.Position.X
+       local dz=hrp.Position.Z-mh.Position.Z
+       local angle=math.atan2(dz,dx)+t
+       local dist=math.sqrt(dx*dx+dz*dz)
+       local newX=mh.Position.X+math.cos(angle)*dist
+       local newZ=mh.Position.Z+math.sin(angle)*dist
+       hrp.Velocity=Vector3.new((newX-hrp.Position.X)*5,60,(newZ-hrp.Position.Z)*5)
+      end
+     end
+    end
+   end)
+  end)
+  print("[甩飞] 龙卷风甩飞执行！(3秒旋转)")
+ end)
+ SlS:AddButton("🚀  宇宙弹射",function()
+  pcall(function()
+   for _,p in ipairs(Plrs:GetPlayers()) do
+    if p~=LP and p.Character then
+     local hrp=p.Character:FindFirstChild("HumanoidRootPart")
+     local hum=p.Character:FindFirstChild("Humanoid")
+     if hrp and hum and hum.Health>0 then
+      -- 先拉到高空再垂直射出去
+      hrp.Position=hrp.Position+Vector3.new(0,50,0)
+      task.wait(0.1)
+      hrp.Velocity=Vector3.new(0,200,0)
+      -- 多次助推
+      task.delay(0.3,function() if hrp and hrp.Parent then hrp.Velocity=Vector3.new(0,250,0) end end)
+      task.delay(0.6,function() if hrp and hrp.Parent then hrp.Velocity=Vector3.new(0,300,0) end end)
+     end
+    end
+   end
+  end)
+  print("[甩飞] 宇宙弹射执行！(超高弹射)")
+ end)
+ SlS:AddButton("💥  全服爆炸",function()
   pcall(function()
    local mc=LP.Character if not mc then return end
    local mh=mc:FindFirstChild("HumanoidRootPart") if not mh then return end
    for _,p in ipairs(Plrs:GetPlayers()) do
     if p~=LP and p.Character then
      local hrp=p.Character:FindFirstChild("HumanoidRootPart")
-     if hrp then hrp.Velocity=(hrp.Position-mh.Position).Unit*200+Vector3.new(0,100,0) end
+     if hrp then
+      local dist=(hrp.Position-mh.Position).Magnitude
+      if dist<50 then
+       local dir=(hrp.Position-mh.Position).Unit
+       -- 爆炸式：距离越近威力越大
+       local power=math.max(200,500-dist*8)
+       hrp.Velocity=dir*power+Vector3.new(0,power*0.6,0)
+      end
+     end
     end
    end
   end)
-  print("[超级甩飞] 执行成功！")
+  print("[甩飞] 全服爆炸执行！(距离越近威力越大)")
+ end)
+ SlS:AddButton("🌀  原地升天",function()
+  pcall(function()
+   for _,p in ipairs(Plrs:GetPlayers()) do
+    if p~=LP and p.Character then
+     local hrp=p.Character:FindFirstChild("HumanoidRootPart")
+     if hrp then
+      -- 用BodyVelocity稳定向上推
+      local bv=Instance.new("BodyVelocity")
+      bv.Velocity=Vector3.new(0,150,0)
+      bv.MaxForce=Vector3.new(0,math.huge,0)
+      bv.P=10000
+      bv.Parent=hrp
+      game:GetService("Debris"):AddItem(bv,2)
+     end
+    end
+   end
+  end)
+  print("[甩飞] 原地升天执行！(2秒持续推力)")
  end)
  local OT=W:AddTab("脚本","📦")
  local CS=OT:AddSection("通用脚本")
