@@ -106,30 +106,8 @@ local function setPct(p,s)
  TS:Create(PB,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{Size=UDim2.new(p/100,0,1,0)}):Play()
  PT.Text=math.floor(p).."%" if s then ST.Text=s end
 end
--- 并行启动UI构建和加载动画（更快）
+-- 加载动画 + UI构建（快速丝滑版）
 task.spawn(function()
- -- 先开始构建UI（后台加载，节省时间）
- task.spawn(function()
-  while not buildUI do task.wait() end
-  local ok,err=pcall(buildUI)
-  if not ok then
-   warn("[磊脚本] 加载失败:",err)
-   local EG=Instance.new("ScreenGui") EG.Parent=CG EG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-   local EF=Instance.new("Frame") EF.Parent=EG EF.BackgroundColor3=Color3.fromRGB(25,15,20) EF.Position=UDim2.new(0.5,-180,0.5,-80) EF.Size=UDim2.new(0,360,0,160) EF.ZIndex=1
-   Instance.new("UICorner",EF).CornerRadius=UDim.new(0,12)
-   local ES=Instance.new("UIStroke") ES.Parent=EF ES.Thickness=1 ES.Transparency=0.6 ES.Color=Color3.fromRGB(255,80,80)
-   local ET=Instance.new("TextLabel") ET.Parent=EF ET.BackgroundTransparency=1 ET.Position=UDim2.new(0,0,0,15) ET.Size=UDim2.new(1,0,0,30)
-   ET.Font=Enum.Font.GothamBold ET.Text="❌ 加载失败" ET.TextColor3=Color3.fromRGB(255,80,80) ET.TextSize=20 ET.ZIndex=2
-   local EM=Instance.new("TextLabel") EM.Parent=EF EM.BackgroundTransparency=1 EM.Position=UDim2.new(0,20,0,55) EM.Size=UDim2.new(1,-40,0,70)
-   EM.Font=Enum.Font.Gotham EM.Text=tostring(err) EM.TextColor3=Color3.fromRGB(220,220,220) EM.TextSize=12 EM.ZIndex=2 EM.TextWrapped=true EM.TextXAlignment=Enum.TextXAlignment.Left
-   local EB=Instance.new("TextButton") EB.Parent=EF EB.BackgroundColor3=Color3.fromRGB(80,40,40) EB.Position=UDim2.new(0.5,-50,1,-40) EB.Size=UDim2.new(0,100,0,28) EB.AutoButtonColor=false EB.ZIndex=2
-   EB.Font=Enum.Font.GothamSemibold EB.Text="知道了" EB.TextColor3=Color3.fromRGB(255,255,255) EB.TextSize=12 EB.ZIndex=3
-   Instance.new("UICorner",EB).CornerRadius=UDim.new(0,6)
-   EB.MouseButton1Click:Connect(function() EG:Destroy() end)
-   EB.MouseEnter:Connect(function() EB.BackgroundColor3=Color3.fromRGB(100,50,50) end)
-   EB.MouseLeave:Connect(function() EB.BackgroundColor3=Color3.fromRGB(80,40,40) end)
-  end
- end)
  -- 加载动画（丝滑快速版）
  TS:Create(LB,TweenInfo.new(0.35,Enum.EasingStyle.Quad),{BackgroundTransparency=0.7}):Play()
  TS:Create(Vignette,TweenInfo.new(0.35,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
@@ -148,6 +126,27 @@ task.spawn(function()
  local sp={{10,"初始化..."},{25,"加载UI引擎..."},{42,"渲染特效..."},{60,"加载功能..."},{78,"加载资源..."},{95,"收尾中..."},{100,"完成！"}}
  for _,s in ipairs(sp) do setPct(s[1],s[2]) task.wait(0.15+math.random()*0.1) end
  task.wait(0.2)
+ -- 等待UI构建完成
+ while not buildUI do task.wait() end
+ local ok,err=pcall(buildUI)
+ if not ok then
+  warn("[磊脚本] 加载失败:",err)
+  local EG=Instance.new("ScreenGui") EG.Parent=CG EG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+  local EF=Instance.new("Frame") EF.Parent=EG EF.BackgroundColor3=Color3.fromRGB(25,15,20) EF.Position=UDim2.new(0.5,-180,0.5,-80) EF.Size=UDim2.new(0,360,0,160) EF.ZIndex=1
+  Instance.new("UICorner",EF).CornerRadius=UDim.new(0,12)
+  local ES=Instance.new("UIStroke") ES.Parent=EF ES.Thickness=1 ES.Transparency=0.6 ES.Color=Color3.fromRGB(255,80,80)
+  local ET=Instance.new("TextLabel") ET.Parent=EF ET.BackgroundTransparency=1 ET.Position=UDim2.new(0,0,0,15) ET.Size=UDim2.new(1,0,0,30)
+  ET.Font=Enum.Font.GothamBold ET.Text="❌ 加载失败" ET.TextColor3=Color3.fromRGB(255,80,80) ET.TextSize=20 ET.ZIndex=2
+  local EM=Instance.new("TextLabel") EM.Parent=EF EM.BackgroundTransparency=1 EM.Position=UDim2.new(0,20,0,55) EM.Size=UDim2.new(1,-40,0,70)
+  EM.Font=Enum.Font.Gotham EM.Text=tostring(err) EM.TextColor3=Color3.fromRGB(220,220,220) EM.TextSize=12 EM.ZIndex=2 EM.TextWrapped=true EM.TextXAlignment=Enum.TextXAlignment.Left
+  local EB=Instance.new("TextButton") EB.Parent=EF EB.BackgroundColor3=Color3.fromRGB(80,40,40) EB.Position=UDim2.new(0.5,-50,1,-40) EB.Size=UDim2.new(0,100,0,28) EB.AutoButtonColor=false EB.ZIndex=2
+  EB.Font=Enum.Font.GothamSemibold EB.Text="知道了" EB.TextColor3=Color3.fromRGB(255,255,255) EB.TextSize=12 EB.ZIndex=3
+  Instance.new("UICorner",EB).CornerRadius=UDim.new(0,6)
+  EB.MouseButton1Click:Connect(function() EG:Destroy() end)
+  EB.MouseEnter:Connect(function() EB.BackgroundColor3=Color3.fromRGB(100,50,50) end)
+  EB.MouseLeave:Connect(function() EB.BackgroundColor3=Color3.fromRGB(80,40,40) end)
+  return
+ end
  -- 丝滑退出动画
  TS:Create(LF,TweenInfo.new(0.4,Enum.EasingStyle.Quad),{BackgroundTransparency=1,Position=UDim2.new(0.5,-200,0.45,-120)}):Play()
  TS:Create(TL,TweenInfo.new(0.3),{TextTransparency=1}):Play()
@@ -520,12 +519,12 @@ function Lib:CreateWindow(title)
  end
  function W:Show()
   MF.BackgroundTransparency=1
-  MF.Size=UDim2.new(0,0,0,0)
-  MF.Position=UDim2.new(0.5,0,0.5,0)
+  MF.Size=UDim2.new(0,500,0,320)
+  MF.Position=UDim2.new(0.5,-250,0.5,-160)
   SG.Enabled=true
-  -- 丝滑弹出动画：缩放+淡入
-  TS:Create(MF,TweenInfo.new(0.4,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Size=UDim2.new(0,620,0,400),BackgroundTransparency=0}):Play()
-  TS:Create(MF,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Position=UDim2.new(0.5,-310,0.5,-200)}):Play()
+  -- 丝滑弹出动画：放大+淡入
+  TS:Create(MF,TweenInfo.new(0.35,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=UDim2.new(0,620,0,400),BackgroundTransparency=0}):Play()
+  TS:Create(MF,TweenInfo.new(0.3,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Position=UDim2.new(0.5,-310,0.5,-200)}):Play()
  end
  return W
 end
