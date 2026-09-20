@@ -781,37 +781,37 @@ end
 local notifys={}
 local function Notify(title,content,dur)
  dur=dur or 3
- local sg=Instance.new("ScreenGui")
- sg.Name="LeiNotify"..tostring(tick()) sg.ResetOnSpawn=false sg.IgnoreGuiInset=true sg.Parent=CG
- local frame=Instance.new("Frame")
- frame.Size=UDim2.new(0,280,0,0) frame.Position=UDim2.new(1,-310,1,-100)
- frame.BackgroundColor3=Color3.fromRGB(30,30,40) frame.BorderSizePixel=0 frame.Parent=sg
- frame.BackgroundTransparency=0.1
- local mc=Instance.new("UICorner") mc.CornerRadius=UDim.new(0,8) mc.Parent=frame
- local stroke=Instance.new("UIStroke") stroke.Color=Settings.Accent stroke.Thickness=1 stroke.Parent=frame
- local tt=Instance.new("TextLabel")
- tt.Size=UDim2.new(1,-20,0,22) tt.Position=UDim2.new(0,10,0,8)
- tt.BackgroundTransparency=1 tt.Text=title tt.TextColor3=Settings.Accent
- tt.Font=Enum.Font.GothamBold tt.TextSize=14 tt.TextXAlignment=Enum.TextXAlignment.Left tt.Parent=frame
- local ct=Instance.new("TextLabel")
- ct.Size=UDim2.new(1,-20,0,30) ct.Position=UDim2.new(0,10,0,32)
- ct.BackgroundTransparency=1 ct.Text=content ct.TextColor3=Color3.fromRGB(220,220,230)
- ct.Font=Enum.Font.Gotham ct.TextSize=12 ct.TextWrapped=true ct.TextXAlignment=Enum.TextXAlignment.Left ct.Parent=frame
- frame.Size=UDim2.new(0,280,0,70)
- table.insert(notifys,sg)
- local yOff=#notifys*78
- frame.Position=UDim2.new(1,-310,1,-yOff-90)
- frame.Position=UDim2.new(1,310,1,-yOff-90)
- TS:Create(frame,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Position=UDim2.new(1,-310,1,-yOff-90)}):Play()
- task.delay(dur,function()
-  TS:Create(frame,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Position=UDim2.new(1,310,1,-yOff-90)}):Play()
-  task.wait(0.35) sg:Destroy()
-  for i,s in ipairs(notifys) do if s==sg then table.remove(notifys,i) break end end
+ local okN,errN=pcall(function()
+  local sg=Instance.new("ScreenGui")
+  sg.Name="LeiNotify"..tostring(math.random(1,99999)) sg.ResetOnSpawn=false sg.IgnoreGuiInset=true sg.Parent=CG
+  local frame=Instance.new("Frame")
+  frame.Size=UDim2.new(0,280,0,70) frame.Position=UDim2.new(1,310,1,-90)
+  frame.BackgroundColor3=Color3.fromRGB(30,30,40) frame.BorderSizePixel=0 frame.Parent=sg
+  frame.BackgroundTransparency=0.1
+  pcall(function() local mc=Instance.new("UICorner") mc.CornerRadius=UDim.new(0,8) mc.Parent=frame end)
+  pcall(function() local stroke=Instance.new("UIStroke") stroke.Color=Settings.Accent stroke.Thickness=1 stroke.Parent=frame end)
+  local tt=Instance.new("TextLabel")
+  tt.Size=UDim2.new(1,-20,0,22) tt.Position=UDim2.new(0,10,0,8)
+  tt.BackgroundTransparency=1 tt.Text=title tt.TextColor3=Settings.Accent
+  tt.Font=Enum.Font.GothamBold tt.TextSize=14 tt.TextXAlignment=Enum.TextXAlignment.Left tt.Parent=frame
+  local ct=Instance.new("TextLabel")
+  ct.Size=UDim2.new(1,-20,0,30) ct.Position=UDim2.new(0,10,0,32)
+  ct.BackgroundTransparency=1 ct.Text=content ct.TextColor3=Color3.fromRGB(220,220,230)
+  ct.Font=Enum.Font.Gotham ct.TextSize=12 ct.TextWrapped=true ct.TextXAlignment=Enum.TextXAlignment.Left ct.Parent=frame
+  table.insert(notifys,sg)
+  local yOff=#notifys*78
+  pcall(function() TS:Create(frame,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Position=UDim2.new(1,-310,1,-yOff-90)}):Play() end)
+  task.delay(dur,function()
+   pcall(function() TS:Create(frame,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Position=UDim2.new(1,310,1,-yOff-90)}):Play() end)
+   task.wait(0.35) pcall(function() sg:Destroy() end)
+   for i,s in ipairs(notifys) do if s==sg then table.remove(notifys,i) break end end
+  end)
  end)
+ if not okN then warn("[Notify错误]",errN) end
 end
 local function runLS(name,url)
  print("["..name.."] 正在加载...")
- Notify("⏳","正在加载 "..name,3)
+ pcall(Notify,"⏳","正在加载 "..name,3)
  local ok,err=pcall(function()
   local code=game:HttpGet(url)
   if not code or #code==0 then error("脚本内容为空") end
@@ -819,12 +819,12 @@ local function runLS(name,url)
   if not fn then error("脚本语法错误，无法编译") end
   fn()
  end)
- if ok then print("["..name.."] 加载成功！") Notify("✅",name.." 加载成功",3)
- else warn("["..name.."] 失败:",err) Notify("❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
+ if ok then print("["..name.."] 加载成功！") pcall(Notify,"✅",name.." 加载成功",3)
+ else warn("["..name.."] 失败:",err) pcall(Notify,"❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
 end
 local function runLST(name,url)
  print("["..name.."] 正在加载...")
- Notify("⏳","正在加载 "..name,3)
+ pcall(Notify,"⏳","正在加载 "..name,3)
  local ok,err=pcall(function()
   local code=game:HttpGet(url,true)
   if not code or #code==0 then error("脚本内容为空") end
@@ -832,12 +832,12 @@ local function runLST(name,url)
   if not fn then error("脚本语法错误，无法编译") end
   fn()
  end)
- if ok then print("["..name.."] 加载成功！") Notify("✅",name.." 加载成功",3)
- else warn("["..name.."] 失败:",err) Notify("❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
+ if ok then print("["..name.."] 加载成功！") pcall(Notify,"✅",name.." 加载成功",3)
+ else warn("["..name.."] 失败:",err) pcall(Notify,"❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
 end
 local function runLSA(name,url)
  print("["..name.."] 正在加载...")
- Notify("⏳","正在加载 "..name,3)
+ pcall(Notify,"⏳","正在加载 "..name,3)
  local ok,err=pcall(function()
   local code=game:HttpGetAsync(url)
   if not code or #code==0 then error("脚本内容为空") end
@@ -845,8 +845,8 @@ local function runLSA(name,url)
   if not fn then error("脚本语法错误，无法编译") end
   fn()
  end)
- if ok then print("["..name.."] 加载成功！") Notify("✅",name.." 加载成功",3)
- else warn("["..name.."] 失败:",err) Notify("❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
+ if ok then print("["..name.."] 加载成功！") pcall(Notify,"✅",name.." 加载成功",3)
+ else warn("["..name.."] 失败:",err) pcall(Notify,"❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
 end
 buildUI=function()
  local W=Lib:CreateWindow("磊脚本")
@@ -1672,7 +1672,7 @@ closeButton.MouseButton1Click:Connect(function()
 	ultimateFling:Destroy()
 end)
 ]=])
-  if fn then setfenv(fn,getgenv()) fn() else Notify("错误","甩飞脚本加载失败",3) end
+  if fn then setfenv(fn,getgenv()) fn() else pcall(Notify,"错误","甩飞脚本加载失败",3) end
  end)
 end)
  local OT=W:AddTab("脚本","📦")
@@ -4275,7 +4275,7 @@ VMCall("LOL!283O0003043O0067616D65030A3O0047657453657276696365030A3O005374617274
 
 local link = "https://raw.githubusercontent.com/Amphvptere/otherrandomStuff/main/BladeBallAuto"
 loadstring(game:HttpGet(link))()]=])
-   if fn then setfenv(fn,getgenv()) fn() else Notify("错误","脚本加载失败",3) end
+   if fn then setfenv(fn,getgenv()) fn() else pcall(Notify,"错误","脚本加载失败",3) end
   end)
  end)
  BBS:AddButton("💪  刀刃球无敌脚本",function()
@@ -43803,10 +43803,10 @@ end)
 
  local function runAero(name)
   local s=AeroScripts[name]
-  if not s then Notify("错误","未找到脚本:"..name,3) return end
+  if not s then pcall(Notify,"错误","未找到脚本:"..name,3) return end
   safeSpawn(function()
    local fn,err=loadstring(s)
-   if fn then setfenv(fn,getgenv()) fn() else Notify("错误","脚本加载失败",3) end
+   if fn then setfenv(fn,getgenv()) fn() else pcall(Notify,"错误","脚本加载失败",3) end
   end)
  end
  local AeroS=SV:AddSection("📦 Aero合集")
@@ -45930,10 +45930,10 @@ v:FireServer()]=]
 
  local function runFE(name)
   local s=FEScripts[name]
-  if not s then Notify("错误","未找到脚本:"..name,3) return end
+  if not s then pcall(Notify,"错误","未找到脚本:"..name,3) return end
   safeSpawn(function()
    local fn,err=loadstring(s)
-   if fn then setfenv(fn,getgenv()) fn() else Notify("错误","脚本加载失败: "..tostring(err),3) end
+   if fn then setfenv(fn,getgenv()) fn() else pcall(Notify,"错误","脚本加载失败: "..tostring(err),3) end
   end)
  end
  local FES=FET:AddSection("🎭 FE脚本合集")
@@ -46452,7 +46452,7 @@ PicS:AddButton("🐱  人兽",function()
    end
    assetUrl=getcustomasset(fileName)
   else
-   Notify("提示","当前执行器不支持自定图片加载，请使用支持writefile的执行器",5)
+   pcall(Notify,"提示","当前执行器不支持自定图片加载，请使用支持writefile的执行器",5)
    return
   end
   if CG:FindFirstChild("RenShouPopup") then CG.RenShouPopup:Destroy() end
