@@ -777,20 +777,76 @@ function ESP:Disable()
  end
  self.D={} print("[ESP] 已关闭")
 end
+-- 通知函数
+local notifys={}
+local function Notify(title,content,dur)
+ dur=dur or 3
+ local sg=Instance.new("ScreenGui")
+ sg.Name="LeiNotify"..tostring(tick()) sg.ResetOnSpawn=false sg.IgnoreGuiInset=true sg.Parent=CG
+ local frame=Instance.new("Frame")
+ frame.Size=UDim2.new(0,280,0,0) frame.Position=UDim2.new(1,-310,1,-100)
+ frame.BackgroundColor3=Color3.fromRGB(30,30,40) frame.BorderSizePixel=0 frame.Parent=sg
+ frame.BackgroundTransparency=0.1
+ local mc=Instance.new("UICorner") mc.CornerRadius=UDim.new(0,8) mc.Parent=frame
+ local stroke=Instance.new("UIStroke") stroke.Color=Settings.Accent stroke.Thickness=1 stroke.Parent=frame
+ local tt=Instance.new("TextLabel")
+ tt.Size=UDim2.new(1,-20,0,22) tt.Position=UDim2.new(0,10,0,8)
+ tt.BackgroundTransparency=1 tt.Text=title tt.TextColor3=Settings.Accent
+ tt.Font=Enum.Font.GothamBold tt.TextSize=14 tt.TextXAlignment=Enum.TextXAlignment.Left tt.Parent=frame
+ local ct=Instance.new("TextLabel")
+ ct.Size=UDim2.new(1,-20,0,30) ct.Position=UDim2.new(0,10,0,32)
+ ct.BackgroundTransparency=1 ct.Text=content ct.TextColor3=Color3.fromRGB(220,220,230)
+ ct.Font=Enum.Font.Gotham ct.TextSize=12 ct.TextWrapped=true ct.TextXAlignment=Enum.TextXAlignment.Left ct.Parent=frame
+ frame.Size=UDim2.new(0,280,0,70)
+ table.insert(notifys,sg)
+ local yOff=#notifys*78
+ frame.Position=UDim2.new(1,-310,1,-yOff-90)
+ frame.Position=UDim2.new(1,310,1,-yOff-90)
+ TS:Create(frame,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Position=UDim2.new(1,-310,1,-yOff-90)}):Play()
+ task.delay(dur,function()
+  TS:Create(frame,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Position=UDim2.new(1,310,1,-yOff-90)}):Play()
+  task.wait(0.35) sg:Destroy()
+  for i,s in ipairs(notifys) do if s==sg then table.remove(notifys,i) break end end
+ end)
+end
 local function runLS(name,url)
  print("["..name.."] 正在加载...")
- local ok,err=pcall(function() loadstring(game:HttpGet(url))() end)
- if ok then print("["..name.."] 加载成功！") else warn("["..name.."] 失败:",err) end
+ Notify("⏳","正在加载 "..name,3)
+ local ok,err=pcall(function()
+  local code=game:HttpGet(url)
+  if not code or #code==0 then error("脚本内容为空") end
+  local fn=loadstring(code)
+  if not fn then error("脚本语法错误，无法编译") end
+  fn()
+ end)
+ if ok then print("["..name.."] 加载成功！") Notify("✅",name.." 加载成功",3)
+ else warn("["..name.."] 失败:",err) Notify("❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
 end
 local function runLST(name,url)
  print("["..name.."] 正在加载...")
- local ok,err=pcall(function() loadstring(game:HttpGet(url,true))() end)
- if ok then print("["..name.."] 加载成功！") else warn("["..name.."] 失败:",err) end
+ Notify("⏳","正在加载 "..name,3)
+ local ok,err=pcall(function()
+  local code=game:HttpGet(url,true)
+  if not code or #code==0 then error("脚本内容为空") end
+  local fn=loadstring(code)
+  if not fn then error("脚本语法错误，无法编译") end
+  fn()
+ end)
+ if ok then print("["..name.."] 加载成功！") Notify("✅",name.." 加载成功",3)
+ else warn("["..name.."] 失败:",err) Notify("❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
 end
 local function runLSA(name,url)
  print("["..name.."] 正在加载...")
- local ok,err=pcall(function() loadstring(game:HttpGetAsync(url))() end)
- if ok then print("["..name.."] 加载成功！") else warn("["..name.."] 失败:",err) end
+ Notify("⏳","正在加载 "..name,3)
+ local ok,err=pcall(function()
+  local code=game:HttpGetAsync(url)
+  if not code or #code==0 then error("脚本内容为空") end
+  local fn=loadstring(code)
+  if not fn then error("脚本语法错误，无法编译") end
+  fn()
+ end)
+ if ok then print("["..name.."] 加载成功！") Notify("✅",name.." 加载成功",3)
+ else warn("["..name.."] 失败:",err) Notify("❌",name.." 加载失败:"..tostring(err):sub(1,80),5) end
 end
 buildUI=function()
  local W=Lib:CreateWindow("磊脚本")
@@ -1647,7 +1703,7 @@ end)
  OS1:AddButton("📦  13.逆光脚本",function() runLS("13.逆光脚本","https://raw.githubusercontent.com/001-gyang/yingguang/DE/DE%20HUB.lua") end)
  OS1:AddButton("📦  14.DE HUB脚本",function() runLS("14.DE HUB脚本","https://raw.githubusercontent.com/001-gyang/yingguang/DE/DE%20HUB.lua") end)
  OS1:AddButton("📦  15.本脚本1",function() runLS("15.本脚本1","https://pastefy.app/N5P1BGT/raw") end)
- OS1:AddButton("📦  16.KG脚本",function() runLS("16.KG脚本","https://github.com/25-NIKGRAF/main/Zhang-Shuua.lua") end)
+ OS1:AddButton("📦  16.KG脚本",function() runLS("16.KG脚本","https://raw.githubusercontent.com/25-NIKGRAF/main/Zhang-Shuua.lua") end)
  OS1:AddButton("📦  17.APEX HUB脚本",function() runLS("17.APEX HUB脚本","https://api.luarmor.net/files/v3/loaders/b200427847354ec1a5931167334d8.lua") end)
  OS1:AddButton("📦  19.Xpro脚本",function() runLS("19.Xpro脚本","https://pastebin.com/raw/wr7n") end)
  OS1:AddButton("📦  20.导管脚本",function() runLS("20.导管脚本","https://raw.githubusercontent.com/CheekSB/X-pro/refs/heads/main/SBX(Pro).lua") end)
@@ -1655,7 +1711,6 @@ end)
  OS1:AddButton("📦  22.黄马脚本",function() runLS("22.黄马脚本","https://raw.githubusercontent.com/CNM1/Cheer/dasima/移动自动连跳.lua") end)
  OS1:AddButton("📦  23.大司命脚本",function() runLS("23.大司命脚本","https://raw.githubusercontent.com/CheekSB/Cheer/dasima/main/dasimaV6.txt") end)
  OS1:AddButton("📦  24.夜宁脚本",function() runLS("24.夜宁脚本","https://raw.githubusercontent.com/6XWRNTWL/dingding123hh/mg/main/lllllllllllll.lua") end)
- OS1:AddButton("📦  25.提子中心脚本",function() runLS("25.提子中心脚本","https://raw.githubusercontent.com/6XWRNTWL/") end)
  OS1:AddButton("📦  26.沙脚本1",function() runLS("26.沙脚本1","https://raw.githubusercontent.com/Yb666TX-Free-YDYS/main/ShuHUB.lua") end)
  OS1:AddButton("📦  27.沙脚本2",function() runLS("27.沙脚本2","https://raw.githubusercontent.com/Yb666TX-Free-YDYS/main/ShuHUB.lua") end)
  OS1:AddButton("📦  28.FMX脚本",function() runLS("28.FMX脚本","https://raw.githubusercontent.com/Yb666TX-Free-YDYS/main/FREE-TX-TEAM.lua") end)
@@ -1676,7 +1731,7 @@ end)
  OS1:AddButton("📦  47.WU HUB脚本",function() runLS("47.WU HUB脚本","https://pastefy.app/6W0mT9w/raw") end)
  OS1:AddButton("📦  48.Love-Lingdu脚本",function() runLS("48.Love-Lingdu脚本","https://raw.githubusercontent.com/114514khzh/1gm/Love-Lingdu/main/Love-Lingdu2.lua") end)
  OS1:AddButton("📦  49.健测本",function() runLS("49.健测本","https://raw.githubusercontent.com/smalldesion/wocaoaima/main/qq984206069.txt") end)
- OS1:AddButton("📦  50.SX HUB脚本",function() runLS("50.SX HUB脚本","https://gist.github.com/luarmor/refs/heads/loaders/87a844f2dfe535ccdb949218.lua") end)
+ OS1:AddButton("📦  50.SX HUB脚本",function() runLS("50.SX HUB脚本","https://gist.githubusercontent.com/luarmor/87a844f2dfe535ccdb949218/raw/loaders.lua") end)
  OS1:AddButton("📦  51.luarmor脚本",function() runLS("51.luarmor脚本","https://api.luarmor.net/files/v3/loaders/d370959ebdc8d38228b120434431045/raw") end)
  OS1:AddButton("📦  53.光脚本",function() runLS("53.光脚本","https://pastebin.com/raw/gemxHwXAT") end)
  OS1:AddButton("📦  55.画本脚本",function() runLS("55.画本脚本","https://raw.githubusercontent.com/tiasag/blue/PAINT/main/PAINT.lua") end)
@@ -1685,12 +1740,12 @@ end)
  OS1:AddButton("📦  58.西班牙脚本",function() runLS("58.西班牙脚本","https://raw.githubusercontent.com/5tw2hshf9-lx/spain/main/spainScript.lua") end)
  OS1:AddButton("📦  59.名脚本",function() runLS("59.名脚本","https://raw.githubusercontent.com/5tw2hshf9-lx/spain/main/旧Script-Forlaken.lua") end)
  OS1:AddButton("📦  60.ZARA脚本",function() runLS("60.ZARA脚本","https://pastefy.app/CQHR8d/raw") end)
- OS1:AddButton("📦  61.莫脚本",function() runLS("61.莫脚本","https://github.com/135246058625/Han/main/XK%20Hub.lua") end)
+ OS1:AddButton("📦  61.莫脚本",function() runLS("61.莫脚本","https://raw.githubusercontent.com/135246058625/Han/main/XK%20Hub.lua") end)
  OS1:AddButton("📦  62.神脚本",function() runLS("62.神脚本","https://raw.githubusercontent.com/135246058625/Han/main/XK%20Hub.lua") end)
  OS1:AddButton("📦  63.季风脚本",function() runLS("63.季风脚本","https://pastebin.com/raw/jP3P2b6b") end)
  OS1:AddButton("📦  64.神风脚本",function() runLS("64.神风脚本","https://raw.githubusercontent.com/0lithuania0/dvchmd/main/季风脚本%20测试版1.lua") end)
  OS1:AddButton("📦  65.后脚本",function() runLS("65.后脚本","https://raw.githubusercontent.com/edc521/-/main/我后悔了.lua") end)
- OS1:AddButton("📦  66.onic脚本",function() runLS("66.onic脚本","http://snowscript.xyz/snow/SnowScript") end)
+ OS1:AddButton("📦  66.onic脚本",function() runLS("66.onic脚本","https://snowscript.xyz/snow/SnowScript") end)
  OS1:AddButton("📦  67.91中心",function() runLS("91中心","https://raw.githubusercontent.com/odhdshhe/leng9191919191919191919191919191919191919191/refs/heads/main/91%E4%B8%AD%E5%BF%83.txt") end)
  OS1:AddButton("📦  68.落叶中心",function()
   safeSpawn(function()
@@ -3898,7 +3953,7 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
  end)
 YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https://raw.githubusercontent.com/XiaoXuAnZang/XKscript/refs/heads/main/GraceXJ.lua") end)
 YX:AddButton("🚚  亡命速递挂机(自动收集)",function() runLS("亡命速递挂机","https://raw.githubusercontent.com/SNSDARK/Scripts/refs/heads/main/Deadly%20Delivery.lua") end)
-YX:AddButton("😨  压力脚本",function() runLS("压力脚本","https://github.com/Drop56796/CreepyEyeHub/blob/main/obfuscate.lua?raw=true") end)
+YX:AddButton("😨  压力脚本",function() runLS("压力脚本","https://raw.githubusercontent.com/Drop56796/CreepyEyeHub/main/obfuscate.lua") end)
 YX:AddButton("💵  俄亥俄州捡印钞机",function() runLS("俄亥俄州捡印钞机","https://raw.githubusercontent.com/IIIlll1ll1/Cracks/main/AdvancedLogic_Crack.lua") end)
 -- 🚂 死铁轨合集
  local DRS=SV:AddSection("🚂 死铁轨合集")
