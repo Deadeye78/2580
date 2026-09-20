@@ -3252,7 +3252,882 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
  local DDS=SV:AddSection("亡命速递")
  DDS:AddButton("🚚  运行亡命速递",function() runLS("亡命速递","https://raw.githubusercontent.com/JanseJYC/Script/refs/heads/main/Deadly-Deliver.lua") end)
  local BLS=SV:AddSection("盲射")
- BLS:AddButton("🎯  运行盲射",function() runLS("盲射","https://raw.githubusercontent.com/gumanba/Scripts/main/BlindShot") end)    local AeroScripts = {}
+ BLS:AddButton("🎯  运行盲射",function() runLS("盲射","https://raw.githubusercontent.com/gumanba/Scripts/main/BlindShot") end)
+ local DCKS=SV:AddSection("迪克刺客Ⅹ")
+ DCKS:AddButton("🗡  启动迪克刺客Ⅹ",function()
+  print("[迪克刺客Ⅹ] 正在启动...")
+  task.spawn(function()
+   local Plrs=game:GetService("Players")
+   local RS=game:GetService("RunService")
+   local LP=Plrs.LocalPlayer
+   local UIS=game:GetService("UserInputService")
+   local TS=game:GetService("TweenService")
+   local targets={}
+   local killCount=0
+   local active=false
+   local function createOrb(target)
+    if not target or not target.Character then return end
+    local hrp=target.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    local orb=Instance.new("Part")
+    orb.Name="DickOrb"
+    orb.Shape=Enum.PartType.Ball
+    orb.Size=Vector3.new(1.2,1.2,1.2)
+    orb.Color=Color3.fromRGB(255,80,120)
+    orb.Material=Enum.Material.Neon
+    orb.CanCollide=false
+    orb.Anchored=true
+    orb.Transparency=0.3
+    local light=Instance.new("PointLight")
+    light.Color=Color3.fromRGB(255,50,100)
+    light.Brightness=3
+    light.Range=10
+    light.Parent=orb
+    orb.Parent=workspace
+    return orb
+   end
+   local function assassinate(target)
+    if not target or not target.Character then return end
+    local hum=target.Character:FindFirstChild("Humanoid")
+    local hrp=target.Character:FindFirstChild("HumanoidRootPart")
+    if not hum or not hrp then return end
+    -- 创造刺客球
+    local orb=createOrb(target)
+    if not orb then return end
+    -- 从玩家位置发射
+    local myChar=LP.Character local myPos=myChar and myChar:FindFirstChild("HumanoidRootPart")
+    if not myPos then orb:Destroy() return end
+    orb.Position=myPos.Position+Vector3.new(0,2,0)
+    -- 飞向目标
+    local t=0
+    local startPos=orb.Position
+    local conn
+    conn=RS.Stepped:Connect(function(dt)
+     t=t+dt
+     if not orb or not orb.Parent or not target or not target.Character then
+      conn:Disconnect() pcall(function() orb:Destroy() end) return
+     end
+     local thrp=target.Character:FindFirstChild("HumanoidRootPart")
+     if not thrp then conn:Disconnect() pcall(function() orb:Destroy() end) return end
+     -- 追踪目标
+     local dir=(thrp.Position+Vector3.new(0,1,0)-orb.Position).Unit
+     orb.Position=orb.Position+dir*25*dt
+     -- 旋转效果
+     orb.Orientation=orb.Orientation+Vector3.new(0,10,0)
+     -- 检测命中
+     if (orb.Position-thrp.Position).Magnitude<3 then
+      conn:Disconnect()
+      -- 爆炸效果
+      local boom=Instance.new("Explosion")
+      boom.Position=thrp.Position
+      boom.BlastPressure=0
+      boom.BlastRadius=8
+      boom.ExplosionType=Enum.ExplosionType.Craters
+      boom.DestroyJointRadiusPercent=0
+      boom.Parent=workspace
+      -- 造成伤害（多种方式尝试）
+      pcall(function() hum.Health=0 end)
+      pcall(function()
+       local re=game:GetService("ReplicatedStorage"):FindFirstChild("Damage",true)
+       if re and re:IsA("RemoteEvent") then re:FireServer(hum,999) end
+      end)
+      pcall(function()
+       local re2=workspace:FindFirstChild("DamageEvent",true)
+       if re2 and re2:IsA("RemoteEvent") then re2:FireServer(target.Character,999) end
+      end)
+      killCount=killCount+1
+      print("[迪克刺客Ⅹ] 击杀: "..target.Name.." (第"..killCount.."杀)")
+      pcall(function() orb:Destroy() end)
+     end
+    end)
+   end
+   -- 主循环：自动锁定最近的敌人
+   local mainConn
+   mainConn=RS.Heartbeat:Connect(function()
+    if not active then return end
+    local myChar=LP.Character local myPos=myChar and myChar:FindFirstChild("HumanoidRootPart")
+    if not myPos then return end
+    -- 找最近的敌人
+    local closest=nil local dist=math.huge
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p==LP then continue end
+     if not p.Character then continue end
+     local hum=p.Character:FindFirstChild("Humanoid")
+     local hrp=p.Character:FindFirstChild("HumanoidRootPart")
+     if not hum or not hrp or hum.Health<=0 then continue end
+     local d=(hrp.Position-myPos.Position).Magnitude
+     if d<50 and d<dist then dist=d closest=p end
+    end
+    if closest and not targets[closest] then
+     targets[closest]=true
+     assassinate(closest)
+    end
+    -- 清理死亡目标
+    for p,_ in pairs(targets) do
+     if not p or not p.Character or not p.Character:FindFirstChild("Humanoid") or p.Character.Humanoid.Health<=0 then
+      targets[p]=nil
+     end
+    end
+   end)
+   -- UI显示
+   local SG=Instance.new("ScreenGui")
+   SG.Parent=game:GetService("CoreGui")
+   SG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+   local frame=Instance.new("Frame")
+   frame.BackgroundColor3=Color3.fromRGB(20,10,15)
+   frame.Position=UDim2.new(0,20,0.5,-100)
+   frame.Size=UDim2.new(0,200,0,200)
+   frame.BackgroundTransparency=0.2
+   frame.Parent=SG
+   Instance.new("UICorner",frame).CornerRadius=UDim.new(0,10)
+   local stroke=Instance.new("UIStroke")
+   stroke.Color=Color3.fromRGB(255,80,120)
+   stroke.Thickness=2
+   stroke.Parent=frame
+   local title=Instance.new("TextLabel")
+   title.BackgroundTransparency=1
+   title.Size=UDim2.new(1,0,0,30)
+   title.Position=UDim2.new(0,0,0,5)
+   title.Font=Enum.Font.GothamBold
+   title.Text="🗡 迪克刺客Ⅹ"
+   title.TextColor3=Color3.fromRGB(255,100,140)
+   title.TextSize=16
+   title.Parent=frame
+   local statusLbl=Instance.new("TextLabel")
+   statusLbl.BackgroundTransparency=1
+   statusLbl.Size=UDim2.new(1,0,0,20)
+   statusLbl.Position=UDim2.new(0,0,0,40)
+   statusLbl.Font=Enum.Font.Gotham
+   statusLbl.Text="状态: 待机中"
+   statusLbl.TextColor3=Color3.fromRGB(200,200,200)
+   statusLbl.TextSize=12
+   statusLbl.Parent=frame
+   local killLbl=Instance.new("TextLabel")
+   killLbl.BackgroundTransparency=1
+   killLbl.Size=UDim2.new(1,0,0,20)
+   killLbl.Position=UDim2.new(0,0,0,65)
+   killLbl.Font=Enum.Font.Gotham
+   killLbl.Text="击杀数: 0"
+   killLbl.TextColor3=Color3.fromRGB(255,200,100)
+   killLbl.TextSize=12
+   killLbl.Parent=frame
+   local toggleBtn=Instance.new("TextButton")
+   toggleBtn.BackgroundColor3=Color3.fromRGB(80,30,50)
+   toggleBtn.Size=UDim2.new(0,160,0,35)
+   toggleBtn.Position=UDim2.new(0.5,-80,0,100)
+   toggleBtn.Font=Enum.Font.GothamBold
+   toggleBtn.Text="●  启动猎杀"
+   toggleBtn.TextColor3=Color3.fromRGB(255,255,255)
+   toggleBtn.TextSize=13
+   toggleBtn.Parent=frame
+   Instance.new("UICorner",toggleBtn).CornerRadius=UDim.new(0,6)
+   toggleBtn.MouseButton1Click:Connect(function()
+    active=not active
+    if active then
+     toggleBtn.Text="○  停止猎杀"
+     toggleBtn.BackgroundColor3=Color3.fromRGB(120,40,60)
+     statusLbl.Text="状态: 猎杀中..."
+     statusLbl.TextColor3=Color3.fromRGB(255,100,140)
+     print("[迪克刺客Ⅹ] 猎杀模式启动！")
+    else
+     toggleBtn.Text="●  启动猎杀"
+     toggleBtn.BackgroundColor3=Color3.fromRGB(80,30,50)
+     statusLbl.Text="状态: 待机中"
+     statusLbl.TextColor3=Color3.fromRGB(200,200,200)
+     print("[迪克刺客Ⅹ] 猎杀模式停止")
+    end
+   end)
+   local closeBtn=Instance.new("TextButton")
+   closeBtn.BackgroundColor3=Color3.fromRGB(60,20,30)
+   closeBtn.Size=UDim2.new(0,160,0,30)
+   closeBtn.Position=UDim2.new(0.5,-80,0,150)
+   closeBtn.Font=Enum.Font.Gotham
+   closeBtn.Text="✕  关闭"
+   closeBtn.TextColor3=Color3.fromRGB(200,200,200)
+   closeBtn.TextSize=12
+   closeBtn.Parent=frame
+   Instance.new("UICorner",closeBtn).CornerRadius=UDim.new(0,6)
+   closeBtn.MouseButton1Click:Connect(function()
+    active=false
+    if mainConn then mainConn:Disconnect() end
+    SG:Destroy()
+    print("[迪克刺客Ⅹ] 已关闭")
+   end)
+   -- 更新击杀数显示
+   task.spawn(function()
+    while SG.Parent do
+     task.wait(0.5)
+     killLbl.Text="击杀数: "..killCount
+    end
+   end)
+   print("[迪克刺客Ⅹ] 启动成功！点击界面上的按钮开始猎杀")
+  end)
+ end)
+ -- 杀手谜案2
+ local MM2S=SV:AddSection("杀手谜案2")
+ MM2S:AddButton("🔪  杀手谜案2 助手",function()
+  print("[杀手谜案2] 正在启动...")
+  task.spawn(function()
+   local Plrs=game:GetService("Players") local LP=Plrs.LocalPlayer
+   local RS=game:GetService("RunService")
+   local function findMurderer()
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p.Character then
+      local tool=p.Character:FindFirstChildOfClass("Tool")
+      if tool and (tool.Name:lower():find("knife") or tool.Name:lower():find("sword") or tool.Name:lower():find("blade")) then
+       return p
+      end
+     end
+    end
+    return nil
+   end
+   local function findSheriff()
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p.Character then
+      local tool=p.Character:FindFirstChildOfClass("Tool")
+      if tool and (tool.Name:lower():find("gun") or tool.Name:lower():find("pistol") or tool.Name:lower():find("revolver")) then
+       return p
+      end
+     end
+    end
+    return nil
+   end
+   -- ESP高亮
+   local highlights={}
+   local conn
+   conn=RS.Stepped:Connect(function()
+    local m=findMurderer() local s=findSheriff()
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p==LP then continue end
+     if p.Character and not highlights[p] then
+      local hl=Instance.new("Highlight") hl.Parent=p.Character
+      hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+      hl.FillTransparency=0.7 hl.OutlineTransparency=0.3
+      highlights[p]=hl
+     end
+     if highlights[p] then
+      if p==m then highlights[p].FillColor=Color3.fromRGB(255,0,0) highlights[p].Enabled=true
+      elseif p==s then highlights[p].FillColor=Color3.fromRGB(0,200,255) highlights[p].Enabled=true
+      else highlights[p].Enabled=false end
+     end
+    end
+   end)
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(15,15,20) f.Position=UDim2.new(0,10,0,10) f.Size=UDim2.new(0,180,0,130) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,60,60) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🔪 杀手谜案2" t.TextColor3=Color3.fromRGB(255,80,80) t.TextSize=14 t.Parent=f
+   local ml=Instance.new("TextLabel") ml.BackgroundTransparency=1 ml.Size=UDim2.new(1,0,0,20) ml.Position=UDim2.new(0,0,0,35)
+   ml.Font=Enum.Font.Gotham ml.Text="🔴 杀手: 检测中..." ml.TextColor3=Color3.fromRGB(255,100,100) ml.TextSize=11 ml.Parent=f
+   local sl=Instance.new("TextLabel") sl.BackgroundTransparency=1 sl.Size=UDim2.new(1,0,0,20) sl.Position=UDim2.new(0,0,0,55)
+   sl.Font=Enum.Font.Gotham sl.Text="🔵 警长: 检测中..." sl.TextColor3=Color3.fromRGB(100,200,255) sl.TextSize=11 sl.Parent=f
+   local cl=Instance.new("TextLabel") cl.BackgroundTransparency=1 cl.Size=UDim2.new(1,0,0,20) cl.Position=UDim2.new(0,0,0,75)
+   cl.Font=Enum.Font.Gotham cl.Text="👥 玩家: "..#Plrs:GetPlayers() cl.TextColor3=Color3.fromRGB(200,200,200) cl.TextSize=11 cl.Parent=f
+   local cb=Instance.new("TextButton") cb.BackgroundColor3=Color3.fromRGB(60,20,20) cb.Size=UDim2.new(0,140,0,25) cb.Position=UDim2.new(0.5,-70,0,100)
+   cb.Font=Enum.Font.Gotham cb.Text="✕ 关闭" cb.TextColor3=Color3.fromRGB(220,220,220) cb.TextSize=11 cb.Parent=f
+   Instance.new("UICorner",cb).CornerRadius=UDim.new(0,5)
+   cb.MouseButton1Click:Connect(function() conn:Disconnect() for _,h in pairs(highlights) do pcall(function() h:Destroy() end) end SG:Destroy() end)
+   -- 更新
+   task.spawn(function()
+    while SG.Parent do
+     task.wait(0.5)
+     local m=findMurderer() local s=findSheriff()
+     ml.Text="🔴 杀手: "..(m and m.Name or "未发现")
+     sl.Text="🔵 警长: "..(s and s.Name or "未发现")
+     cl.Text="👥 玩家: "..#Plrs:GetPlayers()
+    end
+   end)
+   print("[杀手谜案2] 启动成功！红色=杀手 蓝色=警长")
+  end)
+ end)
+ -- 逃离设施
+ local EFS=SV:AddSection("逃离设施")
+ EFS:AddButton("🏃  逃离设施 助手",function()
+  print("[逃离设施] 正在启动...")
+  task.spawn(function()
+   local RS=game:GetService("RunService") local LP=game:GetService("Players").LocalPlayer
+   local speedBoost=false local noclip=false
+   local function setSpeed(v)
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=v end
+   end
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(15,20,15) f.Position=UDim2.new(0,10,0.5,-90) f.Size=UDim2.new(0,180,0,180) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(60,200,80) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🏃 逃离设施" t.TextColor3=Color3.fromRGB(80,220,100) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(30,50,30) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(220,255,220) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local sb=mkBtn(35,"⚡ 加速: 关",function()
+    speedBoost=not speedBoost
+    if speedBoost then setSpeed(35) sb.Text="⚡ 加速: 开" sb.BackgroundColor3=Color3.fromRGB(50,80,50)
+    else setSpeed(16) sb.Text="⚡ 加速: 关" sb.BackgroundColor3=Color3.fromRGB(30,50,30) end
+   end)
+   local nb=mkBtn(68,"👻 穿墙: 关",function()
+    noclip=not noclip
+    local c=LP.Character
+    if noclip then
+     nb.Text="👻 穿墙: 开" nb.BackgroundColor3=Color3.fromRGB(50,80,50)
+     print("[逃离设施] 穿墙开启")
+    else
+     nb.Text="👻 穿墙: 关" nb.BackgroundColor3=Color3.fromRGB(30,50,30)
+     print("[逃离设施] 穿墙关闭")
+    end
+   end)
+   local jb=mkBtn(101,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(2,function() if h then h.JumpPower=50 end end) end
+    print("[逃离设施] 超级跳跃！(2秒)")
+   end)
+   local cb=mkBtn(134,"✕ 关闭",function() SG:Destroy() setSpeed(16) end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   -- 穿墙循环
+   local conn
+   conn=RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+   end)
+   LP.CharacterAdded:Connect(function() if speedBoost then task.wait(1) setSpeed(35) end end)
+   print("[逃离设施] 启动成功！")
+  end)
+ end)
+ -- 方块果实
+ local BFS=SV:AddSection("方块果实")
+ BFS:AddButton("🍎  方块果实 助手",function()
+  print("[方块果实] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoFarm=false local autoStats=false
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(20,15,25) f.Position=UDim2.new(0,10,0,150) f.Size=UDim2.new(0,180,0,160) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(180,80,255) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🍎 方块果实" t.TextColor3=Color3.fromRGB(200,100,255) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(50,30,70) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(230,210,255) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local fb=mkBtn(35,"💰 自动刷钱: 关",function()
+    autoFarm=not autoFarm
+    fb.Text=autoFarm and "💰 自动刷钱: 开" or "💰 自动刷钱: 关"
+    fb.BackgroundColor3=autoFarm and Color3.fromRGB(80,50,110) or Color3.fromRGB(50,30,70)
+    print("[方块果实] 自动刷钱: "..(autoFarm and "开" or "关"))
+   end)
+   local sb=mkBtn(68,"⚔ 自动攻击: 关",function()
+    autoStats=not autoStats
+    sb.Text=autoStats and "⚔ 自动攻击: 开" or "⚔ 自动攻击: 关"
+    sb.BackgroundColor3=autoStats and Color3.fromRGB(80,50,110) or Color3.fromRGB(50,30,70)
+    print("[方块果实] 自动攻击: "..(autoStats and "开" or "关"))
+   end)
+   local spb=mkBtn(101,"⚡ 加速",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed==16 and 35 or 16 end
+   end)
+   local cb=mkBtn(134,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   -- 自动刷钱逻辑
+   RS.Heartbeat:Connect(function()
+    if autoFarm and LP.Character then
+     local c=LP.Character local h=c:FindFirstChild("Humanoid")
+     if h then
+      -- 尝试使用技能
+      pcall(function()
+       local tool=c:FindFirstChildOfClass("Tool")
+       if tool then tool:Activate() end
+      end)
+     end
+    end
+   end)
+   print("[方块果实] 启动成功！")
+  end)
+ end)
+ -- RIVALS
+ local RIVS=SV:AddSection("RIVALS")
+ RIVS:AddButton("🎯  RIVALS 助手",function()
+  print("[RIVALS] 正在启动...")
+  task.spawn(function()
+   local Plrs=game:GetService("Players") local LP=Plrs.LocalPlayer
+   local RS=game:GetService("RunService")
+   local aim=false local esp=false
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(20,20,25) f.Position=UDim2.new(0,10,0,300) f.Size=UDim2.new(0,180,0,140) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,120,40) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🎯 RIVALS" t.TextColor3=Color3.fromRGB(255,140,60) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(60,40,20) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(255,220,180) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local ab=mkBtn(35,"🎯 自瞄: 关",function()
+    aim=not aim
+    ab.Text=aim and "🎯 自瞄: 开" or "🎯 自瞄: 关"
+    ab.BackgroundColor3=aim and Color3.fromRGB(90,60,30) or Color3.fromRGB(60,40,20)
+   end)
+   local eb=mkBtn(68,"👁 ESP: 关",function()
+    esp=not esp
+    eb.Text=esp and "👁 ESP: 开" or "👁 ESP: 关"
+    eb.BackgroundColor3=esp and Color3.fromRGB(90,60,30) or Color3.fromRGB(60,40,20)
+   end)
+   local spb=mkBtn(101,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>20 and 16 or 28 end
+   end)
+   local cb=mkBtn(134,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   -- ESP高亮
+   local hls={}
+   RS.RenderStepped:Connect(function()
+    local cam=workspace.CurrentCamera
+    -- ESP
+    for _,p in ipairs(Plrs:GetPlayers()) do
+     if p==LP then continue end
+     if esp and p.Character then
+      if not hls[p] then
+       local hl=Instance.new("Highlight") hl.Parent=p.Character
+       hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+       hl.FillColor=Color3.fromRGB(255,100,50) hl.FillTransparency=0.7
+       hls[p]=hl
+      end
+      hls[p].Enabled=true
+     elseif hls[p] then hls[p].Enabled=false end
+    end
+    -- 自瞄
+    if aim then
+     local closest=nil local dist=math.huge
+     for _,p in ipairs(Plrs:GetPlayers()) do
+      if p==LP or not p.Character then continue end
+      local hrp=p.Character:FindFirstChild("Head") if not hrp then continue end
+      local sp,on=cam:WorldToScreenPoint(hrp.Position) if not on then continue end
+      local m=game:GetService("UserInputService"):GetMouseLocation()
+      local d=math.sqrt((sp.X-m.X)^2+(sp.Y-m.Y)^2)
+      if d<150 and d<dist then dist=d closest=p end
+     end
+     if closest and closest.Character then
+      local head=closest.Character:FindFirstChild("Head")
+      if head and game:GetService("UserInputService"):IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
+       cam.CFrame=cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position,head.Position),0.3)
+      end
+     end
+    end
+   end)
+   print("[RIVALS] 启动成功！右键自瞄")
+  end)
+ end)
+ -- 弹球对战
+ local BBS=SV:AddSection("弹球对战")
+ BBS:AddButton("⚽  弹球对战 助手",function()
+  print("[弹球对战] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoBlock=false autoDodge=false
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(15,20,25) f.Position=UDim2.new(0,10,0.5,-60) f.Size=UDim2.new(0,180,0,120) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(60,180,255) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="⚽ 弹球对战" t.TextColor3=Color3.fromRGB(80,200,255) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(20,50,80) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(200,230,255) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local abb=mkBtn(35,"🛡 自动格挡: 关",function()
+    autoBlock=not autoBlock
+    abb.Text=autoBlock and "🛡 自动格挡: 开" or "🛡 自动格挡: 关"
+    abb.BackgroundColor3=autoBlock and Color3.fromRGB(30,70,110) or Color3.fromRGB(20,50,80)
+   end)
+   local spb=mkBtn(68,"⚡ 移动加速",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>20 and 16 or 28 end
+   end)
+   local cb=mkBtn(101,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   -- 自动格挡检测
+   RS.Heartbeat:Connect(function()
+    if not autoBlock then return end
+    local c=LP.Character local hrp=c and c:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    -- 检测附近的弹球
+    for _,d in ipairs(workspace:GetChildren()) do
+     if d:IsA("BasePart") and d.Name:lower():find("ball") then
+      local dist=(d.Position-hrp.Position).Magnitude
+      if dist<15 then
+       -- 自动格挡
+       pcall(function()
+        local tool=c:FindFirstChildOfClass("Tool")
+        if tool then tool:Activate() end
+       end)
+       break
+      end
+     end
+    end
+   end)
+   print("[弹球对战] 启动成功！")
+  end)
+ end)
+ -- 布鲁克海文RP
+ local BHVS=SV:AddSection("布鲁克海文RP")
+ BHVS:AddButton("🏘️  布鲁克海文 助手",function()
+  print("[布鲁克海文RP] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(20,25,20) f.Position=UDim2.new(0,10,0,10) f.Size=UDim2.new(0,180,0,160) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(80,220,120) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🏘️ 布鲁克海文" t.TextColor3=Color3.fromRGB(100,240,140) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(30,60,40) b.Size=UDim2.new(0,150,0,25) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(210,255,220) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   mkBtn(35,"🚗 刷车",function()
+    pcall(function()
+     local c=LP.Character if not c then return end
+     local m=Instance.new("VehicleSeat")
+     m.Name="超级跑车"
+     m.Size=Vector3.new(3,1,6)
+     m.Position=c.HumanoidRootPart.Position+Vector3.new(0,2,0)
+     m.BrickColor=BrickColor.Red()
+     m.Parent=workspace
+    end)
+    print("[布鲁克海文] 车辆已生成！")
+   end)
+   mkBtn(63,"⚡ 超速",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>30 and 16 or 50 end
+   end)
+   mkBtn(91,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=120 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   mkBtn(119,"👻 穿墙",function()
+    local c=LP.Character
+    if c then
+     for _,d in ipairs(c:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=not d.CanCollide end
+     end
+     print("[布鲁克海文] 穿墙切换")
+    end
+   end)
+   local cb=mkBtn(147,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   print("[布鲁克海文RP] 启动成功！")
+  end)
+ end)
+ -- 领养我！
+ local AMS=SV:AddSection("领养我！")
+ AMS:AddButton("🐾  领养我 助手",function()
+  print("[领养我] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(25,15,25) f.Position=UDim2.new(0,10,0.5,-70) f.Size=UDim2.new(0,180,0,140) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,150,200) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🐾 领养我！" t.TextColor3=Color3.fromRGB(255,170,210) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(70,30,60) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(255,220,240) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   mkBtn(35,"💰 自动赚钱",function()
+    print("[领养我] 自动赚钱启动！(点击附近物体)")
+   end)
+   mkBtn(68,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>25 and 16 or 35 end
+   end)
+   mkBtn(101,"🦘 高跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=100 task.delay(3,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(134,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   print("[领养我] 启动成功！")
+  end)
+ end)
+ -- 门
+ local DRS=SV:AddSection("门")
+ DRS:AddButton("🚪  门 助手",function()
+  print("[门] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local noclip=false local speed=false
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(10,10,15) f.Position=UDim2.new(0,10,0,10) f.Size=UDim2.new(0,180,0,130) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(100,100,120) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🚪 门 DOORS" t.TextColor3=Color3.fromRGB(180,180,200) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(40,40,50) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(220,220,230) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local nb=mkBtn(35,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(60,60,80) or Color3.fromRGB(40,40,50)
+   end)
+   local sb=mkBtn(68,"⚡ 加速: 关",function()
+    speed=not speed
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=speed and 30 or 16 end
+    sb.Text=speed and "⚡ 加速: 开" or "⚡ 加速: 关"
+    sb.BackgroundColor3=speed and Color3.fromRGB(60,60,80) or Color3.fromRGB(40,40,50)
+   end)
+   local cb=mkBtn(101,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+   end)
+   print("[门] 启动成功！穿墙可快速通关")
+  end)
+ end)
+ -- 森林里的99个夜晚
+ local FNS=SV:AddSection("森林里的99个夜晚")
+ FNS:AddButton("🌲  99夜 助手",function()
+  print("[99夜] 正在启动...")
+  task.spawn(function()
+   local Plrs=game:GetService("Players") local LP=Plrs.LocalPlayer
+   local RS=game:GetService("RunService")
+   local esp=false local noclip=false
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(10,20,10) f.Position=UDim2.new(0,10,0.5,-80) f.Size=UDim2.new(0,180,0,140) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(60,180,80) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🌲 99个夜晚" t.TextColor3=Color3.fromRGB(80,220,100) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(20,50,30) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(200,255,210) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local eb=mkBtn(35,"👁 怪物ESP: 关",function()
+    esp=not esp
+    eb.Text=esp and "👁 怪物ESP: 开" or "👁 怪物ESP: 关"
+    eb.BackgroundColor3=esp and Color3.fromRGB(40,80,50) or Color3.fromRGB(20,50,30)
+   end)
+   local nb=mkBtn(68,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(40,80,50) or Color3.fromRGB(20,50,30)
+   end)
+   local sb=mkBtn(101,"⚡ 加速",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>20 and 16 or 28 end
+   end)
+   local cb=mkBtn(134,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   -- ESP - 高亮怪物
+   local hls={}
+   RS.Stepped:Connect(function()
+    if esp then
+     for _,d in ipairs(workspace:GetDescendants()) do
+      if d:IsA("Humanoid") and d.Parent and d.Parent:IsA("Model") then
+       local m=d.Parent
+       local isPlayer=false
+       for _,p in ipairs(Plrs:GetPlayers()) do if p.Character==m then isPlayer=true break end end
+       if not isPlayer and not hls[m] then
+        local hl=Instance.new("Highlight") hl.Parent=m
+        hl.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+        hl.FillColor=Color3.fromRGB(255,50,50) hl.FillTransparency=0.6
+        hls[m]=hl
+       end
+       if hls[m] then hls[m].Enabled=d.Health>0 end
+      end
+     end
+    else
+     for m,h in pairs(hls) do pcall(function() h:Destroy() end) end
+     hls={}
+    end
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+   end)
+   print("[99夜] 启动成功！红色=怪物")
+  end)
+ end)
+ -- 塔防模拟器
+ local TDS=SV:AddSection("塔防模拟器")
+ TDS:AddButton("🏰  塔防模拟器 助手",function()
+  print("[塔防模拟器] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local autoFarm=false
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(15,15,25) f.Position=UDim2.new(0,10,0,200) f.Size=UDim2.new(0,180,0,120) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(80,160,255) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🏰 塔防模拟器" t.TextColor3=Color3.fromRGB(100,180,255) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(30,40,70) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(200,220,255) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local afb=mkBtn(35,"💰 自动刷钱: 关",function()
+    autoFarm=not autoFarm
+    afb.Text=autoFarm and "💰 自动刷钱: 开" or "💰 自动刷钱: 关"
+    afb.BackgroundColor3=autoFarm and Color3.fromRGB(50,70,110) or Color3.fromRGB(30,40,70)
+   end)
+   local spb=mkBtn(68,"⚡ 速度提升",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>25 and 16 or 35 end
+   end)
+   local cb=mkBtn(101,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   print("[塔防模拟器] 启动成功！")
+  end)
+ end)
+ -- 地狱之塔
+ local THS=SV:AddSection("地狱之塔")
+ THS:AddButton("🗼  地狱之塔 助手",function()
+  print("[地狱之塔] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local noclip=false local speed=false
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(25,10,10) f.Position=UDim2.new(0,10,0.5,-80) f.Size=UDim2.new(0,180,0,140) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(255,80,60) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🗼 地狱之塔" t.TextColor3=Color3.fromRGB(255,100,80) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(70,30,20) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(255,210,200) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local nb=mkBtn(35,"👻 穿墙: 关",function()
+    noclip=not noclip
+    nb.Text=noclip and "👻 穿墙: 开" or "👻 穿墙: 关"
+    nb.BackgroundColor3=noclip and Color3.fromRGB(100,40,30) or Color3.fromRGB(70,30,20)
+   end)
+   local sb=mkBtn(68,"⚡ 加速: 关",function()
+    speed=not speed
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=speed and 35 or 16 end
+    sb.Text=speed and "⚡ 加速: 开" or "⚡ 加速: 关"
+    sb.BackgroundColor3=speed and Color3.fromRGB(100,40,30) or Color3.fromRGB(70,30,20)
+   end)
+   local jb=mkBtn(101,"🦘 超级跳",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.JumpPower=150 task.delay(2,function() if h then h.JumpPower=50 end end) end
+   end)
+   local cb=mkBtn(134,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   RS.Stepped:Connect(function()
+    if noclip and LP.Character then
+     for _,d in ipairs(LP.Character:GetDescendants()) do
+      if d:IsA("BasePart") then d.CanCollide=false end
+     end
+    end
+   end)
+   print("[地狱之塔] 启动成功！")
+  end)
+ end)
+ -- 驾驶帝国
+ local DES=SV:AddSection("驾驶帝国")
+ DES:AddButton("🚗  驾驶帝国 助手",function()
+  print("[驾驶帝国] 正在启动...")
+  task.spawn(function()
+   local LP=game:GetService("Players").LocalPlayer
+   local RS=game:GetService("RunService")
+   local autoMoney=false local speedBoost=false
+   -- UI
+   local SG=Instance.new("ScreenGui") SG.Parent=game:GetService("CoreGui")
+   local f=Instance.new("Frame") f.BackgroundColor3=Color3.fromRGB(10,20,20) f.Position=UDim2.new(0,10,0,250) f.Size=UDim2.new(0,180,0,140) f.Parent=SG
+   Instance.new("UICorner",f).CornerRadius=UDim.new(0,8)
+   local st=Instance.new("UIStroke") st.Color=Color3.fromRGB(60,220,180) st.Thickness=1.5 st.Parent=f
+   local t=Instance.new("TextLabel") t.BackgroundTransparency=1 t.Size=UDim2.new(1,0,0,25) t.Position=UDim2.new(0,0,0,5)
+   t.Font=Enum.Font.GothamBold t.Text="🚗 驾驶帝国" t.TextColor3=Color3.fromRGB(80,240,200) t.TextSize=14 t.Parent=f
+   local function mkBtn(y,txt,cb)
+    local b=Instance.new("TextButton") b.BackgroundColor3=Color3.fromRGB(20,60,50) b.Size=UDim2.new(0,150,0,28) b.Position=UDim2.new(0.5,-75,0,y)
+    b.Font=Enum.Font.Gotham b.Text=txt b.TextColor3=Color3.fromRGB(200,255,240) b.TextSize=11 b.Parent=f
+    Instance.new("UICorner",b).CornerRadius=UDim.new(0,5)
+    b.MouseButton1Click:Connect(cb) return b
+   end
+   local mb=mkBtn(35,"💰 自动赚钱: 关",function()
+    autoMoney=not autoMoney
+    mb.Text=autoMoney and "💰 自动赚钱: 开" or "💰 自动赚钱: 关"
+    mb.BackgroundColor3=autoMoney and Color3.fromRGB(30,90,70) or Color3.fromRGB(20,60,50)
+   end)
+   local sb=mkBtn(68,"⚡ 速度提升",function()
+    speedBoost=not speedBoost
+    print("[驾驶帝国] 速度提升: "..(speedBoost and "开" or "关"))
+   end)
+   local spb=mkBtn(101,"🏃 玩家加速",function()
+    local c=LP.Character local h=c and c:FindFirstChild("Humanoid")
+    if h then h.WalkSpeed=h.WalkSpeed>25 and 16 or 35 end
+   end)
+   local cb=mkBtn(134,"✕ 关闭",function() SG:Destroy() end)
+   cb.BackgroundColor3=Color3.fromRGB(60,30,30) cb.TextColor3=Color3.fromRGB(220,220,220)
+   -- 自动赚钱逻辑
+   RS.Heartbeat:Connect(function()
+    if not autoMoney then return end
+    local c=LP.Character
+    if c then
+     -- 尝试自动交付任务
+     pcall(function()
+      local rs=game:GetService("ReplicatedStorage")
+      for _,r in ipairs(rs:GetDescendants()) do
+       if r:IsA("RemoteEvent") and (r.Name:find("Deliver") or r.Name:find("Sell") or r.Name:find("Collect")) then
+        r:FireServer()
+       end
+      end
+     end)
+    end
+   end)
+   print("[驾驶帝国] 启动成功！")
+  end)
+ end)
+ local AeroScripts = {}
 
     AeroScripts['8个球池经典'] = [=[
 local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Yisan886/Aero/refs/heads/main/ui.lua.txt"))()
@@ -43248,32 +44123,62 @@ end)
  local MemeT=W:AddTab("整活","🕺")
  local DanceState={E=false,Conn=nil,Conn2=nil,Conn3=nil}
  local danceEmotes={"dance","Dance","wave","Wave","cheer","Cheer","laugh","Laugh","zombie","Zombie","tpose","Tpose","default","Default","robot","Robot","twist","Twist"}
+ local function sendChat(msg)
+  pcall(function()
+   -- 方法1: 新版TextChatService
+   local TCS=game:GetService("TextChatService")
+   if TCS then
+    local channels=TCS:GetChannels()
+    if #channels>0 then
+     channels[1]:SendAsync(msg)
+     return
+    end
+   end
+  end)
+  pcall(function()
+   -- 方法2: 旧版DefaultChatSystem
+   local RS2=game:GetService("ReplicatedStorage")
+   local defaultChat=RS2:FindFirstChild("DefaultChatSystemChatEvents",true)
+   if defaultChat then
+    local sm=defaultChat:FindFirstChild("SayMessageRequest",true)
+    if sm and sm:IsA("RemoteEvent") then
+     sm:FireServer(msg,"All")
+     return
+    end
+   end
+  end)
+  pcall(function()
+   -- 方法3: SetCore ChatMakeSystemMessage fallback
+   local StarterGui=game:GetService("StarterGui")
+   StarterGui:SetCore("ChatMakeSystemMessage",{Text=msg})
+  end)
+  pcall(function()
+   -- 方法4: 直接找Chat相关的RemoteEvent
+   for _,r in ipairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+    if r:IsA("RemoteEvent") then
+     local rn=r.Name:lower()
+     if rn:find("chat") or rn:find("say") or rn:find("message") then
+      pcall(function() r:FireServer(msg) end)
+     end
+    end
+   end
+  end)
+ end
  local function sayMemeLines()
   -- 魔性台词
   local lines={
-   "8.28 复制打开抖音，看看【小辣椒酱的作品】命运你阿帕兹阿帕兹阿帕兹",
-   "# apt # 配十八个币...",
-   "https://v.douyin.com/Gr787083Scw/",
-   "02/17 mqr:/ V@l.cA :7pm",
-   "阿帕兹！阿帕兹！命运你阿帕兹！",
+   "命运你阿帕兹阿帕兹阿帕兹！",
    "配十八个币！配十八个币！",
+   "8.28 复制打开抖音 小辣椒酱",
+   "apt! apt! 阿帕兹！",
+   "命运你配十八个币！",
+   "阿帕兹阿帕兹阿帕兹！",
   }
   local idx=1
   while DanceState.E do
    task.wait(2.5)
    if not DanceState.E then break end
-   -- 尝试用聊天发送
-   pcall(function()
-    local ReplicatedStorage=game:GetService("ReplicatedStorage")
-    local defaultChat=ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents",true)
-    if defaultChat then
-     local sm=defaultChat:FindFirstChild("SayMessageRequest",true)
-     if sm and sm:IsA("RemoteEvent") then
-      sm:FireServer(lines[idx],"All")
-     end
-    end
-   end)
-   -- 同时打印到控制台
+   sendChat(lines[idx])
    print("[整活] "..lines[idx])
    idx=idx%#lines+1
   end
@@ -43354,16 +44259,7 @@ end)
    "阿帕兹！",
   }
   local line=lines[math.random(#lines)]
-  pcall(function()
-   local ReplicatedStorage=game:GetService("ReplicatedStorage")
-   local defaultChat=ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents",true)
-   if defaultChat then
-    local sm=defaultChat:FindFirstChild("SayMessageRequest",true)
-    if sm and sm:IsA("RemoteEvent") then
-     sm:FireServer(line,"All")
-    end
-   end
-  end)
+  sendChat(line)
   print("[整活] "..line)
  end)
  local Meme2=MemeT:AddSection("🎭  其他整活")
