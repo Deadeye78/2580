@@ -101,6 +101,7 @@ RS.RenderStepped:Connect(function()
   end
  end
 end)
+local buildUI=nil
 local function setPct(p,s)
  if p<0 then p=0 end if p>100 then p=100 end
  TS:Create(PB,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{Size=UDim2.new(p/100,0,1,0)}):Play()
@@ -158,7 +159,6 @@ task.spawn(function()
  TS:Create(LB,TweenInfo.new(0.45,Enum.EasingStyle.Quad),{BackgroundTransparency=1}):Play()
  task.wait(0.45) LG:Destroy()
 end)
-local buildUI=nil
 local Lib={}
 local function drag(gui,handle)
  local dg,di,ds,sp=false,nil,nil,nil
