@@ -181,7 +181,7 @@ function Lib:CreateWindow(title)
   Instance.new("UICorner",btn).CornerRadius=UDim.new(0,6)
   local BP=Instance.new("UIPadding") BP.Parent=btn BP.PaddingLeft=UDim.new(0,12)
   local pg=Instance.new("Frame") pg.Parent=PC pg.BackgroundTransparency=1 pg.Size=UDim2.new(1,0,1,0) pg.Visible=false pg.ZIndex=2
-  local PL=Instance.new("UIListLayout") PL.Parent=pg PL.Padding=UDim2.new(0,8) PL.HorizontalAlignment=Enum.HorizontalAlignment.Center PL.VerticalAlignment=Enum.VerticalAlignment.Top
+  local PL=Instance.new("UIListLayout") PL.Parent=pg PL.Padding=UDim.new(0,8) PL.HorizontalAlignment=Enum.HorizontalAlignment.Center PL.VerticalAlignment=Enum.VerticalAlignment.Top
   local PP=Instance.new("UIPadding") PP.Parent=pg PP.PaddingTop=UDim.new(0,12) PP.PaddingBottom=UDim.new(0,12) PP.PaddingLeft=UDim.new(0,12) PP.PaddingRight=UDim.new(0,12)
   if #pages==0 then btn.BackgroundColor3=Color3.fromRGB(Settings.Accent.R*40,Settings.Accent.G*40,Settings.Accent.B*40) btn.TextColor3=Settings.Accent pg.Visible=true cur=pg end
   btn.MouseEnter:Connect(function() if cur~=pg then TS:Create(btn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(34,34,42)}):Play() end end)
