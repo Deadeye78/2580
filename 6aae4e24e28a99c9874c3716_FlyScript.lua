@@ -2,69 +2,94 @@ local TS=game:GetService("TweenService") local UIS=game:GetService("UserInputSer
 local RS=game:GetService("RunService") local Plrs=game:GetService("Players")
 local LP=Plrs.LocalPlayer local CG=game:GetService("CoreGui")
 local cam=workspace.CurrentCamera
+local Settings={Accent=Color3.fromRGB(100,200,255),BGImg="",BGT=0.3}
 local LG=Instance.new("ScreenGui") LG.Name="LS_Load" LG.Parent=CG LG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-local LB=Instance.new("Frame") LB.Parent=LG LB.BackgroundColor3=Color3.fromRGB(10,10,10) LB.Size=UDim2.new(1,0,1,0) LB.ZIndex=1 LB.BackgroundTransparency=1
-local LF=Instance.new("Frame") LF.Parent=LG LF.BackgroundColor3=Color3.fromRGB(20,20,20) LF.Position=UDim2.new(0.5,-180,0.5,-100) LF.Size=UDim2.new(0,360,0,200) LF.ZIndex=2 LF.BackgroundTransparency=1
-Instance.new("UICorner",LF).CornerRadius=UDim.new(0,10)
-local TL=Instance.new("TextLabel") TL.Parent=LF TL.BackgroundTransparency=1 TL.Position=UDim2.new(0,0,0,35) TL.Size=UDim2.new(1,0,0,40)
-TL.Font=Enum.Font.GothamBold TL.Text="磊脚本" TL.TextColor3=Color3.fromRGB(255,255,255) TL.TextSize=32 TL.ZIndex=3 TL.TextTransparency=1
-local SL=Instance.new("TextLabel") SL.Parent=LF SL.BackgroundTransparency=1 SL.Position=UDim2.new(0,0,0,78) SL.Size=UDim2.new(1,0,0,20)
-SL.Font=Enum.Font.Gotham SL.Text="Lei Script Loading..." SL.TextColor3=Color3.fromRGB(150,150,150) SL.TextSize=13 SL.ZIndex=3 SL.TextTransparency=1
-local PBg=Instance.new("Frame") PBg.Parent=LF PBg.BackgroundColor3=Color3.fromRGB(40,40,40) PBg.Position=UDim2.new(0.5,-130,0,120) PBg.Size=UDim2.new(0,260,0,6) PBg.ZIndex=3 PBg.BackgroundTransparency=1
-Instance.new("UICorner",PBg).CornerRadius=UDim.new(0,3)
-local PB=Instance.new("Frame") PB.Parent=PBg PB.BackgroundColor3=Color3.fromRGB(100,200,255) PB.Size=UDim2.new(0,0,1,0) PB.ZIndex=4
-Instance.new("UICorner",PB).CornerRadius=UDim.new(0,3)
-local PT=Instance.new("TextLabel") PT.Parent=LF PT.BackgroundTransparency=1 PT.Position=UDim2.new(0,0,0,145) PT.Size=UDim2.new(1,0,0,18)
-PT.Font=Enum.Font.Gotham PT.Text="0%" PT.TextColor3=Color3.fromRGB(180,180,180) PT.TextSize=12 PT.ZIndex=3 PT.TextTransparency=1
-local ST=Instance.new("TextLabel") ST.Parent=LF ST.BackgroundTransparency=1 ST.Position=UDim2.new(0,0,0,168) ST.Size=UDim2.new(1,0,0,16)
-ST.Font=Enum.Font.Gotham ST.Text="正在初始化..." ST.TextColor3=Color3.fromRGB(120,120,120) ST.TextSize=11 ST.ZIndex=3 ST.TextTransparency=1
-local NT=Instance.new("TextLabel") NT.Parent=LF NT.BackgroundTransparency=1 NT.Position=UDim2.new(0,0,1,-28) NT.Size=UDim2.new(1,0,0,20)
-NT.Font=Enum.Font.GothamSemibold NT.Text="📢 此脚本由 TRAE 制造，完全免费，如付费购买请向买家退款" NT.TextColor3=Color3.fromRGB(255,200,80) NT.TextSize=11 NT.ZIndex=3 NT.TextTransparency=1
+local LB=Instance.new("Frame") LB.Parent=LG LB.BackgroundColor3=Color3.fromRGB(5,5,10) LB.Size=UDim2.new(1,0,1,0) LB.ZIndex=1 LB.BackgroundTransparency=1
+local LG2=Instance.new("Frame") LG2.Parent=LB LG2.BackgroundTransparency=1 LG2.Size=UDim2.new(1,0,1,0) LG2.ZIndex=2
+for i=1,30 do
+ local p=Instance.new("Frame") p.Parent=LG2 p.BackgroundColor3=Color3.fromRGB(100,200,255)
+ p.Size=UDim2.new(0,math.random(2,4),0,math.random(2,4)) p.Position=UDim2.new(math.random(),0,math.random(),0)
+ p.BackgroundTransparency=math.random(70,90)/100 p.ZIndex=2 Instance.new("UICorner",p).CornerRadius=UDim.new(1,0)
+ p.Name="P"..i
+end
+local LF=Instance.new("Frame") LF.Parent=LG LF.BackgroundColor3=Color3.fromRGB(15,15,20) LF.Position=UDim2.new(0.5,-200,0.5,-120) LF.Size=UDim2.new(0,400,0,240) LF.ZIndex=3 LF.BackgroundTransparency=1
+Instance.new("UICorner",LF).CornerRadius=UDim.new(0,16)
+local Glow=Instance.new("Frame") Glow.Parent=LF Glow.BackgroundTransparency=1 Glow.Size=UDim2.new(1,40,1,40) Glow.Position=UDim2.new(0,-20,0,-20) Glow.ZIndex=2
+local UIStroke=Instance.new("UIStroke") UIStroke.Parent=LF UIStroke.Thickness=1.5 UIStroke.Transparency=0.7 UIStroke.Color=Color3.fromRGB(100,200,255) UIStroke.LineJoinMode=Enum.LineJoinMode.Round
+local TL=Instance.new("TextLabel") TL.Parent=LF TL.BackgroundTransparency=1 TL.Position=UDim2.new(0,0,0,40) TL.Size=UDim2.new(1,0,0,48)
+TL.Font=Enum.Font.GothamBold TL.Text="磊脚本" TL.TextColor3=Color3.fromRGB(255,255,255) TL.TextSize=40 TL.ZIndex=4 TL.TextTransparency=1
+local TS2=Instance.new("UIStroke") TS2.Parent=TL TS2.Thickness=2 TS2.Transparency=0.8 TS2.Color=Color3.fromRGB(100,200,255)
+local SL=Instance.new("TextLabel") SL.Parent=LF SL.BackgroundTransparency=1 SL.Position=UDim2.new(0,0,0,92) SL.Size=UDim2.new(1,0,0,22)
+SL.Font=Enum.Font.Gotham SL.Text="LEI SCRIPT PREMIUM" SL.TextColor3=Color3.fromRGB(150,180,220) SL.TextSize=12 SL.ZIndex=4 SL.TextTransparency=1
+local PBg=Instance.new("Frame") PBg.Parent=LF PBg.BackgroundColor3=Color3.fromRGB(25,25,35) PBg.Position=UDim2.new(0.5,-140,0,140) PBg.Size=UDim2.new(0,280,0,8) PBg.ZIndex=4 PBg.BackgroundTransparency=1
+Instance.new("UICorner",PBg).CornerRadius=UDim.new(0,4)
+local PB=Instance.new("Frame") PB.Parent=PBg PB.BackgroundColor3=Color3.fromRGB(100,200,255) PB.Size=UDim2.new(0,0,1,0) PB.ZIndex=5
+Instance.new("UICorner",PB).CornerRadius=UDim.new(0,4)
+local PG=Instance.new("UIGradient") PG.Parent=PB PG.Rotation=90 PG.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.5,0.3),NumberSequenceKeypoint.new(1,0)})
+local Shine=Instance.new("Frame") Shine.Parent=PB Shine.BackgroundColor3=Color3.fromRGB(255,255,255) Shine.BackgroundTransparency=0.5 Shine.Size=UDim2.new(0,30,1,0) Shine.Position=UDim2.new(-0.2,0,0,0) Shine.ZIndex=6
+Instance.new("UICorner",Shine).CornerRadius=UDim.new(0,2)
+local PT=Instance.new("TextLabel") PT.Parent=LF PT.BackgroundTransparency=1 PT.Position=UDim2.new(0,0,0,165) PT.Size=UDim2.new(1,0,0,20)
+PT.Font=Enum.Font.GothamBold PT.Text="0%" PT.TextColor3=Color3.fromRGB(200,220,255) PT.TextSize=14 PT.ZIndex=4 PT.TextTransparency=1
+local ST=Instance.new("TextLabel") ST.Parent=LF ST.BackgroundTransparency=1 ST.Position=UDim2.new(0,0,0,192) ST.Size=UDim2.new(1,0,0,18)
+ST.Font=Enum.Font.Gotham ST.Text="正在初始化..." ST.TextColor3=Color3.fromRGB(140,160,200) ST.TextSize=12 ST.ZIndex=4 ST.TextTransparency=1
+local NT=Instance.new("TextLabel") NT.Parent=LF NT.BackgroundTransparency=1 NT.Position=UDim2.new(0,0,1,-32) NT.Size=UDim2.new(1,0,0,22)
+NT.Font=Enum.Font.GothamSemibold NT.Text="✨ 此脚本由 TRAE 制造 · 完全免费 · 请勿付费 ✨" NT.TextColor3=Color3.fromRGB(255,220,100) NT.TextSize=11 NT.ZIndex=4 NT.TextTransparency=1
 local t0=os.clock()
+local function hsv(h,s,v) return Color3.fromHSV(h,s,v) end
 RS.RenderStepped:Connect(function()
  if not LG.Parent then return end
  local t=os.clock()-t0
- LF.Position=UDim2.new(0.5,-180,0.5,-100+math.sin(t*2)*3)
- local r=100+math.sin(t*1.5)*50 local g=180+math.sin(t*1.2)*40
- if r<80 then r=80 elseif r>180 then r=180 end
- if g<150 then g=150 elseif g>255 then g=255 end
- PB.BackgroundColor3=Color3.fromRGB(r,g,255)
+ LF.Position=UDim2.new(0.5,-200,0.5,-120+math.sin(t*1.5)*4)
+ local hue=(t*0.08)%1 local c=hsv(hue,0.7,1)
+ UIStroke.Color=c TS2.Color=c PB.BackgroundColor=c
+ PG.Color=ColorSequence.new{c,hsv((hue+0.1)%1,0.5,1)}
+ Shine.Position=UDim2.new((t*0.5)%1.4-0.2,0,0,0)
+ for _,p in ipairs(LG2:GetChildren()) do
+  if p:IsA("Frame") and p.Name:sub(1,1)=="P" then
+   local ox,oy=tonumber(p.Name:sub(2))%10,tonumber(p.Name:sub(2))%7
+   local ny=p.Position.Y.Scale-0.003-0.001*math.sin(t*2+ox)
+   if ny<-0.05 then ny=1.05 end
+   p.Position=UDim2.new(p.Position.X.Scale+math.sin(t+oy)*0.002,0,ny,0)
+   p.BackgroundColor3=c
+  end
+ end
 end)
 local function setPct(p,s)
  if p<0 then p=0 end if p>100 then p=100 end
  TS:Create(PB,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Size=UDim2.new(p/100,0,1,0)}):Play()
  PT.Text=math.floor(p).."%" if s then ST.Text=s end
 end
-TS:Create(LB,TweenInfo.new(0.4),{BackgroundTransparency=0.5}):Play()
-TS:Create(LF,TweenInfo.new(0.5,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
-task.wait(0.2) TS:Create(TL,TweenInfo.new(0.4),{TextTransparency=0}):Play()
-task.wait(0.1) TS:Create(SL,TweenInfo.new(0.4),{TextTransparency=0}):Play()
-task.wait(0.1)
+TS:Create(LB,TweenInfo.new(0.5,Enum.EasingStyle.Quad),{BackgroundTransparency=0.85}):Play()
+TS:Create(LF,TweenInfo.new(0.6,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
+task.wait(0.25) TS:Create(TL,TweenInfo.new(0.5),{TextTransparency=0}):Play()
+task.wait(0.15) TS:Create(SL,TweenInfo.new(0.4),{TextTransparency=0}):Play()
+task.wait(0.15)
 TS:Create(PBg,TweenInfo.new(0.4),{BackgroundTransparency=0}):Play()
 TS:Create(PT,TweenInfo.new(0.4),{TextTransparency=0}):Play()
 TS:Create(ST,TweenInfo.new(0.4),{TextTransparency=0}):Play()
 TS:Create(NT,TweenInfo.new(0.4),{TextTransparency=0}):Play()
 local buildUI=nil
 task.spawn(function()
- local sp={{15,"正在加载 UI 库..."},{35,"正在初始化窗口..."},{55,"正在创建控件..."},{75,"加载功能模块..."},{90,"加载脚本资源..."},{100,"加载完成！"}}
- for _,s in ipairs(sp) do setPct(s[1],s[2]) task.wait(0.3+math.random()*0.2) end
- task.wait(0.4)
- TS:Create(LF,TweenInfo.new(0.5,Enum.EasingStyle.Quad),{BackgroundTransparency=1,Position=UDim2.new(0.5,-180,0.45,-100)}):Play()
- TS:Create(TL,TweenInfo.new(0.4),{TextTransparency=1}):Play()
+ local sp={{12,"正在加载核心模块..."},{28,"正在注入 UI 引擎..."},{45,"正在渲染光效..."},{62,"加载功能组件..."},{78,"加载脚本资源..."},{92,"正在收尾..."},{100,"加载完成！"}}
+ for _,s in ipairs(sp) do setPct(s[1],s[2]) task.wait(0.35+math.random()*0.2) end
+ task.wait(0.5)
+ TS:Create(LF,TweenInfo.new(0.6,Enum.EasingStyle.Quad),{BackgroundTransparency=1,Position=UDim2.new(0.5,-200,0.45,-120)}):Play()
+ TS:Create(TL,TweenInfo.new(0.5),{TextTransparency=1}):Play()
  TS:Create(SL,TweenInfo.new(0.4),{TextTransparency=1}):Play()
  TS:Create(PBg,TweenInfo.new(0.4),{BackgroundTransparency=1}):Play()
  TS:Create(PT,TweenInfo.new(0.4),{TextTransparency=1}):Play()
  TS:Create(ST,TweenInfo.new(0.4),{TextTransparency=1}):Play()
  TS:Create(NT,TweenInfo.new(0.4),{TextTransparency=1}):Play()
- TS:Create(LB,TweenInfo.new(0.6),{BackgroundTransparency=1}):Play()
- task.wait(0.6) LG:Destroy()
+ TS:Create(LB,TweenInfo.new(0.7),{BackgroundTransparency=1}):Play()
+ task.wait(0.7) LG:Destroy()
  while not buildUI do task.wait() end
  local ok,err=pcall(buildUI)
  if not ok then
   warn("[磊脚本] 加载失败:",err)
   local EG=Instance.new("ScreenGui") EG.Parent=CG EG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-  local EF=Instance.new("Frame") EF.Parent=EG EF.BackgroundColor3=Color3.fromRGB(30,20,20) EF.Position=UDim2.new(0.5,-180,0.5,-80) EF.Size=UDim2.new(0,360,0,160) EF.ZIndex=1
-  Instance.new("UICorner",EF).CornerRadius=UDim.new(0,10)
+  local EF=Instance.new("Frame") EF.Parent=EG EF.BackgroundColor3=Color3.fromRGB(25,15,20) EF.Position=UDim2.new(0.5,-180,0.5,-80) EF.Size=UDim2.new(0,360,0,160) EF.ZIndex=1
+  Instance.new("UICorner",EF).CornerRadius=UDim.new(0,12)
+  local ES=Instance.new("UIStroke") ES.Parent=EF ES.Thickness=1 ES.Transparency=0.6 ES.Color=Color3.fromRGB(255,80,80)
   local ET=Instance.new("TextLabel") ET.Parent=EF ET.BackgroundTransparency=1 ET.Position=UDim2.new(0,0,0,15) ET.Size=UDim2.new(1,0,0,30)
   ET.Font=Enum.Font.GothamBold ET.Text="❌ 加载失败" ET.TextColor3=Color3.fromRGB(255,80,80) ET.TextSize=20 ET.ZIndex=2
   local EM=Instance.new("TextLabel") EM.Parent=EF EM.BackgroundTransparency=1 EM.Position=UDim2.new(0,20,0,55) EM.Size=UDim2.new(1,-40,0,70)
@@ -98,79 +123,99 @@ local function drag(gui,handle)
 end
 function Lib:CreateWindow(title)
  local SG=Instance.new("ScreenGui") SG.Name="LS_Main" SG.Parent=CG SG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling SG.ResetOnSpawn=false SG.Enabled=false
- local MF=Instance.new("Frame") MF.Parent=SG MF.BackgroundColor3=Color3.fromRGB(20,20,20) MF.Position=UDim2.new(0.5,-280,0.5,-180) MF.Size=UDim2.new(0,560,0,380) MF.ClipsDescendants=true MF.Active=true MF.ZIndex=1
- Instance.new("UICorner",MF).CornerRadius=UDim.new(0,8)
- local TB=Instance.new("Frame") TB.Parent=MF TB.BackgroundColor3=Color3.fromRGB(24,24,24) TB.Size=UDim2.new(1,0,0,45) TB.ZIndex=2
- Instance.new("UICorner",TB).CornerRadius=UDim.new(0,8)
- local TL2=Instance.new("TextLabel") TL2.Parent=TB TL2.BackgroundTransparency=1 TL2.Position=UDim2.new(0,45,0,6) TL2.Size=UDim2.new(0,150,0,22)
- TL2.Font=Enum.Font.GothamBold TL2.Text=title TL2.TextColor3=Color3.fromRGB(255,255,255) TL2.TextSize=15 TL2.TextXAlignment=Enum.TextXAlignment.Left TL2.ZIndex=3
- local ST2=Instance.new("TextLabel") ST2.Parent=TB ST2.BackgroundTransparency=1 ST2.Position=UDim2.new(0,45,0,25) ST2.Size=UDim2.new(0,200,0,16)
- ST2.Font=Enum.Font.Gotham ST2.Text="by 磊脚本" ST2.TextColor3=Color3.fromRGB(160,160,160) ST2.TextSize=11 ST2.TextXAlignment=Enum.TextXAlignment.Left ST2.ZIndex=3
- local VT=Instance.new("TextLabel") VT.Parent=TB VT.BackgroundColor3=Color3.fromRGB(45,45,45) VT.Position=UDim2.new(0,195,0,12) VT.Size=UDim2.new(0,55,0,22) VT.Font=Enum.Font.GothamSemibold VT.Text="v3.0" VT.TextColor3=Color3.fromRGB(200,200,200) VT.TextSize=11 VT.ZIndex=3
+ local BGL=Instance.new("ImageLabel") BGL.Parent=SG BGL.BackgroundTransparency=1 BGL.Size=UDim2.new(1,0,1,0) BGL.ZIndex=0 BGL.ImageTransparency=0.7
+ local MF=Instance.new("Frame") MF.Parent=SG MF.BackgroundColor3=Color3.fromRGB(15,15,20) MF.Position=UDim2.new(0.5,-290,0.5,-190) MF.Size=UDim2.new(0,580,0,380) MF.ClipsDescendants=true MF.Active=true MF.ZIndex=1
+ Instance.new("UICorner",MF).CornerRadius=UDim.new(0,12)
+ local MS=Instance.new("UIStroke") MS.Parent=MF MS.Thickness=1.5 MS.Transparency=0.6 MS.Color=Settings.Accent MS.LineJoinMode=Enum.LineJoinMode.Round
+ local TB=Instance.new("Frame") TB.Parent=MF TB.BackgroundColor3=Color3.fromRGB(20,20,26) TB.Size=UDim2.new(1,0,0,48) TB.ZIndex=2
+ Instance.new("UICorner",TB).CornerRadius=UDim.new(0,12)
+ local TBS=Instance.new("UIStroke") TBS.Parent=TB TBS.Thickness=0.8 TBS.Transparency=0.8 TBS.Color=Settings.Accent
+ local TL2=Instance.new("TextLabel") TL2.Parent=TB TL2.BackgroundTransparency=1 TL2.Position=UDim2.new(0,50,0,6) TL2.Size=UDim2.new(0,180,0,24)
+ TL2.Font=Enum.Font.GothamBold TL2.Text=title TL2.TextColor3=Settings.Accent TL2.TextSize=16 TL2.TextXAlignment=Enum.TextXAlignment.Left TL2.ZIndex=3
+ local TLS=Instance.new("UIStroke") TLS.Parent=TL2 TLS.Thickness=1.5 TLS.Transparency=0.85 TLS.Color=Settings.Accent
+ local ST2=Instance.new("TextLabel") ST2.Parent=TB ST2.BackgroundTransparency=1 ST2.Position=UDim2.new(0,50,0,28) ST2.Size=UDim2.new(0,200,0,16)
+ ST2.Font=Enum.Font.Gotham ST2.Text="PREMIUM · 尊享版" ST2.TextColor3=Color3.fromRGB(150,150,180) ST2.TextSize=11 ST2.TextXAlignment=Enum.TextXAlignment.Left ST2.ZIndex=3
+ local VT=Instance.new("TextLabel") VT.Parent=TB VT.BackgroundColor3=Color3.fromRGB(30,30,40) VT.Position=UDim2.new(0,210,0,13) VT.Size=UDim2.new(0,60,0,22) VT.Font=Enum.Font.GothamSemibold VT.Text="v4.0" VT.TextColor3=Settings.Accent VT.TextSize=11 VT.ZIndex=3
  Instance.new("UICorner",VT).CornerRadius=UDim.new(0,6)
- local X=Instance.new("TextButton") X.Parent=TB X.BackgroundTransparency=1 X.Position=UDim2.new(1,-35,0,10) X.Size=UDim2.new(0,24,0,24)
- X.Font=Enum.Font.GothamBold X.Text="✕" X.TextColor3=Color3.fromRGB(180,180,180) X.TextSize=14 X.AutoButtonColor=false X.ZIndex=5
- X.MouseEnter:Connect(function() X.TextColor3=Color3.fromRGB(255,80,80) end)
- X.MouseLeave:Connect(function() X.TextColor3=Color3.fromRGB(180,180,180) end)
+ local VTS=Instance.new("UIStroke") VTS.Parent=VT VTS.Thickness=0.8 VTS.Transparency=0.7 VTS.Color=Settings.Accent
+ local X=Instance.new("TextButton") X.Parent=TB X.BackgroundTransparency=1 X.Position=UDim2.new(1,-35,0,12) X.Size=UDim2.new(0,24,0,24)
+ X.Font=Enum.Font.GothamBold X.Text="✕" X.TextColor3=Color3.fromRGB(180,180,200) X.TextSize=14 X.AutoButtonColor=false X.ZIndex=5
+ X.MouseEnter:Connect(function() TS:Create(X,TweenInfo.new(0.15),{TextColor3=Color3.fromRGB(255,80,80)}):Play() end)
+ X.MouseLeave:Connect(function() TS:Create(X,TweenInfo.new(0.15),{TextColor3=Color3.fromRGB(180,180,200)}):Play() end)
  X.MouseButton1Click:Connect(function() SG:Destroy() end)
- local Min=Instance.new("TextButton") Min.Parent=TB Min.BackgroundTransparency=1 Min.Position=UDim2.new(1,-65,0,10) Min.Size=UDim2.new(0,24,0,24)
- Min.Font=Enum.Font.GothamBold Min.Text="—" Min.TextColor3=Color3.fromRGB(180,180,180) Min.TextSize=14 Min.AutoButtonColor=false Min.ZIndex=5
+ local Min=Instance.new("TextButton") Min.Parent=TB Min.BackgroundTransparency=1 Min.Position=UDim2.new(1,-65,0,12) Min.Size=UDim2.new(0,24,0,24)
+ Min.Font=Enum.Font.GothamBold Min.Text="—" Min.TextColor3=Color3.fromRGB(180,180,200) Min.TextSize=14 Min.AutoButtonColor=false Min.ZIndex=5
  local mini=false
- Min.MouseEnter:Connect(function() Min.TextColor3=Color3.fromRGB(255,255,255) end)
- Min.MouseLeave:Connect(function() Min.TextColor3=Color3.fromRGB(180,180,180) end)
+ Min.MouseEnter:Connect(function() TS:Create(Min,TweenInfo.new(0.15),{TextColor3=Settings.Accent}):Play() end)
+ Min.MouseLeave:Connect(function() TS:Create(Min,TweenInfo.new(0.15),{TextColor3=Color3.fromRGB(180,180,200)}):Play() end)
  Min.MouseButton1Click:Connect(function()
   mini=not mini
-  TS:Create(MF,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{Size=mini and UDim2.new(0,560,0,45) or UDim2.new(0,560,0,380)}):Play()
+  TS:Create(MF,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Size=mini and UDim2.new(0,580,0,48) or UDim2.new(0,580,0,380)}):Play()
  end)
- local SB=Instance.new("Frame") SB.Parent=MF SB.BackgroundColor3=Color3.fromRGB(22,22,22) SB.Position=UDim2.new(0,0,0,45) SB.Size=UDim2.new(0,170,1,-45) SB.ClipsDescendants=true SB.ZIndex=2
- local SBL=Instance.new("UIListLayout") SBL.Parent=SB SBL.Padding=UDim.new(0,2) SBL.HorizontalAlignment=Enum.HorizontalAlignment.Center SBL.VerticalAlignment=Enum.VerticalAlignment.Top
+ local SB=Instance.new("Frame") SB.Parent=MF SB.BackgroundColor3=Color3.fromRGB(18,18,24) SB.Position=UDim2.new(0,0,0,48) SB.Size=UDim2.new(0,175,1,-48) SB.ClipsDescendants=true SB.ZIndex=2
+ local SBL=Instance.new("UIListLayout") SBL.Parent=SB SBL.Padding=UDim.new(0,3) SBL.HorizontalAlignment=Enum.HorizontalAlignment.Center SBL.VerticalAlignment=Enum.VerticalAlignment.Top
  local SBP=Instance.new("UIPadding") SBP.Parent=SB SBP.PaddingTop=UDim.new(0,10)
- local CC=Instance.new("Frame") CC.Parent=MF CC.BackgroundColor3=Color3.fromRGB(20,20,20) CC.Position=UDim2.new(0,170,0,45) CC.Size=UDim2.new(1,-170,1,-45) CC.ClipsDescendants=true CC.ZIndex=2
- local PC=Instance.new("ScrollingFrame") PC.Parent=CC PC.BackgroundTransparency=1 PC.Size=UDim2.new(1,0,1,0) PC.ScrollBarThickness=3 PC.ScrollBarImageColor3=Color3.fromRGB(80,80,80) PC.CanvasSize=UDim2.new(0,0,0,0) PC.ZIndex=2
+ local CC=Instance.new("Frame") CC.Parent=MF CC.BackgroundColor3=Color3.fromRGB(15,15,20) CC.Position=UDim2.new(0,175,0,48) CC.Size=UDim2.new(1,-175,1,-48) CC.ClipsDescendants=true CC.ZIndex=2
+ local PC=Instance.new("ScrollingFrame") PC.Parent=CC PC.BackgroundTransparency=1 PC.Size=UDim2.new(1,0,1,0) PC.ScrollBarThickness=3 PC.ScrollBarImageColor3=Settings.Accent PC.CanvasSize=UDim2.new(0,0,0,0) PC.ZIndex=2
  drag(MF,TB)
  local pages={} local cur=nil
- local W={}
+ local function applyAccent(color)
+  Settings.Accent=color
+  MS.Color=color TBS.Color=color TLS.Color=color VTS.Color=color
+  TL2.TextColor3=color VT.TextColor3=color PC.ScrollBarImageColor3=color
+  for _,p in ipairs(pages) do
+   if p.Pg==cur then p.Btn.BackgroundColor3=Color3.fromRGB(color.R*40,color.G*40,color.B*40) p.Btn.TextColor3=color end
+  end
+ end
+ local function applyBG(imgid,trans)
+  if imgid and imgid~="" then
+   BGL.Image=imgid BGL.ImageTransparency=trans
+  else
+   BGL.Image="" BGL.ImageTransparency=1
+  end
+ end
+ local W={ApplyAccent=applyAccent,ApplyBG=applyBG}
  function W:AddTab(name,icon)
-  local btn=Instance.new("TextButton") btn.Parent=SB btn.BackgroundColor3=Color3.fromRGB(28,28,28) btn.Size=UDim2.new(0,150,0,36)
-  btn.Font=Enum.Font.GothamSemibold btn.Text=(icon and icon.."  " or "")..name btn.TextColor3=Color3.fromRGB(200,200,200) btn.TextSize=13 btn.TextXAlignment=Enum.TextXAlignment.Left btn.AutoButtonColor=false btn.ZIndex=3
+  local btn=Instance.new("TextButton") btn.Parent=SB btn.BackgroundColor3=Color3.fromRGB(24,24,30) btn.Size=UDim2.new(0,155,0,36)
+  btn.Font=Enum.Font.GothamSemibold btn.Text=(icon and icon.."  " or "")..name btn.TextColor3=Color3.fromRGB(190,190,210) btn.TextSize=13 btn.TextXAlignment=Enum.TextXAlignment.Left btn.AutoButtonColor=false btn.ZIndex=3
   Instance.new("UICorner",btn).CornerRadius=UDim.new(0,6)
   local BP=Instance.new("UIPadding") BP.Parent=btn BP.PaddingLeft=UDim.new(0,12)
   local pg=Instance.new("Frame") pg.Parent=PC pg.BackgroundTransparency=1 pg.Size=UDim2.new(1,0,1,0) pg.Visible=false pg.ZIndex=2
-  local PL=Instance.new("UIListLayout") PL.Parent=pg PL.Padding=UDim.new(0,8) PL.HorizontalAlignment=Enum.HorizontalAlignment.Center PL.VerticalAlignment=Enum.VerticalAlignment.Top
+  local PL=Instance.new("UIListLayout") PL.Parent=pg PL.Padding=UDim2.new(0,8) PL.HorizontalAlignment=Enum.HorizontalAlignment.Center PL.VerticalAlignment=Enum.VerticalAlignment.Top
   local PP=Instance.new("UIPadding") PP.Parent=pg PP.PaddingTop=UDim.new(0,12) PP.PaddingBottom=UDim.new(0,12) PP.PaddingLeft=UDim.new(0,12) PP.PaddingRight=UDim.new(0,12)
-  if #pages==0 then btn.BackgroundColor3=Color3.fromRGB(50,50,50) btn.TextColor3=Color3.fromRGB(255,255,255) pg.Visible=true cur=pg end
-  btn.MouseEnter:Connect(function() if cur~=pg then TS:Create(btn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(38,38,38)}):Play() end end)
-  btn.MouseLeave:Connect(function() if cur~=pg then TS:Create(btn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(28,28,28)}):Play() end end)
+  if #pages==0 then btn.BackgroundColor3=Color3.fromRGB(Settings.Accent.R*40,Settings.Accent.G*40,Settings.Accent.B*40) btn.TextColor3=Settings.Accent pg.Visible=true cur=pg end
+  btn.MouseEnter:Connect(function() if cur~=pg then TS:Create(btn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(34,34,42)}):Play() end end)
+  btn.MouseLeave:Connect(function() if cur~=pg then TS:Create(btn,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(24,24,30)}):Play() end end)
   btn.MouseButton1Click:Connect(function()
    if cur==pg then return end
-   for _,p in ipairs(pages) do p.Btn.BackgroundColor3=Color3.fromRGB(28,28,28) p.Btn.TextColor3=Color3.fromRGB(200,200,200) p.Pg.Visible=false end
-   btn.BackgroundColor3=Color3.fromRGB(50,50,50) btn.TextColor3=Color3.fromRGB(255,255,255) pg.Visible=true cur=pg
+   for _,p in ipairs(pages) do p.Btn.BackgroundColor3=Color3.fromRGB(24,24,30) p.Btn.TextColor3=Color3.fromRGB(190,190,210) p.Pg.Visible=false end
+   btn.BackgroundColor3=Color3.fromRGB(Settings.Accent.R*40,Settings.Accent.G*40,Settings.Accent.B*40) btn.TextColor3=Settings.Accent pg.Visible=true cur=pg
    PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24)
   end)
   local T={Btn=btn,Pg=pg,PL=PL,PC=PC}
   function T:AddButton(txt,cb)
-   local bf=Instance.new("Frame") bf.Parent=pg bf.BackgroundColor3=Color3.fromRGB(28,28,28) bf.Size=UDim2.new(1,0,0,42) bf.ZIndex=3
+   local bf=Instance.new("Frame") bf.Parent=pg bf.BackgroundColor3=Color3.fromRGB(24,24,30) bf.Size=UDim2.new(1,0,0,42) bf.ZIndex=3
    Instance.new("UICorner",bf).CornerRadius=UDim.new(0,6)
    local b=Instance.new("TextButton") b.Parent=bf b.BackgroundTransparency=1 b.Size=UDim2.new(1,0,1,0)
-   b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(230,230,230) b.TextSize=13 b.AutoButtonColor=false b.ZIndex=5
-   b.MouseEnter:Connect(function() TS:Create(bf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(40,40,40)}):Play() end)
-   b.MouseLeave:Connect(function() TS:Create(bf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(28,28,28)}):Play() end)
+   b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(220,220,240) b.TextSize=13 b.AutoButtonColor=false b.ZIndex=5
+   b.MouseEnter:Connect(function() TS:Create(bf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(35,35,45)}):Play() end)
+   b.MouseLeave:Connect(function() TS:Create(bf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(24,24,30)}):Play() end)
    b.MouseButton1Click:Connect(function() cb() end)
    if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end
    return b
   end
-  function T:AddSection(sname)
-   local sec=Instance.new("Frame") sec.Parent=pg sec.BackgroundColor3=Color3.fromRGB(28,28,28) sec.Size=UDim2.new(1,0,0,38) sec.ClipsDescendants=true sec.ZIndex=3
+  function T:AddSection(sname,collapsed)
+   local sec=Instance.new("Frame") sec.Parent=pg sec.BackgroundColor3=Color3.fromRGB(24,24,30) sec.Size=UDim2.new(1,0,0,38) sec.ClipsDescendants=true sec.ZIndex=3
    Instance.new("UICorner",sec).CornerRadius=UDim.new(0,6)
    local stb=Instance.new("TextButton") stb.Parent=sec stb.BackgroundTransparency=1 stb.Position=UDim2.new(0,0,0,0) stb.Size=UDim2.new(1,0,0,38)
-   stb.Font=Enum.Font.GothamBold stb.Text="  🔻 "..sname stb.TextColor3=Color3.fromRGB(230,230,230) stb.TextSize=13 stb.TextXAlignment=Enum.TextXAlignment.Left stb.AutoButtonColor=false stb.ZIndex=6
+   stb.Font=Enum.Font.GothamBold stb.Text=(collapsed and "  ▶ " or "  🔻 ")..sname stb.TextColor3=Color3.fromRGB(220,220,240) stb.TextSize=13 stb.TextXAlignment=Enum.TextXAlignment.Left stb.AutoButtonColor=false stb.ZIndex=6
    local sp2=Instance.new("UIPadding") sp2.Parent=stb sp2.PaddingLeft=UDim.new(0,12)
    local sc=Instance.new("Frame") sc.Parent=sec sc.BackgroundTransparency=1 sc.Position=UDim2.new(0,0,0,38) sc.Size=UDim2.new(1,0,0,0) sc.AutomaticSize=Enum.AutomaticSize.Y sc.ZIndex=4
    local SCL=Instance.new("UIListLayout") SCL.Parent=sc SCL.Padding=UDim.new(0,6) SCL.HorizontalAlignment=Enum.HorizontalAlignment.Center SCL.VerticalAlignment=Enum.VerticalAlignment.Top
    local SCP=Instance.new("UIPadding") SCP.Parent=sc SCP.PaddingLeft=UDim.new(0,12) SCP.PaddingRight=UDim.new(0,12) SCP.PaddingBottom=UDim.new(0,10)
-   local exp=true
+   local exp=not collapsed
    stb.MouseEnter:Connect(function() stb.TextColor3=Color3.fromRGB(255,255,255) end)
-   stb.MouseLeave:Connect(function() stb.TextColor3=Color3.fromRGB(230,230,230) end)
+   stb.MouseLeave:Connect(function() stb.TextColor3=Color3.fromRGB(220,220,240) end)
    stb.MouseButton1Click:Connect(function()
     exp=not exp
     if exp then stb.Text="  🔻 "..sname TS:Create(sec,TweenInfo.new(0.2),{Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10)}):Play()
@@ -179,17 +224,17 @@ function Lib:CreateWindow(title)
    end)
    local S={}
    function S:AddButton(txt,cb)
-    local bf=Instance.new("Frame") bf.Parent=sc bf.BackgroundColor3=Color3.fromRGB(35,35,35) bf.Size=UDim2.new(1,0,0,36) bf.ZIndex=5
+    local bf=Instance.new("Frame") bf.Parent=sc bf.BackgroundColor3=Color3.fromRGB(30,30,38) bf.Size=UDim2.new(1,0,0,36) bf.ZIndex=5
     Instance.new("UICorner",bf).CornerRadius=UDim.new(0,5)
     local b=Instance.new("TextButton") b.Parent=bf b.BackgroundTransparency=1 b.Size=UDim2.new(1,0,1,0)
-    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(220,220,220) b.TextSize=12 b.AutoButtonColor=false b.ZIndex=6
-    b.MouseEnter:Connect(function() TS:Create(bf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(48,48,48)}):Play() end)
-    b.MouseLeave:Connect(function() TS:Create(bf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(35,35,35)}):Play() end)
+    b.Font=Enum.Font.GothamSemibold b.Text=txt b.TextColor3=Color3.fromRGB(210,210,230) b.TextSize=12 b.AutoButtonColor=false b.ZIndex=6
+    b.MouseEnter:Connect(function() TS:Create(bf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(42,42,55)}):Play() end)
+    b.MouseLeave:Connect(function() TS:Create(bf,TweenInfo.new(0.15),{BackgroundColor3=Color3.fromRGB(30,30,38)}):Play() end)
     b.MouseButton1Click:Connect(function() cb() end)
     task.defer(function() if exp then sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) end if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
     return b
    end
-   task.defer(function() sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
+   task.defer(function() if exp then sec.Size=UDim2.new(1,0,0,38+sc.AbsoluteSize.Y+10) end if cur==pg then PC.CanvasSize=UDim2.new(0,0,0,PL.AbsoluteContentSize.Y+24) end end)
    return S
   end
   table.insert(pages,T)
@@ -213,24 +258,19 @@ function NC:Enable()
  self.OC={}
  for _,p in ipairs(ch:GetDescendants()) do if p:IsA("BasePart") then self.OC[p]=p.CanCollide p.CanCollide=false end end
  self.D=ch.DescendantAdded:Connect(function(d) if d:IsA("BasePart") then self.OC[d]=d.CanCollide d.CanCollide=false end end)
- self.C=RS.RenderStepped:Connect(function()
+ self.C=RS.Stepped:Connect(function()
   if not self.E then return end
   ch=LP.Character if not ch then return end
   hrp=ch:FindFirstChild("HumanoidRootPart") hum=ch:FindFirstChild("Humanoid")
   if not hrp or not hum then return end
-  hum.WalkSpeed=self.S
-  local cf=workspace.CurrentCamera.CFrame
-  local mv=Vector3.new(0,0,0)
-  local mv2=hum.MoveDirection
-  if mv2.Magnitude>0 then mv=mv+mv2 end
+  local mv=hum.MoveDirection
   if UIS:IsKeyDown(Enum.KeyCode.Space) then mv=mv+Vector3.new(0,1,0) end
   if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then mv=mv-Vector3.new(0,1,0) end
-  if mv.Magnitude>0 then
+  if mv.Magnitude>0.1 then
    hrp.Velocity=mv.Unit*self.S
   else
-   hrp.Velocity=Vector3.new(0,0,0)
+   hrp.Velocity=Vector3.new(hrp.Velocity.X*0.9,0,hrp.Velocity.Z*0.9)
   end
-  for _,p in ipairs(ch:GetDescendants()) do if p:IsA("BasePart") then p.CanCollide=false end end
  end)
  print("[穿墙] 已开启 (方向键移动,空格上升,Ctrl下降)")
 end
@@ -2561,7 +2601,7 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
 ]=]
 
     for sname, scontent in pairs(ZMScripts) do
-        local sec = OT:AddSection(sname)
+        local sec = OT:AddSection(sname,true)
         sec:AddButton("⭐  运行" .. sname, function()
             print("[" .. sname .. "] 正在加载...")
             local ok, err = pcall(function() loadstring(scontent)() end)
@@ -42253,9 +42293,42 @@ end)
             end
         end)
     end
+ local SetT=W:AddTab("设置","⚙")
+ local CS2=SetT:AddSection("🎨 主题颜色")
+ local colors={
+  {Name="🔴  烈焰红",Color=Color3.fromRGB(255,80,80)},
+  {Name="🟠  日落橙",Color=Color3.fromRGB(255,160,60)},
+  {Name="🟡  璀璨金",Color=Color3.fromRGB(255,220,80)},
+  {Name="🟢  翡翠绿",Color=Color3.fromRGB(80,255,140)},
+  {Name="🔵  天空蓝",Color=Color3.fromRGB(100,200,255)},
+  {Name="💎  青空色",Color=Color3.fromRGB(80,220,255)},
+  {Name="🟣  梦幻紫",Color=Color3.fromRGB(180,120,255)},
+ }
+ for _,c in ipairs(colors) do
+  CS2:AddButton(c.Name,function() W.ApplyAccent(c.Color) print("[设置] 主题颜色:"..c.Name) end)
+ end
+ local BGS=SetT:AddSection("🖼  背景图")
+ BGS:AddButton("❌  无背景",function() W.ApplyBG("",0) print("[设置] 已关闭背景图") end)
+ local bgs={
+  {Name="🐱  可爱猫猫",ID="rbxassetid://15465870245",DY="抖音: LoeTing20140224"},
+  {Name="🐑  喜羊羊",ID="rbxassetid://15465872785",DY="抖音: 43257824802"},
+  {Name="☁️  天空涂鸦",ID="rbxassetid://15465874217",DY="抖音: 43257824802"},
+  {Name="🌊  水下雏菊",ID="rbxassetid://15465875604",DY="抖音: 43257824802"},
+  {Name="🌸  唯美少女",ID="rbxassetid://15465876943",DY="抖音: 43257824802"},
+ }
+ for _,bg in ipairs(bgs) do
+  BGS:AddButton(bg.Name,function()
+   W.ApplyBG(bg.ID,0.65) print("[设置] 背景:"..bg.Name.." ("..bg.DY..")")
+  end)
+ end
+ local DYInfo=SetT:AddSection("📱  抖音号")
+ DYInfo:AddButton("🎵  关注 LoeTing20140224",function() print("抖音号: LoeTing20140224") end)
+ DYInfo:AddButton("🎵  关注 43257824802",function() print("抖音号: 43257824802") end)
  local IT=W:AddTab("Info","ℹ")
- IT:AddButton("磊脚本 v3.0",function() print("磊脚本 v3.0") end)
- IT:AddButton("Lei Script",function() print("磊脚本 - 多功能辅助脚本") end)
+ IT:AddButton("磊脚本 v4.0 PREMIUM",function() print("磊脚本 v4.0 尊享版") end)
+ IT:AddButton("✨  PREMIUM · 尊享版",function() print("磊脚本 - 高端多功能辅助脚本") end)
+ IT:AddButton("🎨  支持7种主题色",function() print("在设置页可切换主题颜色") end)
+ IT:AddButton("🖼  支持自定义背景",function() print("在设置页可切换背景图") end)
  W:Show()
  print("[磊脚本] 加载完成！")
 end
