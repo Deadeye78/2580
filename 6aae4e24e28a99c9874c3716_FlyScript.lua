@@ -46135,538 +46135,538 @@ v:FireServer()]=]
  local UIS2=game:GetService("UserInputService")
  local TS2=game:GetService("TweenService")
  local Platform = {
-  IsMobile = UIS2.TouchEnabled,
-  IsPC = not UIS2.TouchEnabled,
-  TouchButton = nil,
-  TouchActive = false,
-  TouchButton2 = nil,
-  TouchActive2 = false
+ IsMobile = UIS2.TouchEnabled,
+ IsPC = not UIS2.TouchEnabled,
+ TouchButton = nil,
+ TouchActive = false,
+ TouchButton2 = nil,
+ TouchActive2 = false
  }
  -- 创建手机触摸按钮（自瞄）
  local function createAimbotTouchButton()
-     if not Platform.IsMobile or Platform.TouchButton then return end
-     local sg=Instance.new("ScreenGui")
-     sg.Name="AimbotTouchUI"
-     sg.Parent=CG
-     sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-     sg.IgnoreGuiInset=true
-     local btn=Instance.new("ImageButton")
-     btn.Parent=sg
-     btn.Size=UDim2.new(0,75,0,75)
-     btn.Position=UDim2.new(0,25,1,-105)
-     btn.BackgroundTransparency=0.4
-     btn.BackgroundColor3=Color3.fromRGB(255,255,255)
-     btn.BorderSizePixel=0
-     local corner=Instance.new("UICorner")
-     corner.CornerRadius=UDim.new(0,37.5)
-     corner.Parent=btn
-     local stroke=Instance.new("UIStroke")
-     stroke.Parent=btn
-     stroke.Thickness=2
-     stroke.Color=Color3.fromRGB(255,255,255)
-     stroke.Transparency=0.3
-     local label=Instance.new("TextLabel")
-     label.Parent=btn
-     label.Size=UDim2.new(1,0,1,0)
-     label.BackgroundTransparency=1
-     label.Text="🎯"
-     label.TextSize=28
-     label.TextColor3=Color3.fromRGB(0,0,0)
-     label.TextScaled=false
-     btn.TouchBegan:Connect(function(input)
-         input.UserInputState=Enum.UserInputState.Begin
-         Platform.TouchActive=true
-         btn.BackgroundTransparency=0.2
-         btn.BackgroundColor3=Color3.fromRGB(200,255,200)
-     end)
-     btn.TouchEnded:Connect(function(input)
-         input.UserInputState=Enum.UserInputState.End
-         Platform.TouchActive=false
-         btn.BackgroundTransparency=0.4
-         btn.BackgroundColor3=Color3.fromRGB(255,255,255)
-     end)
-     Platform.TouchButton=sg
+  if not Platform.IsMobile or Platform.TouchButton then return end
+  local sg=Instance.new("ScreenGui")
+  sg.Name="AimbotTouchUI"
+  sg.Parent=CG
+  sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+  sg.IgnoreGuiInset=true
+  local btn=Instance.new("ImageButton")
+  btn.Parent=sg
+  btn.Size=UDim2.new(0,75,0,75)
+  btn.Position=UDim2.new(0,25,1,-105)
+  btn.BackgroundTransparency=0.4
+  btn.BackgroundColor3=Color3.fromRGB(255,255,255)
+  btn.BorderSizePixel=0
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(0,37.5)
+  corner.Parent=btn
+  local stroke=Instance.new("UIStroke")
+  stroke.Parent=btn
+  stroke.Thickness=2
+  stroke.Color=Color3.fromRGB(255,255,255)
+  stroke.Transparency=0.3
+  local label=Instance.new("TextLabel")
+  label.Parent=btn
+  label.Size=UDim2.new(1,0,1,0)
+  label.BackgroundTransparency=1
+  label.Text="🎯"
+  label.TextSize=28
+  label.TextColor3=Color3.fromRGB(0,0,0)
+  label.TextScaled=false
+  btn.TouchBegan:Connect(function(input)
+      input.UserInputState=Enum.UserInputState.Begin
+      Platform.TouchActive=true
+      btn.BackgroundTransparency=0.2
+      btn.BackgroundColor3=Color3.fromRGB(200,255,200)
+  end)
+  btn.TouchEnded:Connect(function(input)
+      input.UserInputState=Enum.UserInputState.End
+      Platform.TouchActive=false
+      btn.BackgroundTransparency=0.4
+      btn.BackgroundColor3=Color3.fromRGB(255,255,255)
+  end)
+  Platform.TouchButton=sg
  end
  -- 创建手机触摸按钮（子弹追踪）
  local function createBTTouchButton()
-     if not Platform.IsMobile or Platform.TouchButton2 then return end
-     local sg=Instance.new("ScreenGui")
-     sg.Name="BTTouchUI"
-     sg.Parent=CG
-     sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
-     sg.IgnoreGuiInset=true
-     local btn=Instance.new("ImageButton")
-     btn.Parent=sg
-     btn.Size=UDim2.new(0,75,0,75)
-     btn.Position=UDim2.new(1,-100,1,-105)
-     btn.BackgroundTransparency=0.4
-     btn.BackgroundColor3=Color3.fromRGB(255,255,255)
-     btn.BorderSizePixel=0
-     local corner=Instance.new("UICorner")
-     corner.CornerRadius=UDim.new(0,37.5)
-     corner.Parent=btn
-     local stroke=Instance.new("UIStroke")
-     stroke.Parent=btn
-     stroke.Thickness=2
-     stroke.Color=Color3.fromRGB(255,255,255)
-     stroke.Transparency=0.3
-     local label=Instance.new("TextLabel")
-     label.Parent=btn
-     label.Size=UDim2.new(1,0,1,0)
-     label.BackgroundTransparency=1
-     label.Text="💫"
-     label.TextSize=28
-     label.TextColor3=Color3.fromRGB(0,0,0)
-     label.TextScaled=false
-     btn.TouchBegan:Connect(function(input)
-         input.UserInputState=Enum.UserInputState.Begin
-         Platform.TouchActive2=true
-         btn.BackgroundTransparency=0.2
-         btn.BackgroundColor3=Color3.fromRGB(200,220,255)
-     end)
-     btn.TouchEnded:Connect(function(input)
-         input.UserInputState=Enum.UserInputState.End
-         Platform.TouchActive2=false
-         btn.BackgroundTransparency=0.4
-         btn.BackgroundColor3=Color3.fromRGB(255,255,255)
-     end)
-     Platform.TouchButton2=sg
+  if not Platform.IsMobile or Platform.TouchButton2 then return end
+  local sg=Instance.new("ScreenGui")
+  sg.Name="BTTouchUI"
+  sg.Parent=CG
+  sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+  sg.IgnoreGuiInset=true
+  local btn=Instance.new("ImageButton")
+  btn.Parent=sg
+  btn.Size=UDim2.new(0,75,0,75)
+  btn.Position=UDim2.new(1,-100,1,-105)
+  btn.BackgroundTransparency=0.4
+  btn.BackgroundColor3=Color3.fromRGB(255,255,255)
+  btn.BorderSizePixel=0
+  local corner=Instance.new("UICorner")
+  corner.CornerRadius=UDim.new(0,37.5)
+  corner.Parent=btn
+  local stroke=Instance.new("UIStroke")
+  stroke.Parent=btn
+  stroke.Thickness=2
+  stroke.Color=Color3.fromRGB(255,255,255)
+  stroke.Transparency=0.3
+  local label=Instance.new("TextLabel")
+  label.Parent=btn
+  label.Size=UDim2.new(1,0,1,0)
+  label.BackgroundTransparency=1
+  label.Text="💫"
+  label.TextSize=28
+  label.TextColor3=Color3.fromRGB(0,0,0)
+  label.TextScaled=false
+  btn.TouchBegan:Connect(function(input)
+      input.UserInputState=Enum.UserInputState.Begin
+      Platform.TouchActive2=true
+      btn.BackgroundTransparency=0.2
+      btn.BackgroundColor3=Color3.fromRGB(200,220,255)
+  end)
+  btn.TouchEnded:Connect(function(input)
+      input.UserInputState=Enum.UserInputState.End
+      Platform.TouchActive2=false
+      btn.BackgroundTransparency=0.4
+      btn.BackgroundColor3=Color3.fromRGB(255,255,255)
+  end)
+  Platform.TouchButton2=sg
  end
  -- 自瞄触发条件适配（PC键盘/手机触摸）
  local function shouldAim()
-     if not AimbotState.E then return false end
-     if AimbotState.HoldKey then
-         if Platform.IsPC then
-             return UIS2:IsKeyDown(AimbotState.KeyCode)
-         else
-             return Platform.TouchActive
-         end
-     end
-     return true
+  if not AimbotState.E then return false end
+  if AimbotState.HoldKey then
+      if Platform.IsPC then
+          return UIS2:IsKeyDown(AimbotState.KeyCode)
+      else
+          return Platform.TouchActive
+      end
+  end
+  return true
  end
  -- 显示/隐藏自瞄触摸按钮
  local function showAimbotTouch(show)
-     if not Platform.IsMobile then return end
-     if show then
-         createAimbotTouchButton()
-         if Platform.TouchButton then Platform.TouchButton.Enabled=true end
-     else
-         if Platform.TouchButton then Platform.TouchButton.Enabled=false end
-     end
+  if not Platform.IsMobile then return end
+  if show then
+      createAimbotTouchButton()
+      if Platform.TouchButton then Platform.TouchButton.Enabled=true end
+  else
+      if Platform.TouchButton then Platform.TouchButton.Enabled=false end
+  end
  end
  -- 显示/隐藏子弹追踪触摸按钮
  local function showBTTouch(show)
-     if not Platform.IsMobile then return end
-     if show then
-         createBTTouchButton()
-         if Platform.TouchButton2 then Platform.TouchButton2.Enabled=true end
-     else
-         if Platform.TouchButton2 then Platform.TouchButton2.Enabled=false end
-     end
+  if not Platform.IsMobile then return end
+  if show then
+      createBTTouchButton()
+      if Platform.TouchButton2 then Platform.TouchButton2.Enabled=true end
+  else
+      if Platform.TouchButton2 then Platform.TouchButton2.Enabled=false end
+  end
  end
  -- 手机端自动调整参数
  local function optimizeForMobile()
-     if not Platform.IsMobile then return end
-     -- 手机端适当增大FOV
-     if AimbotState.FOV<180 then AimbotState.FOV=180 updateFOVCircle() end
-     -- 手机端降低平滑度提高响应速度
-     if AimbotState.Smooth>0.1 then AimbotState.Smooth=0.08 end
-     -- 手机端增加子弹追踪预测强度
-     if BTState.PredictAmount<0.2 then BTState.PredictAmount=0.2 end
+  if not Platform.IsMobile then return end
+  -- 手机端适当增大FOV
+  if AimbotState.FOV<180 then AimbotState.FOV=180 updateFOVCircle() end
+  -- 手机端降低平滑度提高响应速度
+  if AimbotState.Smooth>0.1 then AimbotState.Smooth=0.08 end
+  -- 手机端增加子弹追踪预测强度
+  if BTState.PredictAmount<0.2 then BTState.PredictAmount=0.2 end
  end
  -- ========== 自瞄系统（优化版）==========
  local AimbotState={
-  E=false,Conn=nil,Target=nil,
-  FOV=150,Smooth=0.08,Part="Head",
-  VisibleCheck=false,TeamCheck=false,
-  Mode="Camera",HoldKey=false,KeyCode=Enum.KeyCode.C,
-  FOVCircle=nil
+ E=false,Conn=nil,Target=nil,
+ FOV=150,Smooth=0.08,Part="Head",
+ VisibleCheck=false,TeamCheck=false,
+ Mode="Camera",HoldKey=false,KeyCode=Enum.KeyCode.C,
+ FOVCircle=nil
  }
  -- FOV圆圈显示
  local function createFOVCircle()
-  if AimbotState.FOVCircle then pcall(function() AimbotState.FOVCircle:Destroy() end) end
-  local sg=Instance.new("ScreenGui") sg.Name="AimbotFOV" sg.Parent=CG sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling sg.IgnoreGuiInset=true
-  local circle=Instance.new("Frame") circle.Parent=sg circle.BackgroundTransparency=1 circle.Size=UDim2.new(0,AimbotState.FOV*2,0,AimbotState.FOV*2)
-  circle.AnchorPoint=Vector2.new(0.5,0.5) circle.Position=UDim2.new(0.5,0,0.5,0)
-  local cc=Instance.new("UICorner") cc.CornerRadius=UDim.new(1,0) cc.Parent=circle
-  local outline=Instance.new("UIStroke") outline.Parent=circle outline.Thickness=1.5 outline.Transparency=0.5 outline.Color=Color3.fromRGB(255,255,255)
-  AimbotState.FOVCircle=sg
+ if AimbotState.FOVCircle then pcall(function() AimbotState.FOVCircle:Destroy() end) end
+ local sg=Instance.new("ScreenGui") sg.Name="AimbotFOV" sg.Parent=CG sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling sg.IgnoreGuiInset=true
+ local circle=Instance.new("Frame") circle.Parent=sg circle.BackgroundTransparency=1 circle.Size=UDim2.new(0,AimbotState.FOV*2,0,AimbotState.FOV*2)
+ circle.AnchorPoint=Vector2.new(0.5,0.5) circle.Position=UDim2.new(0.5,0,0.5,0)
+ local cc=Instance.new("UICorner") cc.CornerRadius=UDim.new(1,0) cc.Parent=circle
+ local outline=Instance.new("UIStroke") outline.Parent=circle outline.Thickness=1.5 outline.Transparency=0.5 outline.Color=Color3.fromRGB(255,255,255)
+ AimbotState.FOVCircle=sg
  end
  local function updateFOVCircle()
-  if not AimbotState.FOVCircle then return end
-  local circle=AimbotState.FOVCircle:FindFirstChildOfClass("Frame")
-  if circle then
-   circle.Size=UDim2.new(0,AimbotState.FOV*2,0,AimbotState.FOV*2)
-   circle.AnchorPoint=Vector2.new(0.5,0.5) circle.Position=UDim2.new(0.5,0,0.5,0)
-  end
+ if not AimbotState.FOVCircle then return end
+ local circle=AimbotState.FOVCircle:FindFirstChildOfClass("Frame")
+ if circle then
+ circle.Size=UDim2.new(0,AimbotState.FOV*2,0,AimbotState.FOV*2)
+ circle.AnchorPoint=Vector2.new(0.5,0.5) circle.Position=UDim2.new(0.5,0,0.5,0)
+ end
  end
  -- 计算角度距离（更准确的FOV检测）
  local function getAngleDistance(targetPos)
-  local cam=workspace.CurrentCamera
-  local camPos=cam.CFrame.Position
-  local lookVec=cam.CFrame.LookVector
-  local toTarget=(targetPos-camPos).Unit
-  local dot=lookVec:Dot(toTarget)
-  local angle=math.deg(math.acos(math.clamp(dot,-1,1)))
-  return angle
+ local cam=workspace.CurrentCamera
+ local camPos=cam.CFrame.Position
+ local lookVec=cam.CFrame.LookVector
+ local toTarget=(targetPos-camPos).Unit
+ local dot=lookVec:Dot(toTarget)
+ local angle=math.deg(math.acos(math.clamp(dot,-1,1)))
+ return angle
  end
  -- 射线检测（优化版，支持多条射线）
  local function isVisible(targetPos)
-  local cam=workspace.CurrentCamera
-  local camPos=cam.CFrame.Position
-  local dir=(targetPos-camPos)
-  local params=RaycastParams.new()
-  params.FilterType=Enum.RaycastFilterType.Exclude
-  params.FilterDescendantsInstances={LP.Character}
-  params.IgnoreWater=true
-  local result=workspace:Raycast(camPos,dir,params)
-  return result==nil
+ local cam=workspace.CurrentCamera
+ local camPos=cam.CFrame.Position
+ local dir=(targetPos-camPos)
+ local params=RaycastParams.new()
+ params.FilterType=Enum.RaycastFilterType.Exclude
+ params.FilterDescendantsInstances={LP.Character}
+ params.IgnoreWater=true
+ local result=workspace:Raycast(camPos,dir,params)
+ return result==nil
  end
  -- 获取最近目标（角度距离优先）
  local function getClosestTarget()
-  local closest=nil local bestAngle=math.huge
-  local cam=workspace.CurrentCamera
-  for _,p in ipairs(Plrs:GetPlayers()) do
-   if p==LP then continue end
-   if AimbotState.TeamCheck and p.Team and LP.Team and p.Team==LP.Team then continue end
-   local ch=p.Character if not ch then continue end
-   local hum=ch:FindFirstChild("Humanoid") if not hum or hum.Health<=0 then continue end
-   local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
-   if not part then continue end
-   -- 可见性检测
-   if AimbotState.VisibleCheck and not isVisible(part.Position) then continue end
-   -- 屏幕位置检测
-   local screenPos,onScreen=cam:WorldToScreenPoint(part.Position)
-   if not onScreen then continue end
-   -- 角度距离
-   local angle=getAngleDistance(part.Position)
-   -- 转换为像素距离用于FOV比较
-   local mouse=UIS2:GetMouseLocation()
-   local pxDist=math.sqrt((screenPos.X-mouse.X)^2+(screenPos.Y-mouse.Y)^2)
-   if pxDist<AimbotState.FOV and angle<bestAngle then
-    bestAngle=angle closest=p
-   end
-  end
-  return closest
+ local closest=nil local bestAngle=math.huge
+ local cam=workspace.CurrentCamera
+ for _,p in ipairs(Plrs:GetPlayers()) do
+ if p==LP then continue end
+ if AimbotState.TeamCheck and p.Team and LP.Team and p.Team==LP.Team then continue end
+ local ch=p.Character if not ch then continue end
+ local hum=ch:FindFirstChild("Humanoid") if not hum or hum.Health<=0 then continue end
+ local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
+ if not part then continue end
+ -- 可见性检测
+ if AimbotState.VisibleCheck and not isVisible(part.Position) then continue end
+ -- 屏幕位置检测
+ local screenPos,onScreen=cam:WorldToScreenPoint(part.Position)
+ if not onScreen then continue end
+ -- 角度距离
+ local angle=getAngleDistance(part.Position)
+ -- 转换为像素距离用于FOV比较
+ local mouse=UIS2:GetMouseLocation()
+ local pxDist=math.sqrt((screenPos.X-mouse.X)^2+(screenPos.Y-mouse.Y)^2)
+ if pxDist<AimbotState.FOV and angle<bestAngle then
+ bestAngle=angle closest=p
+ end
+ end
+ return closest
  end
  -- 相机模式自瞄
  local function aimCamera(target)
-  if not target then return end
-  local ch=target.Character if not ch then return end
-  local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
-  if not part then return end
-  local cam=workspace.CurrentCamera
-  local targetPos=part.Position
-  -- 加入预测（根据目标速度）
-  local humRootPart=ch:FindFirstChild("HumanoidRootPart")
-  if humRootPart then
-   local vel=humRootPart.Velocity
-   targetPos=targetPos+vel*0.05 -- 轻微预判
-  end
-  local targetCF=CFrame.new(cam.CFrame.Position,targetPos)
-  -- 平滑插值
-  local smooth=AimbotState.Smooth
-  cam.CFrame=cam.CFrame:Lerp(targetCF,smooth)
+ if not target then return end
+ local ch=target.Character if not ch then return end
+ local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
+ if not part then return end
+ local cam=workspace.CurrentCamera
+ local targetPos=part.Position
+ -- 加入预测（根据目标速度）
+ local humRootPart=ch:FindFirstChild("HumanoidRootPart")
+ if humRootPart then
+ local vel=humRootPart.Velocity
+ targetPos=targetPos+vel*0.05 -- 轻微预判
+ end
+ local targetCF=CFrame.new(cam.CFrame.Position,targetPos)
+ -- 平滑插值
+ local smooth=AimbotState.Smooth
+ cam.CFrame=cam.CFrame:Lerp(targetCF,smooth)
  end
  -- 鼠标移动模式自瞄（适用于更多游戏）
  local function aimMouse(target)
-  if not target then return end
-  local ch=target.Character if not ch then return end
-  local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
-  if not part then return end
-  local cam=workspace.CurrentCamera
-  local screenPos=cam:WorldToScreenPoint(part.Position)
-  local mouse=UIS2:GetMouseLocation()
-  local dx=screenPos.X-mouse.X
-  local dy=screenPos.Y-mouse.Y
-  local dist=math.sqrt(dx^2+dy^2)
-  if dist<3 then return end -- 已经很接近了
-  -- 平滑移动鼠标
-  local speed=1-AimbotState.Smooth*5
-  speed=math.clamp(speed,0.1,0.9)
-  local moveX=dx*speed
-  local moveY=dy*speed
-  -- 通过mousemoverelative移动
-  pcall(function()
-   UIS2.MouseDeltaSensitivity=1
-  end)
+ if not target then return end
+ local ch=target.Character if not ch then return end
+ local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
+ if not part then return end
+ local cam=workspace.CurrentCamera
+ local screenPos=cam:WorldToScreenPoint(part.Position)
+ local mouse=UIS2:GetMouseLocation()
+ local dx=screenPos.X-mouse.X
+ local dy=screenPos.Y-mouse.Y
+ local dist=math.sqrt(dx^2+dy^2)
+ if dist<3 then return end -- 已经很接近了
+ -- 平滑移动鼠标
+ local speed=1-AimbotState.Smooth*5
+ speed=math.clamp(speed,0.1,0.9)
+ local moveX=dx*speed
+ local moveY=dy*speed
+ -- 通过mousemoverelative移动
+ pcall(function()
+ UIS2.MouseDeltaSensitivity=1
+ end)
  end
  -- 自瞄主循环
  local function aimbotLoop()
-  if not shouldAim() then return end
-  local target=getClosestTarget()
-  AimbotState.Target=target
-  if target then
-   if AimbotState.Mode=="Camera" then
-    aimCamera(target)
-   else
-    aimMouse(target)
-   end
-  end
+ if not shouldAim() then return end
+ local target=getClosestTarget()
+ AimbotState.Target=target
+ if target then
+ if AimbotState.Mode=="Camera" then
+ aimCamera(target)
+ else
+ aimMouse(target)
+ end
+ end
  end
  -- 开启/关闭自瞄
  local function enableAimbot()
-  if AimbotState.E then return end
-  AimbotState.E=true
-  AimbotState.Conn=RS.RenderStepped:Connect(aimbotLoop)
-  createFOVCircle()
-  showAimbotTouch(AimbotState.HoldKey)
-  optimizeForMobile()
-  pcall(Notify,"🎯","自瞄已开启 ("..AimbotState.Mode.."模式) "..(Platform.IsMobile and "📱手机版" or "💻电脑版"),3)
+ if AimbotState.E then return end
+ AimbotState.E=true
+ AimbotState.Conn=RS.RenderStepped:Connect(aimbotLoop)
+ createFOVCircle()
+ showAimbotTouch(AimbotState.HoldKey)
+ optimizeForMobile()
+ pcall(Notify,"🎯","自瞄已开启 ("..AimbotState.Mode.."模式) "..(Platform.IsMobile and "📱手机版" or "💻电脑版"),3)
  end
  local function disableAimbot()
-  AimbotState.E=false
-  if AimbotState.Conn then AimbotState.Conn:Disconnect() AimbotState.Conn=nil end
-  if AimbotState.FOVCircle then pcall(function() AimbotState.FOVCircle:Destroy() AimbotState.FOVCircle=nil end) end
-  showAimbotTouch(false)
-  pcall(Notify,"🎯","自瞄已关闭",2)
+ AimbotState.E=false
+ if AimbotState.Conn then AimbotState.Conn:Disconnect() AimbotState.Conn=nil end
+ if AimbotState.FOVCircle then pcall(function() AimbotState.FOVCircle:Destroy() AimbotState.FOVCircle=nil end) end
+ showAimbotTouch(false)
+ pcall(Notify,"🎯","自瞄已关闭",2)
  end
  -- 平台信息
  local PlatformSection=CombatT:AddSection((Platform.IsMobile and "📱  移动端" or "💻  电脑端").." 已适配")
  PlatformSection:AddButton("当前设备: "..(Platform.IsMobile and "手机/平板" or "电脑"),function()
-  pcall(Notify,"设备信息",Platform.IsMobile and "📱 移动端 - 触摸按钮已就绪" or "💻 电脑端 - 键盘快捷键已就绪",3)
+ pcall(Notify,"设备信息",Platform.IsMobile and "📱 移动端 - 触摸按钮已就绪" or "💻 电脑端 - 键盘快捷键已就绪",3)
  end)
  -- 自瞄UI
  local ABS=CombatT:AddSection("🎯  自瞄系统")
  ABS:AddButton("●  开启自瞄",function() enableAimbot() end)
  ABS:AddButton("○  关闭自瞄",function() disableAimbot() end)
  ABS:AddButton("📍  瞄准部位: Head",function()
-  local parts={"Head","HumanoidRootPart","Torso","UpperTorso","LowerTorso"}
-  local idx=table.find(parts,AimbotState.Part) or 1
-  idx=idx%#parts+1 AimbotState.Part=parts[idx]
-  print("[自瞄] 瞄准部位: "..AimbotState.Part)
+ local parts={"Head","HumanoidRootPart","Torso","UpperTorso","LowerTorso"}
+ local idx=table.find(parts,AimbotState.Part) or 1
+ idx=idx%#parts+1 AimbotState.Part=parts[idx]
+ print("[自瞄] 瞄准部位: "..AimbotState.Part)
  end)
  ABS:AddButton("📐  FOV: 150",function()
-  local fovs={50,80,100,150,200,300,500}
-  local idx=table.find(fovs,AimbotState.FOV) or 4
-  idx=idx%#fovs+1 AimbotState.FOV=fovs[idx]
-  updateFOVCircle()
-  print("[自瞄] FOV: "..AimbotState.FOV)
+ local fovs={50,80,100,150,200,300,500}
+ local idx=table.find(fovs,AimbotState.FOV) or 4
+ idx=idx%#fovs+1 AimbotState.FOV=fovs[idx]
+ updateFOVCircle()
+ print("[自瞄] FOV: "..AimbotState.FOV)
  end)
  ABS:AddButton("🌀  平滑度: 0.08",function()
-  local smooths={0.02,0.05,0.08,0.1,0.15,0.2,0.3,0.5}
-  local idx=table.find(smooths,AimbotState.Smooth) or 3
-  idx=idx%#smooths+1 AimbotState.Smooth=smooths[idx]
-  print("[自瞄] 平滑度: "..AimbotState.Smooth)
+ local smooths={0.02,0.05,0.08,0.1,0.15,0.2,0.3,0.5}
+ local idx=table.find(smooths,AimbotState.Smooth) or 3
+ idx=idx%#smooths+1 AimbotState.Smooth=smooths[idx]
+ print("[自瞄] 平滑度: "..AimbotState.Smooth)
  end)
  ABS:AddButton("🎮  模式: Camera",function()
-  local modes={"Camera","Mouse"}
-  local idx=table.find(modes,AimbotState.Mode) or 1
-  idx=idx%#modes+1 AimbotState.Mode=modes[idx]
-  pcall(Notify,"🎯","自瞄模式: "..AimbotState.Mode,2)
+ local modes={"Camera","Mouse"}
+ local idx=table.find(modes,AimbotState.Mode) or 1
+ idx=idx%#modes+1 AimbotState.Mode=modes[idx]
+ pcall(Notify,"🎯","自瞄模式: "..AimbotState.Mode,2)
  end)
  ABS:AddButton("👁  可见检测: 关",function()
-  AimbotState.VisibleCheck=not AimbotState.VisibleCheck
-  pcall(Notify,"🎯","可见检测: "..(AimbotState.VisibleCheck and "开" or "关"),2)
+ AimbotState.VisibleCheck=not AimbotState.VisibleCheck
+ pcall(Notify,"🎯","可见检测: "..(AimbotState.VisibleCheck and "开" or "关"),2)
  end)
  ABS:AddButton("👥  队友保护: 关",function()
-  AimbotState.TeamCheck=not AimbotState.TeamCheck
-  pcall(Notify,"🎯","队友保护: "..(AimbotState.TeamCheck and "开" or "关"),2)
+ AimbotState.TeamCheck=not AimbotState.TeamCheck
+ pcall(Notify,"🎯","队友保护: "..(AimbotState.TeamCheck and "开" or "关"),2)
  end)
  ABS:AddButton(Platform.IsMobile and "👆  触摸按钮: 关" or "🔘  按C开启: 关",function()
-  AimbotState.HoldKey=not AimbotState.HoldKey
-  if AimbotState.E then showAimbotTouch(AimbotState.HoldKey) end
-  pcall(Notify,"🎯",(Platform.IsMobile and "触摸按钮" or "按C开启")..": "..(AimbotState.HoldKey and "开" or "关"),2)
+ AimbotState.HoldKey=not AimbotState.HoldKey
+ if AimbotState.E then showAimbotTouch(AimbotState.HoldKey) end
+ pcall(Notify,"🎯",(Platform.IsMobile and "触摸按钮" or "按C开启")..": "..(AimbotState.HoldKey and "开" or "关"),2)
  end)
  -- ========== 子弹追踪系统（优化版）==========
  local BTState={
-  E=false,Conn=nil,Conn2=nil,Conn3=nil,
-  LastGun=nil,Supported=true,
-  Target=nil,PredictAmount=0.15,
-  Mode="Auto",SilentAim=false,
-  HoldKey=false,KeyCode=Enum.KeyCode.V
+ E=false,Conn=nil,Conn2=nil,Conn3=nil,
+ LastGun=nil,Supported=true,
+ Target=nil,PredictAmount=0.15,
+ Mode="Auto",SilentAim=false,
+ HoldKey=false,KeyCode=Enum.KeyCode.V
  }
  -- 检测武器是否支持
  local function checkGunSupport(tool)
-  if not tool then return false end
-  local name=tool.Name:lower()
-  -- 关键词检测
-  local gunKeywords={"gun","rifle","pistol","shotgun","smg","sniper","ak","m4","glock","deagle","awp","scar","ump","mp5","p90","bow","crossbow","rocket","laser"}
-  for _,kw in ipairs(gunKeywords) do
-   if name:find(kw,1,true) then return true end
-  end
-  -- 检测是否有开火RemoteEvent
-  local hasFire=false
-  pcall(function()
-   for _,desc in ipairs(tool:GetDescendants()) do
-    if desc:IsA("RemoteEvent") or desc:IsA("RemoteFunction") then
-     local dn=desc.Name:lower()
-     if dn:find("fire") or dn:find("shoot") or dn:find("attack") then hasFire=true break end
-    end
-   end
-  end)
-  -- 检测是否有弹药属性
-  pcall(function()
-   if tool:FindFirstChild("Ammo") or tool:FindFirstChild("Bullet") or tool:FindFirstChild("Projectile") or tool:FindFirstChild("Damage") then hasFire=true end
-  end)
-  return hasFire
+ if not tool then return false end
+ local name=tool.Name:lower()
+ -- 关键词检测
+ local gunKeywords={"gun","rifle","pistol","shotgun","smg","sniper","ak","m4","glock","deagle","awp","scar","ump","mp5","p90","bow","crossbow","rocket","laser"}
+ for _,kw in ipairs(gunKeywords) do
+ if name:find(kw,1,true) then return true end
+ end
+ -- 检测是否有开火RemoteEvent
+ local hasFire=false
+ pcall(function()
+ for _,desc in ipairs(tool:GetDescendants()) do
+ if desc:IsA("RemoteEvent") or desc:IsA("RemoteFunction") then
+  local dn=desc.Name:lower()
+  if dn:find("fire") or dn:find("shoot") or dn:find("attack") then hasFire=true break end
+ end
+ end
+ end)
+ -- 检测是否有弹药属性
+ pcall(function()
+ if tool:FindFirstChild("Ammo") or tool:FindFirstChild("Bullet") or tool:FindFirstChild("Projectile") or tool:FindFirstChild("Damage") then hasFire=true end
+ end)
+ return hasFire
  end
  -- 获取最近的敌人
  local function getBTTarget()
-  local closest=nil local dist=math.huge
-  local myRoot=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
-  if not myRoot then return nil end
-  for _,p in ipairs(Plrs:GetPlayers()) do
-   if p==LP then continue end
-   local ph=p.Character if not ph then continue end
-   local phum=ph:FindFirstChild("Humanoid") if not phum or phum.Health<=0 then continue end
-   local phrp=ph:FindFirstChild("HumanoidRootPart") if not phrp then continue end
-   local d=(phrp.Position-myRoot.Position).Magnitude
-   if d<200 and d<dist then dist=d closest=p end
-  end
-  return closest
+ local closest=nil local dist=math.huge
+ local myRoot=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+ if not myRoot then return nil end
+ for _,p in ipairs(Plrs:GetPlayers()) do
+ if p==LP then continue end
+ local ph=p.Character if not ph then continue end
+ local phum=ph:FindFirstChild("Humanoid") if not phum or phum.Health<=0 then continue end
+ local phrp=ph:FindFirstChild("HumanoidRootPart") if not phrp then continue end
+ local d=(phrp.Position-myRoot.Position).Magnitude
+ if d<200 and d<dist then dist=d closest=p end
+ end
+ return closest
  end
  -- 预测目标位置
  local function predictPosition(target)
-  if not target or not target.Character then return nil end
-  local ch=target.Character
-  local part=ch:FindFirstChild("Head") or ch:FindFirstChild("HumanoidRootPart")
-  if not part then return nil end
-  local hrp=ch:FindFirstChild("HumanoidRootPart")
-  if hrp then
-   return part.Position+hrp.Velocity*BTState.PredictAmount
-  else
-   return part.Position
-  end
+ if not target or not target.Character then return nil end
+ local ch=target.Character
+ local part=ch:FindFirstChild("Head") or ch:FindFirstChild("HumanoidRootPart")
+ if not part then return nil end
+ local hrp=ch:FindFirstChild("HumanoidRootPart")
+ if hrp then
+ return part.Position+hrp.Velocity*BTState.PredictAmount
+ else
+ return part.Position
+ end
  end
  -- 子弹追踪触发条件适配（PC键盘/手机触摸）
  local function shouldBT()
-     if not BTState.E then return false end
-     if BTState.HoldKey then
-         if Platform.IsPC then
-             return UIS2:IsKeyDown(BTState.KeyCode)
-         else
-             return Platform.TouchActive2
-         end
-     end
-     return true
+  if not BTState.E then return false end
+  if BTState.HoldKey then
+      if Platform.IsPC then
+          return UIS2:IsKeyDown(BTState.KeyCode)
+      else
+          return Platform.TouchActive2
+      end
+  end
+  return true
  end
  -- 子弹追踪主循环（拦截工作区子弹并转向目标）
  local function bulletTrackLoop()
-  if not shouldBT() then return end
-  local target=BTState.Target
-  if not target or not target.Character then
-   BTState.Target=getBTTarget()
-   return
+ if not shouldBT() then return end
+ local target=BTState.Target
+ if not target or not target.Character then
+ BTState.Target=getBTTarget()
+ return
+ end
+ -- 更新目标
+ if not target.Character or not target.Character:FindFirstChild("Humanoid") or target.Character.Humanoid.Health<=0 then
+ BTState.Target=getBTTarget()
+ return
+ end
+ local targetPos=predictPosition(target)
+ if not targetPos then return end
+ -- 扫描工作区中的子弹
+ local myRoot=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+ if not myRoot then return end
+ for _,v in ipairs(workspace:GetChildren()) do
+ if v:IsA("BasePart") then
+ local vel=v.Velocity
+ if vel.Magnitude>80 then -- 高速物体可能是子弹
+  local distToMe=(v.Position-myRoot.Position).Magnitude
+  -- 只处理靠近玩家的子弹（可能是自己发射的）
+  if distToMe<15 and v.Parent~=LP.Character then
+   -- 改变子弹方向指向预测位置
+   local dir=(targetPos-v.Position).Unit
+   v.Velocity=dir*vel.Magnitude
+   -- 同步改变CFrame朝向
+   v.CFrame=CFrame.new(v.Position,targetPos)
   end
-  -- 更新目标
-  if not target.Character or not target.Character:FindFirstChild("Humanoid") or target.Character.Humanoid.Health<=0 then
-   BTState.Target=getBTTarget()
-   return
-  end
-  local targetPos=predictPosition(target)
-  if not targetPos then return end
-  -- 扫描工作区中的子弹
-  local myRoot=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
-  if not myRoot then return end
-  for _,v in ipairs(workspace:GetChildren()) do
-   if v:IsA("BasePart") then
-    local vel=v.Velocity
-    if vel.Magnitude>80 then -- 高速物体可能是子弹
-     local distToMe=(v.Position-myRoot.Position).Magnitude
-     -- 只处理靠近玩家的子弹（可能是自己发射的）
-     if distToMe<15 and v.Parent~=LP.Character then
-      -- 改变子弹方向指向预测位置
-      local dir=(targetPos-v.Position).Unit
-      v.Velocity=dir*vel.Magnitude
-      -- 同步改变CFrame朝向
-      v.CFrame=CFrame.new(v.Position,targetPos)
-     end
-    end
+ end
+ end
+ end
+ -- 检查子弹文件夹
+ pcall(function()
+ local bulletFolders=workspace:FindFirstChild("Bullets") or workspace:FindFirstChild("Projectiles") or workspace:FindFirstChild("Rays")
+ if bulletFolders then
+ for _,b in ipairs(bulletFolders:GetChildren()) do
+  if b:IsA("BasePart") and b.Velocity.Magnitude>80 then
+   local distToMe=(b.Position-myRoot.Position).Magnitude
+   if distToMe<15 then
+    local dir=(targetPos-b.Position).Unit
+    b.Velocity=dir*b.Velocity.Magnitude
+    b.CFrame=CFrame.new(b.Position,targetPos)
    end
   end
-  -- 检查子弹文件夹
-  pcall(function()
-   local bulletFolders=workspace:FindFirstChild("Bullets") or workspace:FindFirstChild("Projectiles") or workspace:FindFirstChild("Rays")
-   if bulletFolders then
-    for _,b in ipairs(bulletFolders:GetChildren()) do
-     if b:IsA("BasePart") and b.Velocity.Magnitude>80 then
-      local distToMe=(b.Position-myRoot.Position).Magnitude
-      if distToMe<15 then
-       local dir=(targetPos-b.Position).Unit
-       b.Velocity=dir*b.Velocity.Magnitude
-       b.CFrame=CFrame.new(b.Position,targetPos)
-      end
-     end
-    end
-   end
-  end)
+ end
+ end
+ end)
  end
  -- 监听武器切换
  local function setupToolListener()
-  if not LP.Character then return end
-  BTState.LastGun=nil
-  local function checkTool()
-   local tool=LP.Character:FindFirstChildOfClass("Tool")
-   if tool and tool~=BTState.LastGun then
-    BTState.LastGun=tool
-    BTState.Supported=checkGunSupport(tool)
-    if BTState.E then
-     pcall(Notify,"💫","武器"..(BTState.Supported and "支持" or "不支持")..": "..tool.Name,3)
-    end
-   end
-  end
-  local conn=LP.Character.ChildAdded:Connect(function(child)
-   if child:IsA("Tool") then task.wait(0.1) checkTool() end
-  end)
-  return conn
+ if not LP.Character then return end
+ BTState.LastGun=nil
+ local function checkTool()
+ local tool=LP.Character:FindFirstChildOfClass("Tool")
+ if tool and tool~=BTState.LastGun then
+ BTState.LastGun=tool
+ BTState.Supported=checkGunSupport(tool)
+ if BTState.E then
+  pcall(Notify,"💫","武器"..(BTState.Supported and "支持" or "不支持")..": "..tool.Name,3)
+ end
+ end
+ end
+ local conn=LP.Character.ChildAdded:Connect(function(child)
+ if child:IsA("Tool") then task.wait(0.1) checkTool() end
+ end)
+ return conn
  end
  -- 开启/关闭
  local function enableBT()
-  if BTState.E then return end
-  BTState.E=true
-  BTState.Target=getBTTarget()
-  BTState.Conn=RS.RenderStepped:Connect(bulletTrackLoop)
-  BTState.Conn2=setupToolListener()
-  BTState.Conn3=LP.CharacterAdded:Connect(function()
-   task.wait(1) BTState.LastGun=nil
-   if BTState.Conn2 then BTState.Conn2:Disconnect() end
-   BTState.Conn2=setupToolListener()
-  end)
-  showBTTouch(BTState.HoldKey)
-  if Platform.IsMobile then
-   BTState.PredictAmount=math.max(BTState.PredictAmount,0.2)
-  end
-  pcall(Notify,"💫","子弹追踪已开启 "..(Platform.IsMobile and "📱手机版" or "💻电脑版"),3)
+ if BTState.E then return end
+ BTState.E=true
+ BTState.Target=getBTTarget()
+ BTState.Conn=RS.RenderStepped:Connect(bulletTrackLoop)
+ BTState.Conn2=setupToolListener()
+ BTState.Conn3=LP.CharacterAdded:Connect(function()
+ task.wait(1) BTState.LastGun=nil
+ if BTState.Conn2 then BTState.Conn2:Disconnect() end
+ BTState.Conn2=setupToolListener()
+ end)
+ showBTTouch(BTState.HoldKey)
+ if Platform.IsMobile then
+ BTState.PredictAmount=math.max(BTState.PredictAmount,0.2)
+ end
+ pcall(Notify,"💫","子弹追踪已开启 "..(Platform.IsMobile and "📱手机版" or "💻电脑版"),3)
  end
  local function disableBT()
-  BTState.E=false
-  if BTState.Conn then BTState.Conn:Disconnect() BTState.Conn=nil end
-  if BTState.Conn2 then BTState.Conn2:Disconnect() BTState.Conn2=nil end
-  if BTState.Conn3 then BTState.Conn3:Disconnect() BTState.Conn3=nil end
-  showBTTouch(false)
-  pcall(Notify,"💫","子弹追踪已关闭",2)
+ BTState.E=false
+ if BTState.Conn then BTState.Conn:Disconnect() BTState.Conn=nil end
+ if BTState.Conn2 then BTState.Conn2:Disconnect() BTState.Conn2=nil end
+ if BTState.Conn3 then BTState.Conn3:Disconnect() BTState.Conn3=nil end
+ showBTTouch(false)
+ pcall(Notify,"💫","子弹追踪已关闭",2)
  end
  -- 子弹追踪UI
  local BTS=CombatT:AddSection("💫  子弹追踪")
  BTS:AddButton("●  开启子弹追踪",function() enableBT() end)
  BTS:AddButton("○  关闭子弹追踪",function() disableBT() end)
  BTS:AddButton("🎯  预测强度: 0.15",function()
-  local preds={0.05,0.1,0.15,0.2,0.3,0.5}
-  local idx=table.find(preds,BTState.PredictAmount) or 3
-  idx=idx%#preds+1 BTState.PredictAmount=preds[idx]
-  pcall(Notify,"💫","预测强度: "..BTState.PredictAmount,2)
+ local preds={0.05,0.1,0.15,0.2,0.3,0.5}
+ local idx=table.find(preds,BTState.PredictAmount) or 3
+ idx=idx%#preds+1 BTState.PredictAmount=preds[idx]
+ pcall(Notify,"💫","预测强度: "..BTState.PredictAmount,2)
  end)
  BTS:AddButton("🔍  检测当前武器",function()
-  local ch=LP.Character if not ch then pcall(Notify,"❌","找不到角色",2) return end
-  local tool=ch:FindFirstChildOfClass("Tool")
-  if not tool then pcall(Notify,"❌","当前没有装备武器",2) return end
-  local sup=checkGunSupport(tool)
-  pcall(Notify,sup and "✅" or "❌",(sup and "支持" or "不支持")..": "..tool.Name,3)
+ local ch=LP.Character if not ch then pcall(Notify,"❌","找不到角色",2) return end
+ local tool=ch:FindFirstChildOfClass("Tool")
+ if not tool then pcall(Notify,"❌","当前没有装备武器",2) return end
+ local sup=checkGunSupport(tool)
+ pcall(Notify,sup and "✅" or "❌",(sup and "支持" or "不支持")..": "..tool.Name,3)
  end)
  BTS:AddButton("🎯  锁定最近敌人",function()
-  local t=getBTTarget()
-  if t then
-   BTState.Target=t
-   pcall(Notify,"💫","已锁定: "..t.Name,2)
-  else
-   pcall(Notify,"❌","附近没有敌人",2)
-  end
+ local t=getBTTarget()
+ if t then
+ BTState.Target=t
+ pcall(Notify,"💫","已锁定: "..t.Name,2)
+ else
+ pcall(Notify,"❌","附近没有敌人",2)
+ end
  end)
  BTS:AddButton(Platform.IsMobile and "👆  触摸按钮: 关" or "🔘  按V开启: 关",function()
-  BTState.HoldKey=not BTState.HoldKey
-  if BTState.E then showBTTouch(BTState.HoldKey) end
-  pcall(Notify,"💫",(Platform.IsMobile and "触摸按钮" or "按V开启")..": "..(BTState.HoldKey and "开" or "关"),2)
+ BTState.HoldKey=not BTState.HoldKey
+ if BTState.E then showBTTouch(BTState.HoldKey) end
+ pcall(Notify,"💫",(Platform.IsMobile and "触摸按钮" or "按V开启")..": "..(BTState.HoldKey and "开" or "关"),2)
  end)
  -- 整活功能页
  local MemeT=W:AddTab("整活","🕺")
@@ -46839,71 +46839,71 @@ v:FireServer()]=]
   task.delay(3,function() conn:Disconnect() print("[整活] 转圈结束") end)
   print("[整活] 转起来了！(3秒)")
  end)
--- 😍 整活图片集
-local PicS=MemeT:AddSection("😍  整活图片集")
-PicS:AddButton("🐱  人兽",function()
- safeSpawn(function()
-  local imgUrl="https://raw.githubusercontent.com/Deadeye78/2580/refs/heads/main/renshou.jpg"
-  local fileName="renshou.jpg"
-  local assetUrl
-  if isfile and writefile and getcustomasset then
-   if not isfile(fileName) then
-    local data=game:HttpGet(imgUrl)
-    writefile(fileName,data)
+ -- 😍 整活图片集
+ local PicS=MemeT:AddSection("😍  整活图片集")
+ PicS:AddButton("🐱  人兽",function()
+  safeSpawn(function()
+   local imgUrl="https://raw.githubusercontent.com/Deadeye78/2580/refs/heads/main/renshou.jpg"
+   local fileName="renshou.jpg"
+   local assetUrl
+   if isfile and writefile and getcustomasset then
+    if not isfile(fileName) then
+     local data=game:HttpGet(imgUrl)
+     writefile(fileName,data)
+    end
+    assetUrl=getcustomasset(fileName)
+   else
+    pcall(Notify,"提示","当前执行器不支持自定图片加载，请使用支持writefile的执行器",5)
+    return
    end
-   assetUrl=getcustomasset(fileName)
-  else
-   pcall(Notify,"提示","当前执行器不支持自定图片加载，请使用支持writefile的执行器",5)
-   return
-  end
-  if CG:FindFirstChild("RenShouPopup") then CG.RenShouPopup:Destroy() end
-  local sg=Instance.new("ScreenGui")
-  sg.Name="RenShouPopup" sg.ResetOnSpawn=false sg.IgnoreGuiInset=true sg.Parent=CG
-  local frame=Instance.new("Frame")
-  frame.Size=UDim2.new(0,380,0,420)
-  frame.Position=UDim2.new(0.5,-190,0.5,-210)
-  frame.BackgroundColor3=Color3.fromRGB(25,25,35)
-  frame.BorderSizePixel=0 frame.Parent=sg
-  local mc=Instance.new("UICorner") mc.CornerRadius=UDim.new(0,10) mc.Parent=frame
-  local title=Instance.new("TextLabel")
-  title.Size=UDim2.new(1,-60,0,40) title.Position=UDim2.new(0,15,0,8)
-  title.BackgroundTransparency=1 title.Text="🐱 人兽"
-  title.TextColor3=Color3.fromRGB(255,255,255) title.Font=Enum.Font.GothamBold
-  title.TextSize=18 title.TextXAlignment=Enum.TextXAlignment.Left title.Parent=frame
-  local closeBtn=Instance.new("TextButton")
-  closeBtn.Size=UDim2.new(0,40,0,40) closeBtn.Position=UDim2.new(1,-48,0,8)
-  closeBtn.BackgroundColor3=Color3.fromRGB(200,50,50) closeBtn.Text="✕"
-  closeBtn.TextColor3=Color3.fromRGB(255,255,255) closeBtn.Font=Enum.Font.GothamBold
-  closeBtn.TextSize=18 closeBtn.Parent=frame
-  local cc=Instance.new("UICorner") cc.CornerRadius=UDim.new(0,8) cc.Parent=closeBtn
-  local img=Instance.new("ImageLabel")
-  img.Size=UDim2.new(1,-20,1,-60) img.Position=UDim2.new(0,10,0,50)
-  img.BackgroundTransparency=1 img.Image=assetUrl img.Parent=frame
-  local ic=Instance.new("UICorner") ic.CornerRadius=UDim.new(0,6) ic.Parent=img
-  closeBtn.MouseButton1Click:Connect(function() sg:Destroy() end)
-  local drag=Instance.new("TextButton")
-  drag.Size=UDim2.new(1,-48,0,40) drag.Position=UDim2.new(0,0,0,0)
-  drag.BackgroundTransparency=1 drag.Text="" drag.Parent=frame
-  local dragging,dragStart,frameStart
-  drag.InputBegan:Connect(function(input)
-   if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
-    dragging=true dragStart=input.Position frameStart=frame.Position
-   end
+   if CG:FindFirstChild("RenShouPopup") then CG.RenShouPopup:Destroy() end
+   local sg=Instance.new("ScreenGui")
+   sg.Name="RenShouPopup" sg.ResetOnSpawn=false sg.IgnoreGuiInset=true sg.Parent=CG
+   local frame=Instance.new("Frame")
+   frame.Size=UDim2.new(0,380,0,420)
+   frame.Position=UDim2.new(0.5,-190,0.5,-210)
+   frame.BackgroundColor3=Color3.fromRGB(25,25,35)
+   frame.BorderSizePixel=0 frame.Parent=sg
+   local mc=Instance.new("UICorner") mc.CornerRadius=UDim.new(0,10) mc.Parent=frame
+   local title=Instance.new("TextLabel")
+   title.Size=UDim2.new(1,-60,0,40) title.Position=UDim2.new(0,15,0,8)
+   title.BackgroundTransparency=1 title.Text="🐱 人兽"
+   title.TextColor3=Color3.fromRGB(255,255,255) title.Font=Enum.Font.GothamBold
+   title.TextSize=18 title.TextXAlignment=Enum.TextXAlignment.Left title.Parent=frame
+   local closeBtn=Instance.new("TextButton")
+   closeBtn.Size=UDim2.new(0,40,0,40) closeBtn.Position=UDim2.new(1,-48,0,8)
+   closeBtn.BackgroundColor3=Color3.fromRGB(200,50,50) closeBtn.Text="✕"
+   closeBtn.TextColor3=Color3.fromRGB(255,255,255) closeBtn.Font=Enum.Font.GothamBold
+   closeBtn.TextSize=18 closeBtn.Parent=frame
+   local cc=Instance.new("UICorner") cc.CornerRadius=UDim.new(0,8) cc.Parent=closeBtn
+   local img=Instance.new("ImageLabel")
+   img.Size=UDim2.new(1,-20,1,-60) img.Position=UDim2.new(0,10,0,50)
+   img.BackgroundTransparency=1 img.Image=assetUrl img.Parent=frame
+   local ic=Instance.new("UICorner") ic.CornerRadius=UDim.new(0,6) ic.Parent=img
+   closeBtn.MouseButton1Click:Connect(function() sg:Destroy() end)
+   local drag=Instance.new("TextButton")
+   drag.Size=UDim2.new(1,-48,0,40) drag.Position=UDim2.new(0,0,0,0)
+   drag.BackgroundTransparency=1 drag.Text="" drag.Parent=frame
+   local dragging,dragStart,frameStart
+   drag.InputBegan:Connect(function(input)
+    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+     dragging=true dragStart=input.Position frameStart=frame.Position
+    end
+   end)
+   drag.InputEnded:Connect(function(input)
+    if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
+     dragging=false
+    end
+   end)
+   UIS.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
+     local delta=input.Position-dragStart
+     frame.Position=UDim2.new(frameStart.X.Scale,frameStart.X.Offset+delta.X,frameStart.Y.Scale,frameStart.Y.Offset+delta.Y)
+    end
+   end)
+   print("[整活] 人兽图片已弹出")
   end)
-  drag.InputEnded:Connect(function(input)
-   if input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch then
-    dragging=false
-   end
-  end)
-  UIS.InputChanged:Connect(function(input)
-   if dragging and (input.UserInputType==Enum.UserInputType.MouseMovement or input.UserInputType==Enum.UserInputType.Touch) then
-    local delta=input.Position-dragStart
-    frame.Position=UDim2.new(frameStart.X.Scale,frameStart.X.Offset+delta.X,frameStart.Y.Scale,frameStart.Y.Offset+delta.Y)
-   end
-  end)
-  print("[整活] 人兽图片已弹出")
  end)
-end)
  -- ========== 音乐功能页 ==========
  local MusicT=W:AddTab("音乐","🎵")
  local MusicState={
