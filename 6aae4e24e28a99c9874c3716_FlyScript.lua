@@ -3944,9 +3944,627 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
   end)
  end)
 YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https://raw.githubusercontent.com/XiaoXuAnZang/XKscript/refs/heads/main/GraceXJ.lua") end)
-YX:AddButton("😨  压力脚本",function() runLS("压力脚本","https://raw.githubusercontent.com/Drop56796/CreepyEyeHub/main/obfuscate.lua") end)
-YX:AddButton("💵  俄亥俄州捡印钞机",function() runLS("俄亥俄州捡印钞机","https://raw.githubusercontent.com/IIIlll1ll1/Cracks/main/AdvancedLogic_Crack.lua") end)
--- 🚂 死铁轨合集
+ YX:AddButton("😨  压力脚本",function() runLS("压力脚本","https://raw.githubusercontent.com/Drop56796/CreepyEyeHub/main/obfuscate.lua") end)
+ YX:AddButton("💵  俄亥俄州捡印钞机",function() runLS("俄亥俄州捡印钞机","https://raw.githubusercontent.com/IIIlll1ll1/Cracks/main/AdvancedLogic_Crack.lua") end)
+ -- 🍂 秋天脚本（镰刀职业）
+ local QT=SV:AddSection("🍂  秋天·镰刀职业")
+ local QTState={
+  AtkSpeedMod=1,
+  AtkRangeMod=1,
+  AutoAttack=false,
+  AutoHeal=false,
+  AtkConn=nil,
+  HealConn=nil,
+  OriginalSpeed=nil,
+  OriginalRange=nil,
+ }
+ -- 获取镰刀工具
+ local function getScythe()
+  local lp=game.Players.LocalPlayer
+  local ch=lp.Character
+  if not ch then return nil end
+  -- 检查手里
+  local tool=ch:FindFirstChildOfClass("Tool")
+  if tool then
+   local tname=tool.Name:lower()
+   if tname:find("scythe") or tname:find("镰刀") or tname:find("秋天") or tname:find("autumn") or tname:find("fall") then
+    return tool
+   end
+  end
+  -- 检查背包
+  local bp=lp:FindFirstChild("Backpack")
+  if bp then
+   for _,t in ipairs(bp:GetChildren()) do
+    if t:IsA("Tool") then
+     local tname=t.Name:lower()
+     if tname:find("scythe") or tname:find("镰刀") or tname:find("秋天") or tname:find("autumn") then
+      return t
+     end
+    end
+   end
+  end
+  return nil
+ end
+ -- 获取玩家的Humanoid
+ local function getHum()
+  local lp=game.Players.LocalPlayer
+  local ch=lp.Character
+  if not ch then return nil end
+  return ch:FindFirstChild("Humanoid")
+ end
+ -- 攻击速度调整
+ local function setAtkSpeed(multiplier)
+  local scythe=getScythe()
+  if not scythe then return false end
+  pcall(function()
+   -- 尝试修改攻速属性
+   local configs={
+    "AttackSpeed","AtkSpeed","Speed","Cooldown","AttackCooldown",
+    "HitSpeed","SwingSpeed","攻击速度","攻速"
+   }
+   for _,name in ipairs(configs) do
+    local val=scythe:FindFirstChild(name)
+    if val and val:IsA("NumberValue") then
+     if QTState.OriginalSpeed==nil then QTState.OriginalSpeed=val.Value end
+     val.Value=QTState.OriginalSpeed*multiplier
+    elseif val and val:IsA("IntValue") then
+     if QTState.OriginalSpeed==nil then QTState.OriginalSpeed=val.Value end
+     val.Value=math.floor(QTState.OriginalSpeed*multiplier)
+    end
+   end
+   -- 尝试修改动画速度
+   local anim=scythe:FindFirstChildWhichIsA("AnimationController") or scythe:FindFirstChild("Animation")
+   if anim then
+    -- pcall可能失败
+   end
+  end)
+  return true
+ end
+ -- 攻击范围调整
+ local function setAtkRange(multiplier)
+  local scythe=getScythe()
+  if not scythe then return false end
+  pcall(function()
+   local configs={
+    "Range","AttackRange","HitRange","Reach","HitboxSize",
+    "DamageRange","攻击范围","范围"
+   }
+   for _,name in ipairs(configs) do
+    local val=scythe:FindFirstChild(name)
+    if val and val:IsA("NumberValue") then
+     if QTState.OriginalRange==nil then QTState.OriginalRange=val.Value end
+     val.Value=QTState.OriginalRange*multiplier
+    elseif val and val:IsA("IntValue") then
+     if QTState.OriginalRange==nil then QTState.OriginalRange=val.Value end
+     val.Value=math.floor(QTState.OriginalRange*multiplier)
+    end
+   end
+   -- 扩大Hitbox
+   local hitbox=scythe:FindFirstChild("Hitbox") or scythe:FindFirstChild("DamagePart") or scythe:FindFirstChild("Handle")
+   if hitbox and hitbox:IsA("BasePart") then
+    hitbox.Size=hitbox.Size*multiplier
+   end
+  end)
+  return true
+ end
+ -- 自动攻击
+ local function startAutoAttack()
+  if QTState.AtkConn then return end
+  local lp=game.Players.LocalPlayer
+  QTState.AtkConn=game:GetService("RunService").Heartbeat:Connect(function()
+   if not QTState.AutoAttack then return end
+   local scythe=getScythe()
+   if not scythe then return end
+   pcall(function()
+    -- 尝试触发攻击
+    -- 方法1：触发Tool的Activated事件
+    if scythe:FindFirstChild("Handle") then
+     local mouse=lp:GetMouse()
+     if mouse then
+      scythe.Activated:Fire()
+     end
+    end
+    -- 方法2：调用攻击函数
+    for _,child in ipairs(scythe:GetChildren()) do
+     if child:IsA("RemoteEvent") or child:IsA("BindableEvent") then
+      local cname=child.Name:lower()
+      if cname:find("attack") or cname:find("hit") or cname:find("swing") or cname:find("damage") then
+       child:FireServer()
+      end
+     end
+    end
+    -- 方法3：直接调用脚本里的攻击函数
+    for _,s in ipairs(scythe:GetChildren()) do
+     if s:IsA("LocalScript") or s:IsA("Script") then
+      -- 无法直接调用，跳过
+     end
+    end
+   end)
+  end)
+ end
+ -- 无限吃谷回血
+ local function startAutoHeal()
+  if QTState.HealConn then return end
+  local lp=game.Players.LocalPlayer
+  QTState.HealConn=game:GetService("RunService").Heartbeat:Connect(function()
+   if not QTState.AutoHeal then return end
+   pcall(function()
+    local hum=getHum()
+    if not hum then return end
+    -- 如果血量不满，尝试回血
+    if hum.Health<hum.MaxHealth then
+     -- 方法1：找血包/谷物直接使用
+     local bp=lp:FindFirstChild("Backpack")
+     if bp then
+      for _,item in ipairs(bp:GetChildren()) do
+       if item:IsA("Tool") then
+        local iname=item.Name:lower()
+        if iname:find("heal") or iname:find("谷") or iname:find("grain") or iname:find("rice") or iname:find("food") or iname:find("potion") or iname:find("药") or iname:find("恢复") then
+         -- 尝试装备并使用
+         item.Parent=lp.Character
+         task.wait(0.05)
+         if item.Activated then
+          item.Activated:Fire()
+         end
+         break
+        end
+       end
+      end
+     end
+     -- 方法2：直接设置血量（如果有属性）
+     local healthVal=hum:FindFirstChild("Health")
+     if healthVal and healthVal:IsA("NumberValue") then
+      healthVal.Value=hum.MaxHealth
+     end
+     -- 方法3：触发回血远程事件
+     local chars={lp.Character,workspace:FindFirstChild(lp.Name)}
+     for _,ch in ipairs(chars) do
+      if ch then
+       for _,r in ipairs(ch:GetDescendants()) do
+        if r:IsA("RemoteEvent") or r:IsA("BindableEvent") then
+         local rn=r.Name:lower()
+         if rn:find("heal") or rn:find("regen") or rn:find("恢复") then
+          r:FireServer()
+         end
+        end
+       end
+      end
+     end
+    end
+   end)
+  end)
+ end
+ -- 攻击速度按钮
+ QT:AddButton("⚔️  攻速: 1x",function()
+  local speeds={0.5,1,1.5,2,3,5,10}
+  local idx=table.find(speeds,QTState.AtkSpeedMod) or 2
+  idx=idx%#speeds+1
+  QTState.AtkSpeedMod=speeds[idx]
+  if setAtkSpeed(QTState.AtkSpeedMod) then
+   pcall(Notify,"🍂 秋天","攻击速度: "..QTState.AtkSpeedMod.."x",2)
+  else
+   pcall(Notify,"⚠️","没找到镰刀，请先装备",2)
+  end
+ end)
+ -- 攻击范围按钮
+ QT:AddButton("📏  范围: 1x",function()
+  local ranges={1,1.5,2,3,5,10}
+  local idx=table.find(ranges,QTState.AtkRangeMod) or 1
+  idx=idx%#ranges+1
+  QTState.AtkRangeMod=ranges[idx]
+  if setAtkRange(QTState.AtkRangeMod) then
+   pcall(Notify,"🍂 秋天","攻击范围: "..QTState.AtkRangeMod.."x",2)
+  else
+   pcall(Notify,"⚠️","没找到镰刀，请先装备",2)
+  end
+ end)
+ -- 自动攻击
+ QT:AddButton("🤖  自动攻击",function()
+  if QTState.AutoAttack then
+   QTState.AutoAttack=false
+   if QTState.AtkConn then QTState.AtkConn:Disconnect() QTState.AtkConn=nil end
+   pcall(Notify,"🍂 秋天","自动攻击已关闭",2)
+  else
+   QTState.AutoAttack=true
+   startAutoAttack()
+   pcall(Notify,"🍂 秋天","自动攻击已开启\n持续发包中...",3)
+  end
+ end)
+ -- 无限吃谷回血
+ QT:AddButton("❤️  无限回血",function()
+  if QTState.AutoHeal then
+   QTState.AutoHeal=false
+   if QTState.HealConn then QTState.HealConn:Disconnect() QTState.HealConn=nil end
+   pcall(Notify,"🍂 秋天","无限回血已关闭",2)
+  else
+   QTState.AutoHeal=true
+   startAutoHeal()
+   pcall(Notify,"🍂 秋天","无限回血已开启",3)
+  end
+ end)
+ -- 全部重置
+ QT:AddButton("🔄  全部重置",function()
+  QTState.AutoAttack=false
+  QTState.AutoHeal=false
+  QTState.AtkSpeedMod=1
+  QTState.AtkRangeMod=1
+  if QTState.AtkConn then QTState.AtkConn:Disconnect() QTState.AtkConn=nil end
+  if QTState.HealConn then QTState.HealConn:Disconnect() QTState.HealConn=nil end
+  setAtkSpeed(1)
+  setAtkRange(1)
+  QTState.OriginalSpeed=nil
+  QTState.OriginalRange=nil
+  pcall(Notify,"🍂 秋天","所有功能已重置",2)
+ end)
+ -- 🧵 找出1根针
+ local ZN=SV:AddSection("🧵  找出1根针")
+ local NeedleState={ESPEnabled=false,AutoTake=false,Drawings={},Conn=nil,AutoConn=nil}
+ -- 找针的函数
+ local function findNeedles()
+  local needles={}
+  pcall(function()
+   for _,v in ipairs(workspace:GetDescendants()) do
+    pcall(function()
+     if v:IsA("BasePart") then
+      local name=v.Name:lower()
+      if name:find("needle") or name:find("针") then
+       table.insert(needles,v)
+      end
+     elseif v:IsA("Model") then
+      local name=v.Name:lower()
+      if name:find("needle") or name:find("针") then
+       local hrp=v.PrimaryPart or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChildWhichIsA("BasePart")
+       if hrp then table.insert(needles,hrp) end
+      end
+     end
+    end)
+   end
+   -- 如果没找到，尝试找小物体
+   if #needles==0 then
+    for _,v in ipairs(workspace:GetDescendants()) do
+     pcall(function()
+      if v:IsA("BasePart") and not v.Anchored then
+       local sz=v.Size
+       if (sz.X+sz.Y+sz.Z)<3 and v.Name~="Baseplate" then
+        -- 可能是针的小物体
+       end
+      end
+     end)
+    end
+   end
+  end)
+  return needles
+ end
+ -- 针ESP
+ ZN:AddButton("👁  针ESP",function()
+  if NeedleState.ESPEnabled then pcall(Notify,"⚠️","针ESP已经开启了",2) return end
+  safeSpawn(function()
+   NeedleState.ESPEnabled=true
+   local RS=game:GetService("RunService")
+   local cam=workspace.CurrentCamera
+   local LP=game.Players.LocalPlayer
+   local function clearDrawings()
+    for _,d in pairs(NeedleState.Drawings) do
+     pcall(function() d:Remove() end)
+    end
+    NeedleState.Drawings={}
+   end
+   local function updateESP()
+    if not NeedleState.ESPEnabled then return end
+    clearDrawings()
+    local needles=findNeedles()
+    for i,needle in ipairs(needles) do
+     pcall(function()
+      local pos,onScreen=cam:WorldToViewportPoint(needle.Position)
+      if not onScreen then return end
+      -- 文字标签
+      local lbl=Drawing.new("Text")
+      lbl.Center=true
+      lbl.Outline=true
+      lbl.OutlineColor=Color3.fromRGB(0,0,0)
+      lbl.Color=Color3.fromRGB(255,215,0)
+      lbl.Size=14
+      lbl.Font=2
+      lbl.Text="🧵 针"
+      lbl.Position=Vector2.new(pos.X,pos.Y-20)
+      lbl.Visible=true
+      table.insert(NeedleState.Drawings,lbl)
+      -- 距离
+      if LP.Character and LP.Character.HumanoidRootPart then
+       local dist=(needle.Position-LP.Character.HumanoidRootPart.Position).Magnitude
+       local dlbl=Drawing.new("Text")
+       dlbl.Center=true
+       dlbl.Outline=true
+       dlbl.OutlineColor=Color3.fromRGB(0,0,0)
+       dlbl.Color=Color3.fromRGB(200,200,200)
+       dlbl.Size=12
+       dlbl.Font=2
+       dlbl.Text=math.floor(dist).." studs"
+       dlbl.Position=Vector2.new(pos.X,pos.Y-5)
+       dlbl.Visible=true
+       table.insert(NeedleState.Drawings,dlbl)
+      end
+      -- 方框/圆点
+      local dot=Drawing.new("Square")
+      dot.Filled=true
+      dot.Color=Color3.fromRGB(255,215,0)
+      dot.Size=Vector2.new(6,6)
+      dot.Position=Vector2.new(pos.X-3,pos.Y-3)
+      dot.Visible=true
+      table.insert(NeedleState.Drawings,dot)
+      -- 框
+      local box=Drawing.new("Square")
+      box.Filled=false
+      box.Thickness=1.5
+      box.Color=Color3.fromRGB(255,215,0)
+      box.Size=Vector2.new(20,20)
+      box.Position=Vector2.new(pos.X-10,pos.Y-10)
+      box.Visible=true
+      table.insert(NeedleState.Drawings,box)
+     end)
+    end
+   end
+   NeedleState.Conn=RS.RenderStepped:Connect(updateESP)
+   pcall(Notify,"🧵","针ESP已开启",3)
+  end)
+ end)
+ ZN:AddButton("⏹  关闭ESP",function()
+  if not NeedleState.ESPEnabled then pcall(Notify,"⚠️","ESP还没开启",2) return end
+  NeedleState.ESPEnabled=false
+  if NeedleState.Conn then NeedleState.Conn:Disconnect() NeedleState.Conn=nil end
+  for _,d in pairs(NeedleState.Drawings) do
+   pcall(function() d:Remove() end)
+  end
+  NeedleState.Drawings={}
+  pcall(Notify,"🧵","针ESP已关闭",2)
+ end)
+ -- 自动拿取
+ ZN:AddButton("🤖  自动拿取",function()
+  if NeedleState.AutoTake then pcall(Notify,"⚠️","自动拿取已经开启了",2) return end
+  NeedleState.AutoTake=true
+  safeSpawn(function()
+   local LP=game.Players.LocalPlayer
+   local takenCount=0
+   local function tryTake(needle)
+    pcall(function()
+     -- 尝试触发触碰
+     local ch=LP.Character
+     if not ch then return end
+     local hrp=ch:FindFirstChild("HumanoidRootPart")
+     if not hrp then return end
+     -- 方法1：直接触发Touched事件
+     if needle.Touched then
+      needle.Touched:Fire(hrp)
+     end
+     -- 方法2：尝试触发点击
+     local click=needle.Parent and needle.Parent:FindFirstChildWhichIsA("ClickDetector")
+     if click then
+      click.MouseClick:FireServer(LP)
+     end
+     -- 方法3：尝试用ProximityPrompt
+     local prompt=needle:FindFirstChildWhichIsA("ProximityPrompt")
+     if prompt then
+      prompt:InputHoldBegin()
+      task.wait(0.1)
+      prompt:InputHoldEnd()
+     end
+     -- 方法4：如果是工具，直接放进背包
+     if needle.Parent and needle.Parent:IsA("Tool") then
+      needle.Parent.Parent=LP.Backpack
+      takenCount+=1
+     end
+    end)
+   end
+   NeedleState.AutoConn=game:GetService("RunService").Heartbeat:Connect(function()
+    if not NeedleState.AutoTake then return end
+    local needles=findNeedles()
+    for _,needle in ipairs(needles) do
+     tryTake(needle)
+    end
+   end)
+   pcall(Notify,"🧵","自动拿取已开启\n持续发包中...",3)
+   -- 统计
+   task.spawn(function()
+    while NeedleState.AutoTake do
+     task.wait(5)
+    end
+   end)
+  end)
+ end)
+ ZN:AddButton("⏹  停止拿取",function()
+  if not NeedleState.AutoTake then pcall(Notify,"⚠️","自动拿取还没开启",2) return end
+  NeedleState.AutoTake=false
+  if NeedleState.AutoConn then NeedleState.AutoConn:Disconnect() NeedleState.AutoConn=nil end
+  pcall(Notify,"🧵","自动拿取已停止",2)
+ end)
+ ZN:AddButton("🔍  扫描针数量",function()
+  safeSpawn(function()
+   local needles=findNeedles()
+   pcall(Notify,"🧵","找到 "..#needles.." 根针",3)
+   print("[找针] 找到"..#needles.."根针")
+  end)
+ end)
+ -- 🥷 迪克刺客X
+ local DKX=SV:AddSection("🥷  迪克刺客X")
+ local DKX_ESP={Enabled=false,Drawings={},Conn=nil}
+ DKX:AddButton("👁  透视职业脚本",function()
+  if DKX_ESP.Enabled then pcall(Notify,"⚠️","透视已经开启了",2) return end
+  safeSpawn(function()
+   DKX_ESP.Enabled=true
+   local Plrs=game:GetService("Players")
+   local LP=Plrs.LocalPlayer
+   local RS=game:GetService("RunService")
+   local cam=workspace.CurrentCamera
+   -- 职业颜色
+   local roleColors={
+    ["杀手"]=Color3.fromRGB(255,50,50),
+    ["强盗"]=Color3.fromRGB(255,140,0),
+    ["剃头师"]=Color3.fromRGB(255,200,100),
+    ["警察"]=Color3.fromRGB(50,150,255),
+    ["炸弹客"]=Color3.fromRGB(255,80,80),
+    ["警长"]=Color3.fromRGB(100,180,255),
+    ["医生"]=Color3.fromRGB(255,100,150),
+    ["侦探"]=Color3.fromRGB(180,140,255),
+    ["黑客"]=Color3.fromRGB(0,255,200),
+    ["隐身人"]=Color3.fromRGB(200,200,200),
+    ["小丑"]=Color3.fromRGB(255,100,255),
+    ["未知"]=Color3.fromRGB(160,160,160),
+   }
+   -- 检测职业
+   local function getRole(player)
+    local role="未知"
+    pcall(function()
+     local ch=player.Character
+     if not ch then return end
+     -- 检测玩家属性中的职业
+     local leaderstats=player:FindFirstChild("leaderstats")
+     if leaderstats then
+      local roleVal=leaderstats:FindFirstChild("Role") or leaderstats:FindFirstChild("职业") or leaderstats:FindFirstChild("Team")
+      if roleVal then
+       local v=tostring(roleVal.Value)
+       local vl=v:lower()
+       if vl:find("杀手") or vl:find("killer") or vl:find("assassin") then role="杀手"
+       elseif vl:find("强盗") or vl:find("bandit") or vl:find("robber") then role="强盗"
+       elseif vl:find("剃头") or vl:find("barber") or vl:find("理发师") then role="剃头师"
+       elseif vl:find("警察") or vl:find("police") or vl:find("cop") then role="警察"
+       elseif vl:find("炸弹") or vl:find("bomber") or vl:find("bomb") then role="炸弹客"
+       elseif vl:find("警长") or vl:find("sheriff") then role="警长"
+       elseif vl:find("医生") or vl:find("doctor") or vl:find("medic") then role="医生"
+       elseif vl:find("侦探") or vl:find("detective") then role="侦探"
+       elseif vl:find("黑客") or vl:find("hacker") or vl:find("hack") then role="黑客"
+       elseif vl:find("隐身") or vl:find("invisible") or vl:find("stealth") then role="隐身人"
+       elseif vl:find("小丑") or vl:find("clown") then role="小丑"
+       end
+      end
+     end
+     -- 如果没找到，尝试检测背包武器
+     if role=="未知" then
+      local backpack=player:FindFirstChild("Backpack")
+      if backpack then
+       for _,tool in ipairs(backpack:GetChildren()) do
+        if tool:IsA("Tool") then
+         local tname=tool.Name:lower()
+         if tname:find("knife") or tname:find("刀") or tname:find("sword") then
+          if role=="未知" then role="杀手" end
+         elseif tname:find("gun") or tname:find("pistol") or tname:find("警") then
+          if role=="未知" then role="警察" end
+         elseif tname:find("bomb") or tname:find("炸弹") or tname:find("grenade") then
+          role="炸弹客"
+         elseif tname:find("heal") or tname:find("med") or tname:find("医") then
+          role="医生"
+         elseif tname:find("hack") or tname:find("黑客") then
+          role="黑客"
+         elseif tname:find("clown") or tname:find("小丑") then
+          role="小丑"
+         elseif tname:find("sheriff") or tname:find("警长") then
+          role="警长"
+         elseif tname:find("bandit") or tname:find("强盗") then
+          role="强盗"
+         end
+        end
+       end
+      end
+      -- 检测手里的武器
+      local tool=ch:FindFirstChildOfClass("Tool")
+      if tool then
+       local tname=tool.Name:lower()
+       if tname:find("knife") or tname:find("刀") then
+        if role=="未知" then role="杀手" end
+       elseif tname:find("gun") or tname:find("pistol") then
+        if role=="未知" then role="警察" end
+       elseif tname:find("bomb") or tname:find("grenade") then
+        role="炸弹客"
+       elseif tname:find("sheriff") or tname:find("警长") then
+        role="警长"
+       end
+      end
+     end
+    end)
+    return role
+   end
+   -- 创建ESP显示
+   local function createESP(player)
+    if player==LP then return end
+    if DKX_ESP.Drawings[player.UserId] then return end
+    local draw={}
+    DKX_ESP.Drawings[player.UserId]=draw
+    -- 职业文字（头顶显示）
+    local roleLbl=Drawing.new("Text")
+    roleLbl.Center=true
+    roleLbl.Outline=true
+    roleLbl.OutlineColor=Color3.fromRGB(0,0,0)
+    roleLbl.Color=Color3.fromRGB(255,255,255)
+    roleLbl.Size=16
+    roleLbl.Font=2
+    roleLbl.Visible=false
+    draw.Role=roleLbl
+   end
+   -- 移除ESP
+   local function removeESP(player)
+    local draw=DKX_ESP.Drawings[player.UserId]
+    if draw then
+     for _,d in pairs(draw) do
+      pcall(function() d:Remove() end)
+     end
+     DKX_ESP.Drawings[player.UserId]=nil
+    end
+   end
+   -- 更新ESP
+   local function updateESP()
+    if not DKX_ESP.Enabled then return end
+    for _,player in ipairs(Plrs:GetPlayers()) do
+     if player==LP then continue end
+     local ch=player.Character
+     local head=ch and ch:FindFirstChild("Head")
+     local hum=ch and ch:FindFirstChild("Humanoid")
+     local draw=DKX_ESP.Drawings[player.UserId]
+     if not draw then
+      createESP(player)
+      draw=DKX_ESP.Drawings[player.UserId]
+     end
+     if not ch or not head or not hum or hum.Health<=0 then
+      draw.Role.Visible=false
+      continue
+     end
+     -- 获取头顶位置
+     local headPos,onScreen=cam:WorldToViewportPoint(head.Position+Vector3.new(0,1.5,0))
+     if not onScreen then
+      draw.Role.Visible=false
+      continue
+     end
+     -- 职业
+     local role=getRole(player)
+     local roleColor=roleColors[role] or roleColors["未知"]
+     -- 更新显示
+     draw.Role.Position=Vector2.new(headPos.X,headPos.Y)
+     draw.Role.Color=roleColor
+     draw.Role.Text=role
+     draw.Role.Visible=true
+    end
+   end
+   -- 清理离开的玩家
+   Plrs.PlayerRemoving:Connect(function(p) removeESP(p) end)
+   -- 主循环
+   RS.RenderStepped:Connect(updateESP)
+   pcall(Notify,"🥷","迪克刺客X透视已开启",3)
+   print("[迪克刺客X] 透视已启用")
+  end)
+ end)
+ DKX:AddButton("⏹  关闭透视",function()
+  if not DKX_ESP.Enabled then pcall(Notify,"⚠️","透视还没开启",2) return end
+  safeSpawn(function()
+   DKX_ESP.Enabled=false
+   if DKX_ESP.Conn then DKX_ESP.Conn:Disconnect() DKX_ESP.Conn=nil end
+   for _,draw in pairs(DKX_ESP.Drawings) do
+    for _,d in pairs(draw) do
+     pcall(function() d:Remove() end)
+    end
+   end
+   DKX_ESP.Drawings={}
+   pcall(Notify,"🥷","迪克刺客X透视已关闭",2)
+  end)
+ end)
+ -- 🚂 死铁轨合集
  local DRS=SV:AddSection("🚂 死铁轨合集")
  DRS:AddButton("🛤️  死铁轨国人脚本",function()
   safeSpawn(function()
@@ -46944,19 +47562,41 @@ v:FireServer()]=]
   sound.SoundId="rbxassetid://"..songId
   sound.Volume=MusicState.Volume
   sound.Looped=true
-  sound.Parent=workspace
+  sound.Parent=CG -- 放到CoreGui里更稳定
   MusicState.CurrentSound=sound
   MusicState.CurrentName=songName
-  MusicState.Playing=true
-  sound:Play()
-  sound.Ended:Connect(function()
+  -- 等待音频加载
+  sound.Loaded:Connect(function()
    if MusicState.CurrentSound==sound then
-    MusicState.Playing=false
-    MusicState.CurrentName=""
+    sound:Play()
+    MusicState.Playing=true
+    pcall(Notify,"🎵","正在播放: "..songName,3)
+    print("[音乐] 播放: "..songName)
    end
   end)
-  pcall(Notify,"🎵","正在播放: "..songName,3)
-  print("[音乐] 播放: "..songName)
+  -- 加载失败提示
+  sound.LoadFailed:Connect(function(err)
+   if MusicState.CurrentSound==sound then
+    pcall(Notify,"❌","音乐加载失败: "..songName.."\n可能是音频已被下架",4)
+    warn("[音乐] 加载失败:",songName,err)
+    stopAllMusic()
+   end
+  end)
+  -- 播放结束回调
+  sound.Ended:Connect(function()
+   if MusicState.CurrentSound==sound then
+    if not sound.Looped then
+     MusicState.Playing=false
+     MusicState.CurrentName=""
+    end
+   end
+  end)
+  -- 超时检测（5秒还没加载出来就提示失败）
+  task.delay(5,function()
+   if MusicState.CurrentSound==sound and not sound.IsLoaded then
+    pcall(Notify,"⚠️","音乐加载超时，请检查网络",3)
+   end
+  end)
  end
  -- 音乐UI
  local MusicSection=MusicT:AddSection("🎶  音乐列表")
@@ -46973,6 +47613,17 @@ v:FireServer()]=]
    MusicState.CurrentSound.Volume=MusicState.Volume
   end
   pcall(Notify,"🎵","音量: "..math.floor(MusicState.Volume*100).."%",2)
+ end)
+ MusicSection:AddButton("🔧  音效测试",function()
+  stopAllMusic()
+  local sound=Instance.new("Sound")
+  sound.Name="TestSound"
+  sound.SoundId="rbxassetid://12222076"
+  sound.Volume=MusicState.Volume
+  sound.Parent=CG
+  sound:Play()
+  sound.Ended:Connect(function() sound:Destroy() end)
+  pcall(Notify,"🔧","音效测试中，听到声音说明音乐功能正常",3)
  end)
  -- 歌曲按钮
  for i,song in ipairs(songList) do
