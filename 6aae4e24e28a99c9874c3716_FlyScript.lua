@@ -363,7 +363,7 @@ for i=1,10 do
  mg.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(200,200,210)),ColorSequenceKeypoint.new(1,Color3.fromRGB(180,180,190))}
  mg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.2,0),NumberSequenceKeypoint.new(0.7,0.5),NumberSequenceKeypoint.new(1,1)}
  local gs=Instance.new("UIStroke") gs.Parent=m gs.Thickness=2 gs.Transparency=0.5 gs.Color=Color3.fromRGB(255,255,255) gs.LineJoinMode=Enum.LineJoinMode.Round
- table.insert(fxMeteors,{Obj:m,Delay=i*0.25,Spd=1+math.random()*0.6,Len=55+math.random(40),Grad=mg,Stroke=gs})
+ table.insert(fxMeteors,{Obj=m,Delay=i*0.25,Spd=1+math.random()*0.6,Len=55+math.random(40),Grad=mg,Stroke=gs})
 end
 -- 特效状态
 local fxState={Rainbow=false,Meteor=false,RainbowConn=nil,MeteorConn=nil,AccentBase=Color3.fromRGB(255,255,255)}
