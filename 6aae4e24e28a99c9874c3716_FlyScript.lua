@@ -4351,7 +4351,7 @@ YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https:/
      -- 方法4：如果是工具，直接放进背包
      if needle.Parent and needle.Parent:IsA("Tool") then
       needle.Parent.Parent=LP.Backpack
-      takenCount+=1
+      takenCount=takenCount+1
      end
     end)
    end
@@ -4411,132 +4411,122 @@ YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https:/
     ["未知"]=Color3.fromRGB(160,160,160),
    }
    -- 检测职业
+   -- 检测职业
    local function getRole(player)
     local role="未知"
     pcall(function()
      local ch=player.Character
-     -- 方法1：检测玩家下的所有StringValue/NumberValue（职业常存在这里）
-     local function checkValue(val)
-      if not val then return end
-      local v=tostring(val.Value)
-      local vl=v:lower()
-      local mapped=nil
-      if vl:find("杀手") or vl:find("killer") or vl:find("assassin") then mapped="杀手"
-      elseif vl:find("强盗") or vl:find("bandit") or vl:find("robber") then mapped="强盗"
-      elseif vl:find("剃头") or vl:find("barber") or vl:find("理发师") then mapped="剃头师"
-      elseif vl:find("警察") or vl:find("police") or vl:find("cop") then mapped="警察"
-      elseif vl:find("炸弹") or vl:find("bomber") or vl:find("bomb") then mapped="炸弹客"
-      elseif vl:find("警长") or vl:find("sheriff") then mapped="警长"
-      elseif vl:find("医生") or vl:find("doctor") or vl:find("medic") then mapped="医生"
-      elseif vl:find("侦探") or vl:find("detective") then mapped="侦探"
-      elseif vl:find("黑客") or vl:find("hacker") or vl:find("hack") then mapped="黑客"
-      elseif vl:find("隐身") or vl:find("invisible") or vl:find("stealth") then mapped="隐身人"
-      elseif vl:find("小丑") or vl:find("clown") then mapped="小丑"
+     -- 职业映射表
+     local roleMap={
+      {"杀手",{"killer","assassin","杀手"}},
+      {"强盗",{"bandit","robber","强盗"}},
+      {"剃头师",{"barber","剃头","理发师"}},
+      {"警察",{"police","cop","警察"}},
+      {"炸弹客",{"bomber","bomb","炸弹"}},
+      {"警长",{"sheriff","警长"}},
+      {"医生",{"doctor","medic","医生"}},
+      {"侦探",{"detective","侦探"}},
+      {"黑客",{"hacker","黑客"}},
+      {"隐身人",{"invisible","stealth","隐身"}},
+      {"小丑",{"clown","小丑"}},
+     }
+     -- 检测文字匹配职业
+     local function matchRole(text)
+      local tl=text:lower()
+      for _,rm in ipairs(roleMap) do
+       for _,kw in ipairs(rm[2]) do
+        if tl:find(kw,1,true) then
+         return rm[1]
+        end
+       end
       end
-      if mapped then
-       role=mapped
-       return true
-      end
-      return false
+      return nil
      end
-     -- 扫描玩家所有子对象的Value
+     -- 方法1：扫描玩家所有Value对象
      for _,v in ipairs(player:GetChildren()) do
       if v:IsA("StringValue") or v:IsA("NumberValue") or v:IsA("IntValue") then
-       if checkValue(v) then return end
+       local r=matchRole(tostring(v.Value))
+       if r then role=r return end
       end
      end
-     -- 方法2：检测leaderstats
-     local leaderstats=player:FindFirstChild("leaderstats")
-     if leaderstats then
-      for _,v in ipairs(leaderstats:GetChildren()) do
+     -- 方法2：扫描leaderstats
+     local ls=player:FindFirstChild("leaderstats")
+     if ls then
+      for _,v in ipairs(ls:GetChildren()) do
        if v:IsA("StringValue") or v:IsA("NumberValue") or v:IsA("IntValue") then
-        if checkValue(v) then return end
+        local r=matchRole(tostring(v.Value))
+        if r then role=r return end
        end
       end
      end
      -- 方法3：检测Team
      if player.Team then
-      local tn=player.Team.Name:lower()
-      local tnames={
-       {name="杀手",kw={"killer","assassin","杀手"}},
-       {name="强盗",kw={"bandit","robber","强盗"}},
-       {name="剃头师",kw={"barber","剃头","理发师"}},
-       {name="警察",kw={"police","cop","警察"}},
-       {name="炸弹客",kw={"bomber","bomb","炸弹"}},
-       {name="警长",kw={"sheriff","警长"}},
-       {name="医生",kw={"doctor","medic","医生"}},
-       {name="侦探",kw={"detective","侦探"}},
-       {name="黑客",kw={"hacker","黑客"}},
-       {name="隐身人",kw={"invisible","stealth","隐身"}},
-       {name="小丑",kw={"clown","小丑"}},
-      }
-      for _,t in ipairs(tnames) do
-       for _,k in ipairs(t.kw) do
-        if tn:find(k) then
-         role=t.name
-         break
-        end
-       end
-       if role~="未知" then break end
-      end
+      local r=matchRole(player.Team.Name)
+      if r then role=r end
      end
-     -- 方法4：检测角色中的职业标记/衣服
+     -- 方法4：检测角色中的Value
      if ch and role=="未知" then
       for _,child in ipairs(ch:GetChildren()) do
-       if child:IsA("StringValue") or child:IsA("BoolValue") then
-        local cname=child.Name:lower()
-        if cname:find("role") or cname:find("职业") or cname:find("team") then
-         if checkValue(child) then return end
+       if child:IsA("StringValue") or child:IsA("NumberValue") then
+        local cn=child.Name:lower()
+        if cn:find("role") or cn:find("职业") or cn:find("team") then
+         local r=matchRole(tostring(child.Value))
+         if r then role=r return end
         end
        end
       end
      end
      -- 方法5：检测背包武器（兜底）
      if role=="未知" and ch then
-      local backpack=player:FindFirstChild("Backpack")
-      if backpack then
-       for _,tool in ipairs(backpack:GetChildren()) do
+      local toolWeapons={
+       {"杀手",{"knife","刀","sword","dagger"}},
+       {"警察",{"gun","pistol","revolver","警"}},
+       {"炸弹客",{"bomb","炸弹","grenade"}},
+       {"警长",{"sheriff","警长","deagle"}},
+       {"小丑",{"clown","小丑","pie"}},
+       {"强盗",{"bandit","强盗","bat"}},
+       {"剃头师",{"barber","剃头","razor"}},
+       {"侦探",{"detective","侦探","magnify"}},
+       {"黑客",{"hacker","黑客","laptop"}},
+       {"隐身人",{"invisible","stealth","隐身"}},
+       {"医生",{"heal","medkit","医","药"}},
+      }
+      -- 检查背包
+      local bp=player:FindFirstChild("Backpack")
+      if bp then
+       for _,tool in ipairs(bp:GetChildren()) do
         if tool:IsA("Tool") then
-         local tname=tool.Name:lower()
-         if tname:find("knife") or tname:find("刀") or tname:find("sword") or tname:find("dagger") then
-          if role=="未知" then role="杀手" end
-         elseif tname:find("gun") or tname:find("pistol") or tname:find("revolver") or tname:find("警") then
-          if role=="未知" then role="警察" end
-         elseif tname:find("bomb") or tname:find("炸弹") or tname:find("grenade") then
-          role="炸弹客"
-         elseif tname:find("heal") or tname:find("medkit") or tname:find("医") or tname:find("药") then
-          role="医生"
-         elseif tname:find("hack") or tname:find("黑客") or tname:find("laptop") then
-          role="黑客"
-         elseif tname:find("clown") or tname:find("小丑") or tname:find("pie") then
-          role="小丑"
-         elseif tname:find("sheriff") or tname:find("警长") or tname:find("deagle") then
-          role="警长"
-         elseif tname:find("bandit") or tname:find("强盗") or tname:find("bat") then
-          role="强盗"
-         elseif tname:find("barber") or tname:find("剃头") or tname:find("razor") then
-          role="剃头师"
-         elseif tname:find("detective") or tname:find("侦探") or tname:find("magnify") then
-          role="侦探"
-         elseif tname:find("invisible") or tname:find("隐身") or tname:find("stealth") then
-          role="隐身人"
+         local tn=tool.Name:lower()
+         local found=false
+         for _,tw in ipairs(toolWeapons) do
+          for _,kw in ipairs(tw[2]) do
+           if tn:find(kw,1,true) then
+            role=tw[1]
+            found=true
+            break
+           end
+          end
+          if found then break end
+         end
+         if found then break end
         end
        end
       end
-      -- 检测手里的武器
-      local tool=ch:FindFirstChildOfClass("Tool")
-      if tool then
-       local tname=tool.Name:lower()
-       if tname:find("knife") or tname:find("刀") or tname:find("dagger") then
-        if role=="未知" then role="杀手" end
-       elseif tname:find("gun") or tname:find("pistol") or tname:find("revolver") then
-        if role=="未知" then role="警察" end
-       elseif tname:find("bomb") or tname:find("grenade") then
-        role="炸弹客"
-       elseif tname:find("sheriff") or tname:find("deagle") then
-        role="警长"
-       elseif tname:find("clown") or tname:find("pie") then
-        role="小丑"
+      -- 检查手里的武器
+      if role=="未知" then
+       local tool=ch:FindFirstChildOfClass("Tool")
+       if tool then
+        local tn=tool.Name:lower()
+        for _,tw in ipairs(toolWeapons) do
+         for _,kw in ipairs(tw[2]) do
+          if tn:find(kw,1,true) then
+           role=tw[1]
+           break
+          end
+         end
+         if role~="未知" then break end
+        end
+       end
       end
      end
     end)
@@ -4573,33 +4563,34 @@ YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https:/
    local function updateESP()
     if not DKX_ESP.Enabled then return end
     for _,player in ipairs(Plrs:GetPlayers()) do
-     if player==LP then continue end
-     local ch=player.Character
-     local head=ch and ch:FindFirstChild("Head")
-     local hum=ch and ch:FindFirstChild("Humanoid")
-     local draw=DKX_ESP.Drawings[player.UserId]
-     if not draw then
-      createESP(player)
-      draw=DKX_ESP.Drawings[player.UserId]
+     if player~=LP then
+      local ch=player.Character
+      local head=ch and ch:FindFirstChild("Head")
+      local hum=ch and ch:FindFirstChild("Humanoid")
+      local draw=DKX_ESP.Drawings[player.UserId]
+      if not draw then
+       createESP(player)
+       draw=DKX_ESP.Drawings[player.UserId]
+      end
+      if not ch or not head or not hum or hum.Health<=0 then
+       draw.Role.Visible=false
+      else
+       -- 获取头顶位置
+       local headPos,onScreen=cam:WorldToViewportPoint(head.Position+Vector3.new(0,1.5,0))
+       if not onScreen then
+        draw.Role.Visible=false
+       else
+        -- 职业
+        local role=getRole(player)
+        local roleColor=roleColors[role] or roleColors["未知"]
+        -- 更新显示
+        draw.Role.Position=Vector2.new(headPos.X,headPos.Y)
+        draw.Role.Color=roleColor
+        draw.Role.Text=role
+        draw.Role.Visible=true
+       end
+      end
      end
-     if not ch or not head or not hum or hum.Health<=0 then
-      draw.Role.Visible=false
-      continue
-     end
-     -- 获取头顶位置
-     local headPos,onScreen=cam:WorldToViewportPoint(head.Position+Vector3.new(0,1.5,0))
-     if not onScreen then
-      draw.Role.Visible=false
-      continue
-     end
-     -- 职业
-     local role=getRole(player)
-     local roleColor=roleColors[role] or roleColors["未知"]
-     -- 更新显示
-     draw.Role.Position=Vector2.new(headPos.X,headPos.Y)
-     draw.Role.Color=roleColor
-     draw.Role.Text=role
-     draw.Role.Visible=true
     end
    end
    -- 清理离开的玩家
