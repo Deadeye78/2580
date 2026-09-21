@@ -121,100 +121,105 @@ local TS=game:GetService("TweenService") local UIS=game:GetService("UserInputSer
 local RS=game:GetService("RunService") local Plrs=game:GetService("Players")
 local LP=Plrs.LocalPlayer local CG=game:GetService("CoreGui")
 local cam=workspace.CurrentCamera
-local Settings={Accent=Color3.fromRGB(100,200,255),BGImg="",BGT=0.3,FX={Rainbow=false,Meteor=false}}
+local Settings={Accent=Color3.fromRGB(220,220,230),BGImg="",BGT=0.3,FX={Rainbow=false,Meteor=false}}
 local LG=Instance.new("ScreenGui") LG.Name="LS_Load" LG.Parent=CG LG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
 -- 朦胧背景层
-local LB=Instance.new("Frame") LB.Parent=LG LB.BackgroundColor3=Color3.fromRGB(5,5,12) LB.Size=UDim2.new(1,0,1,0) LB.ZIndex=1 LB.BackgroundTransparency=1
+local LB=Instance.new("Frame") LB.Parent=LG LB.BackgroundColor3=Color3.fromRGB(3,3,5) LB.Size=UDim2.new(1,0,1,0) LB.ZIndex=1 LB.BackgroundTransparency=1
 local Vignette=Instance.new("Frame") Vignette.Parent=LB Vignette.BackgroundColor3=Color3.fromRGB(0,0,0) Vignette.Size=UDim2.new(1,0,1,0) Vignette.ZIndex=2 Vignette.BackgroundTransparency=1
-local VG=Instance.new("UIGradient") VG.Parent=Vignette VG.Rotation=0 VG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.7),NumberSequenceKeypoint.new(0.5,0.95),NumberSequenceKeypoint.new(1,0.7)}
--- 星星层
+local VG=Instance.new("UIGradient") VG.Parent=Vignette VG.Rotation=0 VG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.5),NumberSequenceKeypoint.new(0.5,0.9),NumberSequenceKeypoint.new(1,0.5)}
+-- 星星层（黑白）
 local Stars=Instance.new("Frame") Stars.Parent=LB Stars.BackgroundTransparency=1 Stars.Size=UDim2.new(1,0,1,0) Stars.ZIndex=3
 local starData={}
-for i=1,50 do
+for i=1,40 do
  local s=Instance.new("Frame") s.Parent=Stars s.BackgroundColor3=Color3.fromRGB(255,255,255)
  s.Size=UDim2.new(0,math.random(1,3),0,math.random(1,3)) s.Position=UDim2.new(math.random(),0,math.random(),0)
  s.BackgroundTransparency=math.random(50,90)/100 s.ZIndex=3 Instance.new("UICorner",s).CornerRadius=UDim.new(1,0)
  table.insert(starData,{Obj=s,BaseT=math.random()*10,Spd=0.5+math.random()*1.5})
 end
--- 流星雨层
+-- 流星雨层（白色）
 local Meteors=Instance.new("Frame") Meteors.Parent=LB Meteors.BackgroundTransparency=1 Meteors.Size=UDim2.new(1,0,1,0) Meteors.ZIndex=4 Meteors.ClipsDescendants=false
 local meteorData={}
-for i=1,8 do
- local m=Instance.new("Frame") m.Parent=Meteors m.BackgroundColor3=Color3.fromRGB(200,230,255)
+for i=1,6 do
+ local m=Instance.new("Frame") m.Parent=Meteors m.BackgroundColor3=Color3.fromRGB(255,255,255)
  m.Size=UDim2.new(0,2,0,80) m.ZIndex=4 m.BackgroundTransparency=0.5 m.Visible=false
  Instance.new("UICorner",m).CornerRadius=UDim.new(0,1)
  local MG=Instance.new("UIGradient") MG.Parent=m MG.Rotation=45 MG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,0)}
- table.insert(meteorData,{Obj=m,Delay=math.random()*4,Spd=0.8+math.random()*1.2,Len=60+math.random(60),Rot=35+math.random(20)})
+ table.insert(meteorData,{Obj=m,Delay=math.random()*3,Spd=0.8+math.random()*1.2,Len=60+math.random(60),Rot=35+math.random(20)})
 end
--- 光晕层
-local Halo=Instance.new("Frame") Halo.Parent=LB Halo.BackgroundColor3=Color3.fromRGB(100,200,255) Halo.BackgroundTransparency=0.85
-Halo.Size=UDim2.new(0,520,0,520) Halo.Position=UDim2.new(0.5,-260,0.5,-260) Halo.ZIndex=5
-Instance.new("UICorner",Halo).CornerRadius=UDim.new(260,0)
+-- 黑白光晕层
+local Halo=Instance.new("Frame") Halo.Parent=LB Halo.BackgroundColor3=Color3.fromRGB(255,255,255) Halo.BackgroundTransparency=0.9
+Halo.Size=UDim2.new(0,500,0,500) Halo.Position=UDim2.new(0.5,-250,0.5,-250) Halo.ZIndex=5
+Instance.new("UICorner",Halo).CornerRadius=UDim.new(250,0)
 local HG=Instance.new("UIGradient") HG.Parent=Halo HG.Rotation=0
-HG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.6,0.5),NumberSequenceKeypoint.new(1,1)}
+HG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.5,0.5),NumberSequenceKeypoint.new(1,1)}
+-- 第二层光晕（黑色外圈）
+local Halo2=Instance.new("Frame") Halo2.Parent=LB Halo2.BackgroundColor3=Color3.fromRGB(0,0,0) Halo2.BackgroundTransparency=0.92
+Halo2.Size=UDim2.new(0,600,0,600) Halo2.Position=UDim2.new(0.5,-300,0.5,-300) Halo2.ZIndex=4
+Instance.new("UICorner",Halo2).CornerRadius=UDim.new(300,0)
+local HG2=Instance.new("UIGradient") HG2.Parent=Halo2 HG2.Rotation=0
+HG2.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.8),NumberSequenceKeypoint.new(0.7,0.4),NumberSequenceKeypoint.new(1,1)}
 -- 主面板
-local LF=Instance.new("Frame") LF.Parent=LG LF.BackgroundColor3=Color3.fromRGB(12,12,18) LF.Position=UDim2.new(0.5,-210,0.5,-130) LF.Size=UDim2.new(0,420,0,260) LF.ZIndex=6 LF.BackgroundTransparency=1
+local LF=Instance.new("Frame") LF.Parent=LG LF.BackgroundColor3=Color3.fromRGB(8,8,12) LF.Position=UDim2.new(0.5,-210,0.5,-130) LF.Size=UDim2.new(0,420,0,260) LF.ZIndex=6 LF.BackgroundTransparency=1
 Instance.new("UICorner",LF).CornerRadius=UDim.new(0,18)
-local UIStroke=Instance.new("UIStroke") UIStroke.Parent=LF UIStroke.Thickness=1.5 UIStroke.Transparency=0.65 UIStroke.Color=Color3.fromRGB(100,200,255) UIStroke.LineJoinMode=Enum.LineJoinMode.Round
+local UIStroke=Instance.new("UIStroke") UIStroke.Parent=LF UIStroke.Thickness=1.5 UIStroke.Transparency=0.5 UIStroke.Color=Color3.fromRGB(255,255,255) UIStroke.LineJoinMode=Enum.LineJoinMode.Round
 -- 朦胧玻璃效果
-local Glass=Instance.new("Frame") Glass.Parent=LF Glass.BackgroundColor3=Color3.fromRGB(30,40,60) Glass.Size=UDim2.new(1,0,1,0) Glass.BackgroundTransparency=0.85 Glass.ZIndex=1
+local Glass=Instance.new("Frame") Glass.Parent=LF Glass.BackgroundColor3=Color3.fromRGB(20,20,25) Glass.Size=UDim2.new(1,0,1,0) Glass.BackgroundTransparency=0.85 Glass.ZIndex=1
 Instance.new("UICorner",Glass).CornerRadius=UDim.new(0,18)
 -- 标题
 local TL=Instance.new("TextLabel") TL.Parent=LF TL.BackgroundTransparency=1 TL.Position=UDim2.new(0,0,0,45) TL.Size=UDim2.new(1,0,0,52)
 TL.Font=Enum.Font.GothamBold TL.Text="磊脚本" TL.TextColor3=Color3.fromRGB(255,255,255) TL.TextSize=44 TL.ZIndex=7 TL.TextTransparency=1
-local TS2=Instance.new("UIStroke") TS2.Parent=TL TS2.Thickness=2.5 TS2.Transparency=0.8 TS2.Color=Color3.fromRGB(100,200,255)
+local TS2=Instance.new("UIStroke") TS2.Parent=TL TS2.Thickness=2.5 TS2.Transparency=0.6 TS2.Color=Color3.fromRGB(255,255,255)
 local SL=Instance.new("TextLabel") SL.Parent=LF SL.BackgroundTransparency=1 SL.Position=UDim2.new(0,0,0,100) SL.Size=UDim2.new(1,0,0,24)
-SL.Font=Enum.Font.Gotham SL.Text="✨ LEI SCRIPT PREMIUM ✨" SL.TextColor3=Color3.fromRGB(160,190,230) SL.TextSize=13 SL.ZIndex=7 SL.TextTransparency=1
+SL.Font=Enum.Font.Gotham SL.Text="✨ LEI SCRIPT PREMIUM ✨" SL.TextColor3=Color3.fromRGB(200,200,210) SL.TextSize=13 SL.ZIndex=7 SL.TextTransparency=1
 -- 进度条
-local PBg=Instance.new("Frame") PBg.Parent=LF PBg.BackgroundColor3=Color3.fromRGB(20,20,30) PBg.Position=UDim2.new(0.5,-150,0,150) PBg.Size=UDim2.new(0,300,0,10) PBg.ZIndex=7 PBg.BackgroundTransparency=1
+local PBg=Instance.new("Frame") PBg.Parent=LF PBg.BackgroundColor3=Color3.fromRGB(15,15,20) PBg.Position=UDim2.new(0.5,-150,0,150) PBg.Size=UDim2.new(0,300,0,10) PBg.ZIndex=7 PBg.BackgroundTransparency=1
 Instance.new("UICorner",PBg).CornerRadius=UDim.new(0,5)
-local PB=Instance.new("Frame") PB.Parent=PBg PB.BackgroundColor3=Color3.fromRGB(100,200,255) PB.Size=UDim2.new(0,0,1,0) PB.ZIndex=8
+local PB=Instance.new("Frame") PB.Parent=PBg PB.BackgroundColor3=Color3.fromRGB(255,255,255) PB.Size=UDim2.new(0,0,1,0) PB.ZIndex=8
 Instance.new("UICorner",PB).CornerRadius=UDim.new(0,5)
 local PG=Instance.new("UIGradient") PG.Parent=PB PG.Rotation=0 PG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.2),NumberSequenceKeypoint.new(0.5,0),NumberSequenceKeypoint.new(1,0.2)}
 local Shine=Instance.new("Frame") Shine.Parent=PB Shine.BackgroundColor3=Color3.fromRGB(255,255,255) Shine.BackgroundTransparency=0.4 Shine.Size=UDim2.new(0,40,1,0) Shine.Position=UDim2.new(-0.2,0,0,0) Shine.ZIndex=9
 Instance.new("UICorner",Shine).CornerRadius=UDim.new(0,3)
 -- 百分比和状态
 local PT=Instance.new("TextLabel") PT.Parent=LF PT.BackgroundTransparency=1 PT.Position=UDim2.new(0,0,0,178) PT.Size=UDim2.new(1,0,0,22)
-PT.Font=Enum.Font.GothamBold PT.Text="0%" PT.TextColor3=Color3.fromRGB(210,230,255) PT.TextSize=15 PT.ZIndex=7 PT.TextTransparency=1
+PT.Font=Enum.Font.GothamBold PT.Text="0%" PT.TextColor3=Color3.fromRGB(230,230,240) PT.TextSize=15 PT.ZIndex=7 PT.TextTransparency=1
 local ST=Instance.new("TextLabel") ST.Parent=LF ST.BackgroundTransparency=1 ST.Position=UDim2.new(0,0,0,208) ST.Size=UDim2.new(1,0,0,20)
-ST.Font=Enum.Font.Gotham ST.Text="正在初始化..." ST.TextColor3=Color3.fromRGB(150,170,210) ST.TextSize=12 ST.ZIndex=7 ST.TextTransparency=1
+ST.Font=Enum.Font.Gotham ST.Text="正在初始化..." ST.TextColor3=Color3.fromRGB(180,180,190) ST.TextSize=12 ST.ZIndex=7 ST.TextTransparency=1
 local NT=Instance.new("TextLabel") NT.Parent=LF NT.BackgroundTransparency=1 NT.Position=UDim2.new(0,0,1,-34) NT.Size=UDim2.new(1,0,0,24)
 NT.Font=Enum.Font.GothamSemibold NT.Text="🌟 此脚本由 TRAE 制造 · 完全免费 · 请勿付费 🌟" NT.TextColor3=Color3.fromRGB(255,225,110) NT.TextSize=11 NT.ZIndex=7 NT.TextTransparency=1
--- 动画循环
+-- 动画循环（黑白光晕脉动）
 local t0=os.clock()
-local function hsv(h,s,v) return Color3.fromHSV(h,s,v) end
 RS.RenderStepped:Connect(function()
  if not LG.Parent then return end
  local t=os.clock()-t0
- local hue=(t*0.06)%1 local c=hsv(hue,0.65,1)
- local c2=hsv((hue+0.08)%1,0.5,1)
+ local pulse=0.5+0.5*math.sin(t*2)
  -- 主面板浮动
  LF.Position=UDim2.new(0.5,-210,0.5,-130+math.sin(t*1.2)*5)
- -- 彩虹边框+标题发光
- UIStroke.Color=c TS2.Color=c PB.BackgroundColor=c
- PG.Color=ColorSequence.new{c2,c,c2}
- Halo.BackgroundColor3=c
+ -- 黑白光晕脉动
+ UIStroke.Color=Color3.fromRGB(255,255,255)
+ TS2.Color=Color3.fromRGB(255,255,255)
+ PB.BackgroundColor3=Color3.fromRGB(255,255,255)
+ Halo.BackgroundTransparency=0.85-pulse*0.1
+ Halo2.BackgroundTransparency=0.88-pulse*0.08
  -- 流光
  Shine.Position=UDim2.new((t*0.4)%1.4-0.2,0,0,0)
- -- 星星闪烁
+ -- 星星闪烁（白色）
  for _,sd in ipairs(starData) do
   local tw=0.7+0.3*math.sin(t*sd.Spd+sd.BaseT)
   sd.Obj.BackgroundTransparency=1-tw*0.5
-  sd.Obj.BackgroundColor3=c
+  sd.Obj.BackgroundColor3=Color3.fromRGB(255,255,255)
  end
- -- 流星雨
+ -- 流星雨（白色）
  for _,md in ipairs(meteorData) do
-  local phase=(t+md.Delay)%5
-  if phase<2.5 then
+  local phase=(t+md.Delay)%4
+  if phase<2 then
    md.Obj.Visible=true
-   local prog=phase/2.5
+   local prog=phase/2
    local sx=0.3+prog*0.8 local sy=-0.1+prog*1.3
-   local rad=math.rad(md.Rot)
    md.Obj.Position=UDim2.new(sx,0,sy,0)
    md.Obj.Rotation=md.Rot
    md.Obj.Size=UDim2.new(0,2,0,md.Len)
    md.Obj.BackgroundTransparency=prog<0.1 and 1-prog/0.1 or (prog>0.8 and (1-prog)/0.2 or 0.3)
-   md.Obj.BackgroundColor3=c
+   md.Obj.BackgroundColor3=Color3.fromRGB(255,255,255)
   else
    md.Obj.Visible=false
   end
@@ -229,23 +234,23 @@ end
 -- 加载动画 + UI构建（快速丝滑版）
 task.spawn(function()
  -- 加载动画（丝滑快速版）
- TS:Create(LB,TweenInfo.new(0.35,Enum.EasingStyle.Quad),{BackgroundTransparency=0.7}):Play()
- TS:Create(Vignette,TweenInfo.new(0.35,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
- task.wait(0.15)
- TS:Create(LF,TweenInfo.new(0.4,Enum.EasingStyle.Back),{BackgroundTransparency=0}):Play()
- task.wait(0.15)
- TS:Create(TL,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
- task.wait(0.08)
- TS:Create(SL,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
- task.wait(0.08)
- TS:Create(PBg,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
- TS:Create(PT,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
- TS:Create(ST,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
- TS:Create(NT,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ TS:Create(LB,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{BackgroundTransparency=0.7}):Play()
+ TS:Create(Vignette,TweenInfo.new(0.25,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
+ task.wait(0.1)
+ TS:Create(LF,TweenInfo.new(0.3,Enum.EasingStyle.Back),{BackgroundTransparency=0}):Play()
+ task.wait(0.1)
+ TS:Create(TL,TweenInfo.new(0.2,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ task.wait(0.05)
+ TS:Create(SL,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ task.wait(0.05)
+ TS:Create(PBg,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{BackgroundTransparency=0}):Play()
+ TS:Create(PT,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ TS:Create(ST,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
+ TS:Create(NT,TweenInfo.new(0.15,Enum.EasingStyle.Quad),{TextTransparency=0}):Play()
  -- 快速进度条
- local sp={{10,"初始化..."},{25,"加载UI引擎..."},{42,"渲染特效..."},{60,"加载功能..."},{78,"加载资源..."},{95,"收尾中..."},{100,"完成！"}}
- for _,s in ipairs(sp) do setPct(s[1],s[2]) task.wait(0.15+math.random()*0.1) end
- task.wait(0.2)
+ local sp={{15,"初始化..."},{35,"加载UI引擎..."},{55,"渲染特效..."},{72,"加载功能..."},{88,"加载资源..."},{100,"完成！"}}
+ for _,s in ipairs(sp) do setPct(s[1],s[2]) task.wait(0.08+math.random()*0.05) end
+ task.wait(0.1)
  -- 等待UI构建完成
  while not buildUI do task.wait() end
  local ok,err=pcall(buildUI)
@@ -268,15 +273,15 @@ task.spawn(function()
   return
  end
  -- 丝滑退出动画
- TS:Create(LF,TweenInfo.new(0.4,Enum.EasingStyle.Quad),{BackgroundTransparency=1,Position=UDim2.new(0.5,-200,0.45,-120)}):Play()
- TS:Create(TL,TweenInfo.new(0.3),{TextTransparency=1}):Play()
- TS:Create(SL,TweenInfo.new(0.25),{TextTransparency=1}):Play()
- TS:Create(PBg,TweenInfo.new(0.25),{BackgroundTransparency=1}):Play()
- TS:Create(PT,TweenInfo.new(0.25),{TextTransparency=1}):Play()
- TS:Create(ST,TweenInfo.new(0.25),{TextTransparency=1}):Play()
- TS:Create(NT,TweenInfo.new(0.25),{TextTransparency=1}):Play()
- TS:Create(LB,TweenInfo.new(0.45,Enum.EasingStyle.Quad),{BackgroundTransparency=1}):Play()
- task.wait(0.45) LG:Destroy()
+ TS:Create(LF,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{BackgroundTransparency=1,Position=UDim2.new(0.5,-200,0.45,-120)}):Play()
+ TS:Create(TL,TweenInfo.new(0.2),{TextTransparency=1}):Play()
+ TS:Create(SL,TweenInfo.new(0.15),{TextTransparency=1}):Play()
+ TS:Create(PBg,TweenInfo.new(0.15),{BackgroundTransparency=1}):Play()
+ TS:Create(PT,TweenInfo.new(0.15),{TextTransparency=1}):Play()
+ TS:Create(ST,TweenInfo.new(0.15),{TextTransparency=1}):Play()
+ TS:Create(NT,TweenInfo.new(0.15),{TextTransparency=1}):Play()
+ TS:Create(LB,TweenInfo.new(0.35,Enum.EasingStyle.Quad),{BackgroundTransparency=1}):Play()
+ task.wait(0.35) LG:Destroy()
 end)
 local Lib={}
 local function drag(gui,handle)
@@ -299,27 +304,30 @@ local function drag(gui,handle)
 end
 function Lib:CreateWindow(title)
  local SG=Instance.new("ScreenGui") SG.Name="LS_Main" SG.Parent=CG SG.ZIndexBehavior=Enum.ZIndexBehavior.Sibling SG.ResetOnSpawn=false SG.Enabled=false
- local BGL=Instance.new("Frame") BGL.Parent=SG BGL.BackgroundColor3=Color3.fromRGB(15,15,20) BGL.BackgroundTransparency=1 BGL.Size=UDim2.new(1,0,1,0) BGL.ZIndex=0
+ local BGL=Instance.new("Frame") BGL.Parent=SG BGL.BackgroundColor3=Color3.fromRGB(5,5,8) BGL.BackgroundTransparency=1 BGL.Size=UDim2.new(1,0,1,0) BGL.ZIndex=0
  local BGG=Instance.new("UIGradient") BGG.Parent=BGL BGG.Rotation=90 BGG.Enabled=false BGG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.15),NumberSequenceKeypoint.new(1,0.15)}
  -- 暗角效果层（增加高级感）
  local Vignette=Instance.new("Frame") Vignette.Parent=SG Vignette.BackgroundTransparency=1 Vignette.Size=UDim2.new(1,0,1,0) Vignette.ZIndex=0
  local VG=Instance.new("UIGradient") VG.Parent=Vignette VG.Rotation=0 VG.Enabled=false
  VG.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,0,0))}
  VG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.7),NumberSequenceKeypoint.new(0.5,0.95),NumberSequenceKeypoint.new(1,0.7)}
- local MF=Instance.new("Frame") MF.Parent=SG MF.BackgroundColor3=Color3.fromRGB(15,15,20) MF.Position=UDim2.new(0.5,-290,0.5,-190) MF.Size=UDim2.new(0,580,0,380) MF.ClipsDescendants=true MF.Active=true MF.ZIndex=1
+ local MF=Instance.new("Frame") MF.Parent=SG MF.BackgroundColor3=Color3.fromRGB(8,8,12) MF.Position=UDim2.new(0.5,-290,0.5,-190) MF.Size=UDim2.new(0,580,0,380) MF.ClipsDescendants=true MF.Active=true MF.ZIndex=1
  Instance.new("UICorner",MF).CornerRadius=UDim.new(0,12)
- local MS=Instance.new("UIStroke") MS.Parent=MF MS.Thickness=1.5 MS.Transparency=0.6 MS.Color=Settings.Accent MS.LineJoinMode=Enum.LineJoinMode.Round
- local TB=Instance.new("Frame") TB.Parent=MF TB.BackgroundColor3=Color3.fromRGB(20,20,26) TB.Size=UDim2.new(1,0,0,48) TB.ZIndex=2
+ local MS=Instance.new("UIStroke") MS.Parent=MF MS.Thickness=1.5 MS.Transparency=0.4 MS.Color=Color3.fromRGB(255,255,255) MS.LineJoinMode=Enum.LineJoinMode.Round
+ local MFHalo=Instance.new("Frame") MFHalo.Parent=SG MFHalo.BackgroundTransparency=0.9 MFHalo.BackgroundColor3=Color3.fromRGB(255,255,255) MFHalo.Size=UDim2.new(0,620,0,420) MFHalo.Position=UDim2.new(0.5,-310,0.5,-210) MFHalo.ZIndex=0
+ Instance.new("UICorner",MFHalo).CornerRadius=UDim.new(0,16)
+ local MFHG=Instance.new("UIGradient") MFHG.Parent=MFHalo MFHG.Rotation=0 MFHG.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.5),NumberSequenceKeypoint.new(0.5,0.8),NumberSequenceKeypoint.new(1,1)}
+ local TB=Instance.new("Frame") TB.Parent=MF TB.BackgroundColor3=Color3.fromRGB(15,15,20) TB.Size=UDim2.new(1,0,0,48) TB.ZIndex=2
  Instance.new("UICorner",TB).CornerRadius=UDim.new(0,12)
- local TBS=Instance.new("UIStroke") TBS.Parent=TB TBS.Thickness=0.8 TBS.Transparency=0.8 TBS.Color=Settings.Accent
+ local TBS=Instance.new("UIStroke") TBS.Parent=TB TBS.Thickness=0.8 TBS.Transparency=0.6 TBS.Color=Color3.fromRGB(255,255,255)
  local TL2=Instance.new("TextLabel") TL2.Parent=TB TL2.BackgroundTransparency=1 TL2.Position=UDim2.new(0,50,0,6) TL2.Size=UDim2.new(0,180,0,24)
- TL2.Font=Enum.Font.GothamBold TL2.Text=title TL2.TextColor3=Settings.Accent TL2.TextSize=16 TL2.TextXAlignment=Enum.TextXAlignment.Left TL2.ZIndex=3
- local TLS=Instance.new("UIStroke") TLS.Parent=TL2 TLS.Thickness=1.5 TLS.Transparency=0.85 TLS.Color=Settings.Accent
+ TL2.Font=Enum.Font.GothamBold TL2.Text=title TL2.TextColor3=Color3.fromRGB(255,255,255) TL2.TextSize=16 TL2.TextXAlignment=Enum.TextXAlignment.Left TL2.ZIndex=3
+ local TLS=Instance.new("UIStroke") TLS.Parent=TL2 TLS.Thickness=1.5 TLS.Transparency=0.6 TLS.Color=Color3.fromRGB(255,255,255)
  local ST2=Instance.new("TextLabel") ST2.Parent=TB ST2.BackgroundTransparency=1 ST2.Position=UDim2.new(0,50,0,28) ST2.Size=UDim2.new(0,200,0,16)
- ST2.Font=Enum.Font.Gotham ST2.Text="PREMIUM · 尊享版" ST2.TextColor3=Color3.fromRGB(150,150,180) ST2.TextSize=11 ST2.TextXAlignment=Enum.TextXAlignment.Left ST2.ZIndex=3
- local VT=Instance.new("TextLabel") VT.Parent=TB VT.BackgroundColor3=Color3.fromRGB(30,30,40) VT.Position=UDim2.new(0,210,0,13) VT.Size=UDim2.new(0,60,0,22) VT.Font=Enum.Font.GothamSemibold VT.Text="v4.0" VT.TextColor3=Settings.Accent VT.TextSize=11 VT.ZIndex=3
+ ST2.Font=Enum.Font.Gotham ST2.Text="PREMIUM · 尊享版" ST2.TextColor3=Color3.fromRGB(180,180,190) ST2.TextSize=11 ST2.TextXAlignment=Enum.TextXAlignment.Left ST2.ZIndex=3
+ local VT=Instance.new("TextLabel") VT.Parent=TB VT.BackgroundColor3=Color3.fromRGB(25,25,30) VT.Position=UDim2.new(0,210,0,13) VT.Size=UDim2.new(0,60,0,22) VT.Font=Enum.Font.GothamSemibold VT.Text="v4.0" VT.TextColor3=Color3.fromRGB(255,255,255) VT.TextSize=11 VT.ZIndex=3
  Instance.new("UICorner",VT).CornerRadius=UDim.new(0,6)
- local VTS=Instance.new("UIStroke") VTS.Parent=VT VTS.Thickness=0.8 VTS.Transparency=0.7 VTS.Color=Settings.Accent
+ local VTS=Instance.new("UIStroke") VTS.Parent=VT VTS.Thickness=0.8 VTS.Transparency=0.5 VTS.Color=Color3.fromRGB(255,255,255)
  local X=Instance.new("TextButton") X.Parent=TB X.BackgroundTransparency=1 X.Position=UDim2.new(1,-35,0,12) X.Size=UDim2.new(0,24,0,24)
  X.Font=Enum.Font.GothamBold X.Text="✕" X.TextColor3=Color3.fromRGB(180,180,200) X.TextSize=14 X.AutoButtonColor=false X.ZIndex=5
  X.MouseEnter:Connect(function() TS:Create(X,TweenInfo.new(0.15),{TextColor3=Color3.fromRGB(255,80,80)}):Play() end)
@@ -334,84 +342,76 @@ function Lib:CreateWindow(title)
   mini=not mini
   TS:Create(MF,TweenInfo.new(0.3,Enum.EasingStyle.Quad),{Size=mini and UDim2.new(0,580,0,48) or UDim2.new(0,580,0,380)}):Play()
  end)
- local SB=Instance.new("ScrollingFrame") SB.Parent=MF SB.BackgroundColor3=Color3.fromRGB(18,18,24) SB.Position=UDim2.new(0,0,0,48) SB.Size=UDim2.new(0,175,1,-48) SB.ClipsDescendants=true SB.ZIndex=2 SB.ScrollBarThickness=3 SB.ScrollBarImageColor3=Settings.Accent SB.CanvasSize=UDim2.new(0,0,0,0) SB.AutomaticCanvasSize=Enum.AutomaticSize.Y
+ local SB=Instance.new("ScrollingFrame") SB.Parent=MF SB.BackgroundColor3=Color3.fromRGB(10,10,14) SB.Position=UDim2.new(0,0,0,48) SB.Size=UDim2.new(0,175,1,-48) SB.ClipsDescendants=true SB.ZIndex=2 SB.ScrollBarThickness=3 SB.ScrollBarImageColor3=Color3.fromRGB(255,255,255) SB.CanvasSize=UDim2.new(0,0,0,0) SB.AutomaticCanvasSize=Enum.AutomaticSize.Y
  local SBC=Instance.new("Frame") SBC.Parent=SB SBC.BackgroundTransparency=1 SBC.Size=UDim2.new(1,0,1,0) SBC.AutomaticSize=Enum.AutomaticSize.Y
  local SBL=Instance.new("UIListLayout") SBL.Parent=SBC SBL.Padding=UDim.new(0,3) SBL.HorizontalAlignment=Enum.HorizontalAlignment.Center SBL.VerticalAlignment=Enum.VerticalAlignment.Top
  local SBP=Instance.new("UIPadding") SBP.Parent=SBC SBP.PaddingTop=UDim.new(0,10)
- local CC=Instance.new("Frame") CC.Parent=MF CC.BackgroundColor3=Color3.fromRGB(15,15,20) CC.Position=UDim2.new(0,175,0,48) CC.Size=UDim2.new(1,-175,1,-48) CC.ClipsDescendants=true CC.ZIndex=2
- local PC=Instance.new("ScrollingFrame") PC.Parent=CC PC.BackgroundTransparency=1 PC.Size=UDim2.new(1,0,1,0) PC.ScrollBarThickness=3 PC.ScrollBarImageColor3=Settings.Accent PC.CanvasSize=UDim2.new(0,0,0,0) PC.ZIndex=2
+ local CC=Instance.new("Frame") CC.Parent=MF CC.BackgroundColor3=Color3.fromRGB(8,8,12) CC.Position=UDim2.new(0,175,0,48) CC.Size=UDim2.new(1,-175,1,-48) CC.ClipsDescendants=true CC.ZIndex=2
+ local PC=Instance.new("ScrollingFrame") PC.Parent=CC PC.BackgroundTransparency=1 PC.Size=UDim2.new(1,0,1,0) PC.ScrollBarThickness=3 PC.ScrollBarImageColor3=Color3.fromRGB(255,255,255) PC.CanvasSize=UDim2.new(0,0,0,0) PC.ZIndex=2
  drag(MF,TB)
  local pages={} local cur=nil
  -- UI特效层（放在MF外面，避免被裁剪）
  local FXLayer=Instance.new("Frame") FXLayer.Parent=SG FXLayer.BackgroundTransparency=1 FXLayer.Size=UDim2.new(1,0,1,0) FXLayer.ZIndex=100
- -- 流星环绕
- local MeteorLayer=Instance.new("Frame") MeteorLayer.Parent=FXLayer MeteorLayer.BackgroundTransparency=1 MeteorLayer.Size=UDim2.new(1,0,1,0) MeteorLayer.ZIndex=100
- local fxMeteors={}
- for i=1,12 do
-  local m=Instance.new("Frame") m.Parent=MeteorLayer m.BackgroundColor3=Settings.Accent m.Visible=false
-  m.Size=UDim2.new(0,4,0,60) m.ZIndex=100 m.BackgroundTransparency=0
-  Instance.new("UICorner",m).CornerRadius=UDim.new(0,2)
-  -- 渐变：头部亮白→中间主题色→尾部透明消失
-  local mg=Instance.new("UIGradient") mg.Parent=m
-  mg.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.3,Settings.Accent),ColorSequenceKeypoint.new(1,Settings.Accent)}
-  mg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.2,0),NumberSequenceKeypoint.new(0.7,0.5),NumberSequenceKeypoint.new(1,1)}
-  -- 发光效果
-  local gs=Instance.new("UIStroke") gs.Parent=m gs.Thickness=2 gs.Transparency=0.6 gs.Color=Settings.Accent gs.LineJoinMode=Enum.LineJoinMode.Round
-  table.insert(fxMeteors,{Obj=m,Delay=i*0.25,Spd=1+math.random()*0.6,Len=55+math.random(40),Grad=mg,Stroke=gs})
- end
- -- 特效状态
- local fxState={Rainbow=false,Meteor=false,RainbowConn=nil,MeteorConn=nil,AccentBase=Settings.Accent}
- local function fxTick()
-  if not SG.Parent then return end
-  local t=os.clock()
-  -- 彩虹边框
-  if fxState.Rainbow then
-   local hue=(t*0.15)%1 local c=Color3.fromHSV(hue,0.7,1)
-   MS.Color=c TBS.Color=c TLS.Color=c VTS.Color=c
-   TL2.TextColor3=c VT.TextColor3=c PC.ScrollBarImageColor3=c
-   for _,p in ipairs(pages) do
-    if p.Pg==cur then p.Btn.BackgroundColor3=Color3.fromRGB(c.R*40,c.G*40,c.B*40) p.Btn.TextColor3=c end
-   end
-  end
-  -- 流星环绕
-  if fxState.Meteor then
-   local mfx=MF.AbsolutePosition.X local mfy=MF.AbsolutePosition.Y
-   local w=MF.AbsoluteSize.X local h=MF.AbsoluteSize.Y
-   local perimeter=2*(w+h)
-   for i,md in ipairs(fxMeteors) do
-    local pos=((t*md.Spd*100+md.Delay*80)%perimeter)/perimeter
-    md.Obj.Visible=true
-    -- 计算流星位置（屏幕绝对坐标），流星头朝前
-    local px,py,rot
-    if pos<0.25 then -- 上边 左→右
-     local pf=pos/0.25 px=mfx+pf*w py=mfy-2 rot=90
-    elseif pos<0.5 then -- 右边 上→下
-     local pf=(pos-0.25)/0.25 px=mfx+w+2 py=mfy+pf*h rot=180
-    elseif pos<0.75 then -- 下边 右→左
-     local pf=(pos-0.5)/0.25 px=mfx+w-pf*w py=mfy+h+2 rot=270
-    else -- 左边 下→上
-     local pf=(pos-0.75)/0.25 px=mfx-2 py=mfy+h-pf*h rot=0
-    end
-    md.Obj.Position=UDim2.new(0,px,0,py)
-    md.Obj.Rotation=rot
-    md.Obj.Size=UDim2.new(0,4,0,md.Len)
-    local c
-    if fxState.Rainbow then
-     local hue2=((t*0.15)+i*0.05)%1 c=Color3.fromHSV(hue2,0.7,1)
-     md.Obj.BackgroundColor3=c
-     md.Grad.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.3,c),ColorSequenceKeypoint.new(1,c)}
-     md.Stroke.Color=c
-    else
-     c=fxState.AccentBase md.Obj.BackgroundColor3=c
-     md.Grad.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.3,c),ColorSequenceKeypoint.new(1,c)}
-     md.Stroke.Color=c
-    end
-   end
-  else
-   for _,md in ipairs(fxMeteors) do md.Obj.Visible=false end
+ -- 流星环绕（白色）
+local MeteorLayer=Instance.new("Frame") MeteorLayer.Parent=FXLayer MeteorLayer.BackgroundTransparency=1 MeteorLayer.Size=UDim2.new(1,0,1,0) MeteorLayer.ZIndex=100
+local fxMeteors={}
+for i=1,10 do
+ local m=Instance.new("Frame") m.Parent=MeteorLayer m.BackgroundColor3=Color3.fromRGB(255,255,255) m.Visible=false
+ m.Size=UDim2.new(0,4,0,60) m.ZIndex=100 m.BackgroundTransparency=0
+ Instance.new("UICorner",m).CornerRadius=UDim.new(0,2)
+ local mg=Instance.new("UIGradient") mg.Parent=m
+ mg.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(200,200,210)),ColorSequenceKeypoint.new(1,Color3.fromRGB(180,180,190))}
+ mg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0),NumberSequenceKeypoint.new(0.2,0),NumberSequenceKeypoint.new(0.7,0.5),NumberSequenceKeypoint.new(1,1)}
+ local gs=Instance.new("UIStroke") gs.Parent=m gs.Thickness=2 gs.Transparency=0.5 gs.Color=Color3.fromRGB(255,255,255) gs.LineJoinMode=Enum.LineJoinMode.Round
+ table.insert(fxMeteors,{Obj:m,Delay=i*0.25,Spd=1+math.random()*0.6,Len=55+math.random(40),Grad=mg,Stroke=gs})
+end
+-- 特效状态
+local fxState={Rainbow=false,Meteor=false,RainbowConn=nil,MeteorConn=nil,AccentBase=Color3.fromRGB(255,255,255)}
+local function fxTick()
+ if not SG.Parent then return end
+ local t=os.clock()
+ -- 白色光晕脉动
+ if fxState.Rainbow then
+  local pulse=0.7+0.3*math.sin(t*3)
+  local c=Color3.fromRGB(255,255,255)
+  MS.Color=c MS.Transparency=0.4-pulse*0.2
+  TBS.Color=c TLS.Color=c VTS.Color=c
+  TL2.TextColor3=c VT.TextColor3=c PC.ScrollBarImageColor3=c
+  MFHalo.BackgroundTransparency=0.85-pulse*0.15
+  for _,p in ipairs(pages) do
+   if p.Pg==cur then p.Btn.BackgroundColor3=Color3.fromRGB(40,40,45) p.Btn.TextColor3=c end
   end
  end
- local function applyAccent(color)
+ -- 流星环绕（白色）
+ if fxState.Meteor then
+  local mfx=MF.AbsolutePosition.X local mfy=MF.AbsolutePosition.Y
+  local w=MF.AbsoluteSize.X local h=MF.AbsoluteSize.Y
+  local perimeter=2*(w+h)
+  for i,md in ipairs(fxMeteors) do
+   local pos=((t*md.Spd*100+md.Delay*80)%perimeter)/perimeter
+   md.Obj.Visible=true
+   local px,py,rot
+   if pos<0.25 then
+    local pf=pos/0.25 px=mfx+pf*w py=mfy-2 rot=90
+   elseif pos<0.5 then
+    local pf=(pos-0.25)/0.25 px=mfx+w+2 py=mfy+pf*h rot=180
+   elseif pos<0.75 then
+    local pf=(pos-0.5)/0.25 px=mfx+w-pf*w py=mfy+h+2 rot=270
+   else
+    local pf=(pos-0.75)/0.25 px=mfx-2 py=mfy+h-pf*h rot=0
+   end
+   md.Obj.Position=UDim2.new(0,px,0,py)
+   md.Obj.Rotation=rot
+   md.Obj.Size=UDim2.new(0,4,0,md.Len)
+   md.Obj.BackgroundColor3=Color3.fromRGB(255,255,255)
+   md.Grad.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(200,200,210)),ColorSequenceKeypoint.new(1,Color3.fromRGB(180,180,190))}
+   md.Stroke.Color=Color3.fromRGB(255,255,255)
+  end
+ else
+  for _,md in ipairs(fxMeteors) do md.Obj.Visible=false end
+ end
+end
+local function applyAccent(color)
   Settings.Accent=color fxState.AccentBase=color
   if not fxState.Rainbow then
    MS.Color=color TBS.Color=color TLS.Color=color VTS.Color=color
@@ -855,6 +855,100 @@ buildUI=function()
  NS:AddButton("此脚本由 TRAE 制造",function() end)
  NS:AddButton("完全免费，请勿付费购买",function() end)
  NS:AddButton("如已付费请向买家退款",function() end)
+ -- 🌟 内部人员兑换码
+ local VIP=MT:AddSection("🌟 内部人员兑换")
+ local vipActive=false
+ local vipBillboard=nil
+ local function showVIPTag()
+  if vipBillboard then pcall(function() vipBillboard:Destroy() end) end
+  local ch=LP.Character if not ch then return end
+  local head=ch:FindFirstChild("Head") if not head then return end
+  local bg=Instance.new("BillboardGui") bg.Name="LeiVIPTag" bg.Parent=head
+  bg.AlwaysOnTop=true bg.Size=UDim2.new(0,220,0,60) bg.StudsOffset=Vector3.new(0,3.5,0)
+  bg.MaxDistance=150 bg.Enabled=true
+  -- 外层发光
+  local glow=Instance.new("Frame") glow.Parent=bg glow.BackgroundTransparency=0.8
+  glow.BackgroundColor3=Color3.fromRGB(255,255,255) glow.Size=UDim2.new(1,0,1,0) glow.ZIndex=1
+  Instance.new("UICorner",glow).CornerRadius=UDim.new(0,12)
+  local gg=Instance.new("UIGradient") gg.Parent=glow gg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.5),NumberSequenceKeypoint.new(0.5,0.8),NumberSequenceKeypoint.new(1,0.5)}
+  -- 主背景
+  local frame=Instance.new("Frame") frame.Parent=bg frame.BackgroundColor3=Color3.fromRGB(8,8,12)
+  frame.Size=UDim2.new(1,-10,1,-10) frame.Position=UDim2.new(0,5,0,5) frame.ZIndex=2
+  frame.BackgroundTransparency=0.15
+  Instance.new("UICorner",frame).CornerRadius=UDim.new(0,10)
+  local fs=Instance.new("UIStroke") fs.Parent=frame fs.Thickness=1.5 fs.Transparency=0.3 fs.Color=Color3.fromRGB(255,255,255)
+  -- 标题文字
+  local title=Instance.new("TextLabel") title.Parent=frame title.BackgroundTransparency=1
+  title.Size=UDim2.new(1,0,0,28) title.Position=UDim2.new(0,0,0,4) title.ZIndex=3
+  title.Font=Enum.Font.GothamBold title.Text="⭐ 磊脚本内部人员 ⭐"
+  title.TextColor3=Color3.fromRGB(255,255,255) title.TextSize=16 title.TextScaled=false
+  local ts=Instance.new("UIStroke") ts.Parent=title ts.Thickness=2 ts.Transparency=0.5 ts.Color=Color3.fromRGB(255,255,255)
+  -- 副标题
+  local sub=Instance.new("TextLabel") sub.Parent=frame sub.BackgroundTransparency=1
+  sub.Size=UDim2.new(1,0,0,16) sub.Position=UDim2.new(0,0,0,32) sub.ZIndex=3
+  sub.Font=Enum.Font.GothamSemibold sub.Text="PREMIUM · 尊享特权"
+  sub.TextColor3=Color3.fromRGB(200,200,210) sub.TextSize=11
+  -- 光晕脉动动画
+  local t0=os.clock()
+  RS.RenderStepped:Connect(function()
+   if not bg.Parent then return end
+   local t=os.clock()-t0
+   local pulse=0.7+0.3*math.sin(t*2.5)
+   glow.BackgroundTransparency=0.85-pulse*0.15
+   fs.Transparency=0.3-pulse*0.2
+  end)
+  vipBillboard=bg
+  print("[VIP] 内部人员标识已显示")
+ end
+ VIP:AddButton("🎁  输入兑换码",function()
+  safeSpawn(function()
+   -- 简单输入框
+   local sg=Instance.new("ScreenGui") sg.Name="LeiVIPInput" sg.Parent=CG sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+   local bf=Instance.new("Frame") bf.Parent=sg bf.BackgroundColor3=Color3.fromRGB(8,8,12) bf.Size=UDim2.new(0,320,0,180)
+   bf.Position=UDim2.new(0.5,-160,0.5,-90) bf.ZIndex=10 bf.BackgroundTransparency=0.05
+   Instance.new("UICorner",bf).CornerRadius=UDim.new(0,12)
+   local bs=Instance.new("UIStroke") bs.Parent=bf bs.Thickness=1.5 bs.Transparency=0.4 bs.Color=Color3.fromRGB(255,255,255)
+   local tl=Instance.new("TextLabel") tl.Parent=bf tl.BackgroundTransparency=1 tl.Size=UDim2.new(1,0,0,30) tl.Position=UDim2.new(0,0,0,15)
+   tl.Font=Enum.Font.GothamBold tl.Text="🌟 内部人员兑换" tl.TextColor3=Color3.fromRGB(255,255,255) tl.TextSize=18 tl.ZIndex=11
+   local ib=Instance.new("TextBox") ib.Parent=bf ib.Size=UDim2.new(0,260,0,40) ib.Position=UDim2.new(0.5,-130,0,55)
+   ib.BackgroundColor3=Color3.fromRGB(15,15,20) ib.Text="" ib.PlaceholderText="请输入兑换码..."
+   ib.TextColor3=Color3.fromRGB(255,255,255) ib.PlaceholderColor3=Color3.fromRGB(100,100,110)
+   ib.Font=Enum.Font.Gotham ib.TextSize=14 ib.ClearTextOnFocus=false ib.ZIndex=11
+   Instance.new("UICorner",ib).CornerRadius=UDim.new(0,8)
+   local ibs=Instance.new("UIStroke") ibs.Parent=ib ibs.Thickness=1 ibs.Transparency=0.6 ibs.Color=Color3.fromRGB(255,255,255)
+   local cb=Instance.new("TextButton") cb.Parent=bf cb.Text="" cb.Size=UDim2.new(0,120,0,36) cb.Position=UDim2.new(0.5,-60,0,110)
+   cb.BackgroundColor3=Color3.fromRGB(40,40,45) cb.ZIndex=11
+   Instance.new("UICorner",cb).CornerRadius=UDim.new(0,8)
+   local cbs=Instance.new("UIStroke") cbs.Parent=cb cbs.Thickness=1 cbs.Transparency=0.5 cbs.Color=Color3.fromRGB(255,255,255)
+   local cl=Instance.new("TextLabel") cl.Parent=cb cl.BackgroundTransparency=1 cl.Size=UDim2.new(1,0,1,0)
+   cl.Font=Enum.Font.GothamBold cl.Text="确认兑换" cl.TextColor3=Color3.fromRGB(255,255,255) cl.TextSize=14 cl.ZIndex=12
+   local xl=Instance.new("TextButton") xl.Parent=bf xl.BackgroundTransparency=1 xl.Size=UDim2.new(0,30,0,30) xl.Position=UDim2.new(1,-35,0,5)
+   xl.Text="✕" xl.TextColor3=Color3.fromRGB(200,200,210) xl.Font=Enum.Font.GothamBold xl.TextSize=16 xl.ZIndex=11
+   xl.MouseButton1Click:Connect(function() sg:Destroy() end)
+   cb.MouseButton1Click:Connect(function()
+    local code=ib.Text
+    if code=="磊nb" then
+     vipActive=true
+     showVIPTag()
+     -- 监听角色重生
+     LP.CharacterAdded:Connect(function() task.wait(1) if vipActive then showVIPTag() end end)
+     pcall(Notify,"⭐","恭喜！内部人员身份已激活",4)
+     sg:Destroy()
+    else
+     ib.TextColor3=Color3.fromRGB(255,100,100) ib.Text="兑换码错误"
+     task.wait(1) ib.TextColor3=Color3.fromRGB(255,255,255) ib.Text=""
+    end
+   end)
+   ib.FocusLost:Connect(function(enter) if enter then cb.MouseButton1Click:Fire() end end)
+  end)
+ end)
+ VIP:AddButton("👁  显示/隐藏标识",function()
+  if not vipActive then pcall(Notify,"❌","请先激活内部人员身份",3) return end
+  if vipBillboard then
+   vipBillboard.Enabled=not vipBillboard.Enabled
+   pcall(Notify,"ℹ️","标识已"..(vipBillboard.Enabled and "显示" or "隐藏"),2)
+  end
+ end)
  local SpS=MT:AddSection("⚡  通用调整")
  SpS:AddSlider("🏃  移动速度",1,10000,16,function(v)
   local ch=LP.Character local hum=ch and ch:FindFirstChild("Humanoid")
@@ -1679,7 +1773,6 @@ end)
  local CS=OT:AddSection("通用脚本")
  CS:AddButton("🌐  全自动翻译",function() runLSA("全自动翻译","https://raw.githubusercontent.com/JsYb666/Item/refs/heads/main/Auto-language") end)
  CS:AddButton("🚂  火车头",function() runLS("火车头","https://raw.githubusercontent.com/giobolqv1/A-Train-by-GioBolqv1-/refs/heads/main/train.lua") end)
- CS:AddButton("🦸  无敌少侠飞行",function() runLS("无敌少侠飞行","https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414") end)
  CS:AddButton("🦵  通用飞踢",function() runLS("通用飞踢","https://rawscripts.net/raw/Universal-Script-Fe-DropKick-Script-165813") end)
  local BS=OT:AddSection("黑脚本")
  BS:AddButton("⚫  运行黑脚本",function() runLS("黑脚本","https://raw.githubusercontent.com/hgvuyguyg/HEIJIAOBEN/main/aaa") end)
@@ -1694,11 +1787,9 @@ end)
  OS1:AddButton("📦  提姆脚本",function() runLS("提姆脚本","https://api.luarmor.net/files/v3/loaders/1159311eaabc7aced70509c7af1982.lua") end)
  OS1:AddButton("📦  luarmor脚本",function() runLS("luarmor脚本","https://api.luarmor.net/files/v3/loaders/d370959ebdc8d38228b120434431045/raw") end)
  OS1:AddButton("📦  onic脚本",function() runLS("onic脚本","https://snowscript.xyz/snow/SnowScript") end)
- OS1:AddButton("📦  91中心",function() runLS("91中心","https://raw.githubusercontent.com/odhdshhe/leng9191919191919191919191919191919191919191/refs/heads/main/91%E4%B8%AD%E5%BF%83.txt") end)
  OS1:AddButton("📦  落叶中心",function()
   safeSpawn(function()
    getgenv().LS="落叶中心"
-   loadstring(game:HttpGet("https://raw.githubusercontent.com/krlpl/Deciduous-center-LS/main/%E8%90%BD%E5%8F%B6%E4%B8%AD%E5%BF%83%E6%B7%B7%E6%B7%86.txt"))()
   end)
  end)
  local CeS=OT:AddSection("脚本中心")
@@ -1715,13 +1806,7 @@ end)
   local ok,err=pcall(function() loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,98,98,97,109,120,98,98,97,109,120,98,98,97,109,120,47,99,111,100,101,115,112,97,99,101,115,45,98,108,97,110,107,47,109,97,105,110,47,37,69,55,37,57,57,37,66,68,34,41,41,40,41")() end)
   if ok then print("[地岩脚本] 加载成功！") else warn("[地岩脚本] 失败:",err) end
  end)
- local GS=OT:AddSection("绿脚本")
- GS:AddButton("🟢  运行绿脚本",function() runLS("绿脚本","https://pastebin.com/raw/Esw6YQKR") end)
- local GaS=OT:AddSection("甘脚本")
- GaS:AddButton("💚  运行甘脚本",function() runLST("甘脚本","https://raw.githubusercontent.com/CN1919810/de2/main/77_0M1VK6VF%20(1).lua") end)
- local QS=OT:AddSection("空情脚本")
- QS:AddButton("💙  运行空情脚本",function() runLS("空情脚本","https://ayangwp.cn/api/v3/file/get/8628/%E9%9D%99?sign=uxlt7ravTFmP3TZLNgN7zImLHxJWhH93SEbKgFA_PRc%3D%3A0") end)
- local XAS=OT:AddSection("XA 枢纽")
+    local XAS=OT:AddSection("XA 枢纽")
  XAS:AddButton("🌀  运行 XA 枢纽",function() runLS("XA枢纽","https://raw.gitcode.com/Xingtaiduan/Scripts/raw/main/Loader.lua") end)
     local ZMScripts = {}
 
@@ -1732,15 +1817,12 @@ loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\
 
     ZMScripts['云脚本最新'] = [=[
 _G.CloudScript = "云脚本主群号526684389"
-loadstring(game:HttpGet("https://raw.githubusercontent.com/XiaoYunCN/LOL/main/%E4%BA%91%E8%84%9A%E6%9C%ACCloud%20script.lua", true))()
 ]=]
 
     ZMScripts['剑客脚本'] = [=[
-loadstring(game:HttpGet("https://raw.githubusercontent.com/lyyanai/Crack/main/JiankeCrack"))()
 ]=]
 
     ZMScripts['小魔脚本'] = [=[
-loadstring(game:HttpGet("https://raw.githubusercontent.com/xiaomoNB666/xiaomoNB666/main/%E6%9E%81.lua"))()
 ]=]
 
     ZMScripts['小黑子脚本'] = [=[
@@ -2508,7 +2590,6 @@ DoorsMods:CreateToggle({
             })
         end
         thanksgivingEnabled=true
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/ZepsyyCodesLUA/Utilities/main/DOORSthanksgiving"))()
 	end,
 })
 
@@ -2787,13 +2868,6 @@ local toolFuncs={["Skeleton Key"]=function()
     keyTool.Unequipped:Connect(function() con:Disconnect() end)
 
     if Plr.PlayerGui.MainUI.ItemShop.Visible then
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Shop%20Items/Source.lua"))().CreateItem(keyTool, {
-            Title = "骷髅钥匙",
-            Desc = "傻逼现在没用了",
-            Image = "https://static.wikia.nocookie.net/doors-game/images/8/88/Icon_crucifix2.png/revision/latest/scale-to-width-down/350?cb=20220728033038",
-            Price = "点赞加关注",
-            Stack = 1,
-        })
     else keyTool.Parent=game.Players.LocalPlayer.Backpack end
 end, ["Crucifix"]=function() 
     local function IsVisible(part)
@@ -2840,7 +2914,6 @@ end, ["Crucifix"]=function()
         )(),
         CustomShop = loadstring(
             game:HttpGet(
-                "https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Shop%20Items/Source.lua"
             )
         )(),
     }
@@ -3152,20 +3225,16 @@ end, ["Crucifix"]=function()
     })
     else CrucifixTool.Parent=game.Players.LocalPlayer.Backpack end
 end, ["Christmas Guns"]=function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/NotTypicalAdmin/ChristmasGuns/main/main"))()
 end,
     ["Flashlight"]=function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/DXuwu/flashlight-lmao/main/flashlight.lua"))()
 end,    
     ["Seek Crucifix"]=function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RmdComunnityScriptsProvider/AngryHub/main/Seek%20Crucifix.lua"))()
 end,
     ["Halloween Crucifix"]=function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Mye123/MyeWareHub/main/Halloween%20Crucifix"))()
 end,    
     ["Candle"]=function()
     local Functions = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Functions.lua"))()
-    local CustomShop = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Shop%20Items/Source.lua"))()
 
 
     local Candle = game:GetObjects("rbxassetid://11630702537")[1]
@@ -3510,7 +3579,6 @@ global:CreateParagraph({Title="Functionality", Content="按下去 \"牛逼 Figur
 --     Name="Create Tool",
 --     Callback=function()
 --         local Functions = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Functions.lua"))()
---         local CustomShop = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors/Custom%20Shop%20Items/Source.lua"))()
 --         local tool = LoadCustomInstance(tool)
 
 --         for _, lscript in pairs(tool:GetDescendants()) do
@@ -3597,7 +3665,6 @@ end)
 MainTab:CreateSection("Doors 怪物")
 local CanEntityKill=false
 
-local Creator = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Doors%20Entity%20Spawner/Source.lua"))()
 
 local old
 old=hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
@@ -3629,7 +3696,6 @@ end))
 
 function spawnEntity(sel)
     sel=sel:lower()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/sponguss/Doors-Entity-Replicator/main/ui_cache/"..sel..".lua"))()(EntitiesFunctions, CanEntityKill, SelectedDoorsEntity, getTb, Creator, spawnEntity, entities)
 end
 
 MainTab:CreateDropdown({
@@ -3801,7 +3867,6 @@ lin = "作者林"lin ="林QQ群 747623342"loadstring(game:HttpGet("https://raw.g
 
     ZMScripts['猫脚本'] = [=[
 getgenv().MAO = "猫猫王者脚本群935143896"
-loadstring(game:HttpGet("https://raw.githubusercontent.com/dkfkfkfjfkfjdj/longshu/main/%E6%B7%B7%E6%B7%86%E6%96%87%E4%BB%B6.lua"))()("猫猫脚本 V2.0")
 ]=]
 
     ZMScripts['皮脚本'] = [=[
@@ -3809,21 +3874,17 @@ getgenv().XiaoPi="皮脚本QQ群1002100032" loadstring(game:HttpGet("https://raw
 ]=]
 
     ZMScripts['羽脚本'] = [=[
-loadstring(game:HttpGet("https://raw.githubusercontent.com/JY6812/-/refs/heads/main/%E7%BE%BD%E8%84%9A%E6%9C%ACv2.lua",true))()
 ]=]
 
     ZMScripts['落叶脚本'] = [=[
-getgenv().LS="落叶中心" loadstring(game:HttpGet("https://raw.githubusercontent.com/krlpl/Deciduous-center-LS/main/%E8%90%BD%E5%8F%B6%E4%B8%AD%E5%BF%83%E6%B7%B7%E6%B7%86.txt"))()
 ]=]
 
     ZMScripts['退休脚本'] = [=[
 TUIXUI="作者退休☯︎"JIAOBEN="永久免费缝合"
 qun="809771141"
-loadstring(game:HttpGet("https://pastebin.com/raw/yPhwFHy4"))()
 ]=]
 
     ZMScripts['霖溺脚本'] = [=[
-loadstring(game:HttpGet("https://shz.al/~LNINIGGD"))()
 ]=]
 
     ZMScripts['青脚本'] = [=[
@@ -3855,30 +3916,20 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
  local CN1=SV:AddSection("🌟 国产脚本枢纽")
  CN1:AddButton("⚫  黑脚本",function() runLS("黑脚本","https://raw.githubusercontent.com/hgvuyguyg/HEIJIAOBEN/main/aaa") end)
  CN1:AddButton("🔵  DB 脚本",function() runLS("DB脚本","https://raw.githubusercontent.com/dish-rr/DB-scriptnb/main/DB-script101.lua") end)
- CN1:AddButton("🏠  脚本中心",function() runLSA("脚本中心","https://raw.githubusercontent.com/ChinaQY/-/main/%E6%88%91%E7%9A%84%E8%84%9A%E6%9C%AC") end)
- CN1:AddButton("🪨  地岩脚本",function() runLST("地岩脚本","https://raw.githubusercontent.com/bbambbxbbambbxbbambbx/codespaces-blanck/main/%E5%9C%B0%E5%B2%A9") end)
- CN1:AddButton("🟢  绿脚本",function() runLS("绿脚本","https://pastebin.com/raw/Esw6YQKR") end)
- CN1:AddButton("💚  甘脚本",function() runLST("甘脚本","https://raw.githubusercontent.com/CN1919810/de2/main/77_0M1VK6VF%20(1).lua") end)
- CN1:AddButton("💙  空情脚本",function() runLS("空情脚本","https://ayangwp.cn/api/v3/file/get/8628/%E9%9D%99?sign=uxlt7ravTFmP3TZLNgN7zImLHxJWhH93SEbKgFA_PRc%3D%3A0") end)
  CN1:AddButton("🌀  XA 枢纽",function() runLS("XA枢纽","https://raw.gitcode.com/Xingtaiduan/Scripts/raw/main/Loader.lua") end)
  -- 📦 通用脚本
  local TY=SV:AddSection("📦 通用脚本")
  TY:AddButton("🌐  全自动翻译",function() runLSA("全自动翻译","https://raw.githubusercontent.com/JsYb666/Item/refs/heads/main/Auto-language") end)
  TY:AddButton("🚂  火车头",function() runLS("火车头","https://raw.githubusercontent.com/giobolqv1/A-Train-by-GioBolqv1-/refs/heads/main/train.lua") end)
- TY:AddButton("🦸  无敌少侠飞行",function() runLS("无敌少侠飞行","https://rawscripts.net/raw/Universal-Script-Invinicible-Flight-R15-45414") end)
  -- 🎮 游戏专属脚本
  local YX=SV:AddSection("🎮 游戏专属脚本")
- YX:AddButton("💪  最强战场(Nicuse)",function() runLS("最强战场Nicuse","https://raw.githubusercontent.com/Nicuse/RobloxScripts/main/SaitamaBattlegrounds.lua") end)
  -- 💪 最强战场合集
  local TSB=SV:AddSection("💪 最强战场合集")
- TSB:AddButton("❄️  冷寂脚本(超级牛逼)",function() runLS("冷寂脚本","https://raw.githubusercontent.com/xmtdnmsl/-1/refs/heads/main/LENGJINIUBI.lua") end)
  TSB:AddButton("🌀  五条悟脚本",function() runLS("五条悟","https://raw.githubusercontent.com/Kamyk-player/FinalSuperSenior/refs/heads/main/SaitamaToSuperSeniorGojo") end)
  TSB:AddButton("🛡️  自动防御+防反+普攻",function() runLS("自动防御防反普攻","https://raw.githubusercontent.com/Cyborg883/TSB/refs/heads/main/CombatGui") end)
  TSB:AddButton("👻  隐身脚本",function() runLS("最强战场隐身","https://rawscripts.net/raw/The-Strongest-Battlegrounds-Phantasm-20980") end)
- TSB:AddButton("🦀  KJ+变螃蟹+秒杀+传送+无CD",function() runLS("最强战场KJ","https://pastebin.com/raw/L7WEmRth") end)
  YX:AddButton("🪵  代木大亨2",function() runLST("代木大亨2","https://raw.githubusercontent.com/frencaliber/LuaWareLoader.lw/main/luawareloader.wtf") end)
  YX:AddButton("📅  活了7天",function() runLS("活了7天","https://raw.githubusercontent.com/zamzamzan/test/refs/heads/main/7days") end)
- YX:AddButton("🚚  亡命速递",function() runLS("亡命速递","https://raw.githubusercontent.com/JanseJYC/Script/refs/heads/main/Deadly-Deliver.lua") end)
  YX:AddButton("🎯  盲射",function() runLS("盲射","https://raw.githubusercontent.com/gumanba/Scripts/main/BlindShot") end)
  YX:AddButton("🥷  忍者传奇",function()
   safeSpawn(function()
@@ -3886,7 +3937,6 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
    loadstring(game:HttpGet("https://raw.githubusercontent.com/StormSKz12/StirkeHub1/main/Gameincluded"))()
   end)
  end)
- YX:AddButton("💪  力量传奇定制重生",function() runLS("力量传奇定制重生","https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua") end)
  YX:AddButton("🩸  皮脚本(内脏与黑火药)",function()
   safeSpawn(function()
    getgenv().XiaoPi="皮脚本-内脏与黑火药"
@@ -3894,7 +3944,6 @@ loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,1
   end)
  end)
 YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https://raw.githubusercontent.com/XiaoXuAnZang/XKscript/refs/heads/main/GraceXJ.lua") end)
-YX:AddButton("🚚  亡命速递挂机(自动收集)",function() runLS("亡命速递挂机","https://raw.githubusercontent.com/SNSDARK/Scripts/refs/heads/main/Deadly%20Delivery.lua") end)
 YX:AddButton("😨  压力脚本",function() runLS("压力脚本","https://raw.githubusercontent.com/Drop56796/CreepyEyeHub/main/obfuscate.lua") end)
 YX:AddButton("💵  俄亥俄州捡印钞机",function() runLS("俄亥俄州捡印钞机","https://raw.githubusercontent.com/IIIlll1ll1/Cracks/main/AdvancedLogic_Crack.lua") end)
 -- 🚂 死铁轨合集
@@ -3902,7 +3951,6 @@ YX:AddButton("💵  俄亥俄州捡印钞机",function() runLS("俄亥俄州捡�
  DRS:AddButton("🛤️  死铁轨国人脚本",function()
   safeSpawn(function()
    LnScript="By Ln" Roblox="免费" LNTeam="死铁轨"
-   loadstring(game:HttpGet("https://github.com/XiaoyeQWQ/state/raw/refs/heads/main/Dead-Rail.lua"))()
   end)
  end)
  DRS:AddButton("🎫  死铁轨刷券HungHug",function()
@@ -3915,22 +3963,14 @@ YX:AddButton("💵  俄亥俄州捡印钞机",function() runLS("俄亥俄州捡�
  -- 🏚️ 被遗弃合集
  local FKS=SV:AddSection("🏚️ 被遗弃合集")
  FKS:AddButton("⭐  被遗弃(功能多)",function() runLS("被遗弃功能多","https://raw.githubusercontent.com/ivannetta/ShitScripts/refs/heads/main/forsaken.lua") end)
- FKS:AddButton("🐟  被遗弃脚本",function() runLS("被遗弃脚本","https://raw.githubusercontent.com/JackUltraman/fish/refs/heads/main/%E8%A2%AB%E9%81%97%E5%BC%83") end)
- -- 🪓 白脚本
- local BJS=SV:AddSection("🪓 白脚本")
- BJS:AddButton("🪓  伐木不要钱",function() runLS("白脚本伐木","https://raw.githubusercontent.com/CloudX-ScriptsWane/ScriptsDache/main/%E4%BC%90%E6%9C%A8%E5%A4%A7%E4%BA%A822.lua") end)
- -- 🍴 餐厅大亨
+   -- 🍴 餐厅大亨
  local CTS=SV:AddSection("🍴 餐厅大亨")
  CTS:AddButton("🍴  餐厅大亨脚本",function() runLS("餐厅大亨","https://raw.githubusercontent.com/toosiwhip/snake-hub/main/restaurant-tycoon-2.lua") end)
  -- ⚔️ 战争大亨合集
  local WTS=SV:AddSection("⚔️ 战争大亨合集")
- WTS:AddButton("🔫  战争大亨无限子弹",function() runLS("战争大亨无限子弹","https://raw.githubusercontent.com/XOTRXONY/Wartycoon/main/ZZDH.lua") end)
- WTS:AddButton("📦  战争大亨整合1",function() runLS("战争大亨整合1","https://raw.githubusercontent.com/Nivex123456/War-Tycoon/main/Script") end)
  WTS:AddButton("📦  战争大亨整合2",function() runLS("战争大亨整合2","https://raw.githubusercontent.com/MariyaFurmanova/Library/main/WarTycoon") end)
- WTS:AddButton("📦  战争大亨整合3(GNHub)",function() runLS("战争大亨GNHub","https://raw.githubusercontent.com/nici002018/GNHub/master/GNHub.lua") end)
  -- 🌲 森林中的99夜
  local NNS=SV:AddSection("🌲 森林中的99夜")
- NNS:AddButton("🌙  99夜中文脚本(好用)",function() runLS("99夜中文","https://raw.githubusercontent.com/Xingtaiduan/Script/refs/heads/main/Games/森林中的99夜.lua") end)
  NNS:AddButton("💪  99夜H4x脚本(比较强)",function() runLS("99夜H4x","https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua") end)
  -- ⚔️ 刀刃球合集
  local BBS=SV:AddSection("⚔️ 刀刃球合集")
@@ -4281,7 +4321,6 @@ loadstring(game:HttpGet(link))()]=])
  BBS:AddButton("💪  刀刃球无敌脚本",function()
   safeSpawn(function()
    _G.UI_Size=200
-   loadstring(game:HttpGet("https://raw.githubusercontent.com/3345-c-a-t-s-u-s/-beta-/main/AutoParry.lua"))()
   end)
  end)
  -- Aero合集
@@ -43873,7 +43912,6 @@ for _,s in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
         s:Destroy()
         fard.CFrame = CFrame.new(9e9 * _,9e9* _,9e9*_)
         wait()]=]
- FEScripts['超长坤吧'] = [=[loadstring(game:HttpGet("https://pastebin.com/raw/ESWSFND7", true))()]=]
  FEScripts['不雅动作(手机)'] = [=[-- FE SussyHub Made by Nil <3
 -- Mizt Source by Melon <3
 loadstring(game:HttpGet(('https://gist.githubusercontent.com/Nilrogram/8b0c8bd710be142f383c71f79279752c/raw/e4fb01a7de7cd498bb53270d2ad191dfab268a88/FE%2520SussyHub'),true))();]=]
@@ -45919,13 +45957,11 @@ swait()
 end)
 anims()
 warn("Brutal legend. Made by Supr14")]=]
- FEScripts['R15设置体型'] = [=[loadstring(game:HttpGet("https://pastebin.com/raw/gDmAuwhC",true))()]=]
  FEScripts['FE方块'] = [=[loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\40\39\104\116\116\112\115\58\47\47\112\97\115\116\101\102\121\46\103\97\47\50\66\120\90\69\83\109\106\47\114\97\119\39\41\44\116\114\117\101\41\41\40\41\10")()]=]
  FEScripts['免费通行证'] = [=[for _,v in pairs(game:GetDescendants()) do
 if v.ClassName == "RemoteEvent" then
 if v.Parent.Name == "WeaponsRemotes" or v.Parent.Name == "VipRemotes" or v.Parent.Name == "Remotes" then
 v:FireServer()]=]
- FEScripts['R15动作脚本'] = [=[loadstring(game:HttpGet("https://raw.githubusercontent.com/Boxten-Keyes/music/refs/heads/main/music%23%5Bscripts%5D/music%23%5Bmiscellaneous%5D/music%23%5Bfe%20r15%20animation%20player%5D.lua"))()]=]
  FEScripts['FE蜘蛛'] = [=[loadstring(game:HttpGet(('https://rawgithubusercontent.com/0Ben1/sushi/main/X'),true))()]=]
 
  local function runFE(name)
@@ -46093,181 +46129,546 @@ v:FireServer()]=]
    print("[红刀] 攻击光环已关闭")
   end
  end)
- -- 战斗功能页：自描 + 子弹追踪
- local CombatT=W:AddTab("战斗","🎯")
- -- 自描功能
- local AimbotState={E=false,Conn=nil,Target=nil,FOV=150,Smooth=0.15,Part="Head",VisibleCheck=false,TeamCheck=false}
- local function getClosestPlayer()
-  local closest=nil local dist=math.huge
-  local cam=workspace.CurrentCamera
-  local myPos=cam.CFrame.Position
-  for _,p in ipairs(Plrs:GetPlayers()) do
-   if p==LP then continue end
-   if AimbotState.TeamCheck and p.Team and LP.Team and p.Team==LP.Team then continue end
-   local ch=p.Character if not ch then continue end
-   local hum=ch:FindFirstChild("Humanoid") if not hum or hum.Health<=0 then continue end
-   local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
-   if not part then continue end
-   -- 可见性检测
-   if AimbotState.VisibleCheck then
-    local ray=Ray.new(myPos,(part.Position-myPos).Unit*1000)
-    local hit=workspace:FindPartOnRayWithIgnoreList(ray,{LP.Character,ch})
-    if hit then continue end
-   end
-   -- 计算屏幕距离（FOV检查）
-   local screenPos,onScreen=cam:WorldToScreenPoint(part.Position)
-   if not onScreen then continue end
-   local mouse=UIS:GetMouseLocation()
-   local d=math.sqrt((screenPos.X-mouse.X)^2+(screenPos.Y-mouse.Y)^2)
-   if d<AimbotState.FOV and d<dist then
-    dist=d closest=p
-   end
-  end
-  return closest
+ -- 战斗功能页：自瞄 + 子弹追踪（优化版）
+local CombatT=W:AddTab("战斗","🎯")
+-- ========== 双端平台检测 ==========
+local UIS2=game:GetService("UserInputService")
+local TS2=game:GetService("TweenService")
+local Platform = {
+    IsMobile = UIS2.TouchEnabled,
+    IsPC = not UIS2.TouchEnabled,
+    TouchButton = nil,
+    TouchActive = false,
+    TouchButton2 = nil,
+    TouchActive2 = false
+}
+-- 创建手机触摸按钮（自瞄）
+local function createAimbotTouchButton()
+    if not Platform.IsMobile or Platform.TouchButton then return end
+    local sg=Instance.new("ScreenGui")
+    sg.Name="AimbotTouchUI"
+    sg.Parent=CG
+    sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+    sg.IgnoreGuiInset=true
+    local btn=Instance.new("ImageButton")
+    btn.Parent=sg
+    btn.Size=UDim2.new(0,75,0,75)
+    btn.Position=UDim2.new(0,25,1,-105)
+    btn.BackgroundTransparency=0.4
+    btn.BackgroundColor3=Color3.fromRGB(255,255,255)
+    btn.BorderSizePixel=0
+    local corner=Instance.new("UICorner")
+    corner.CornerRadius=UDim.new(0,37.5)
+    corner.Parent=btn
+    local stroke=Instance.new("UIStroke")
+    stroke.Parent=btn
+    stroke.Thickness=2
+    stroke.Color=Color3.fromRGB(255,255,255)
+    stroke.Transparency=0.3
+    local label=Instance.new("TextLabel")
+    label.Parent=btn
+    label.Size=UDim2.new(1,0,1,0)
+    label.BackgroundTransparency=1
+    label.Text="🎯"
+    label.TextSize=28
+    label.TextColor3=Color3.fromRGB(0,0,0)
+    label.TextScaled=false
+    btn.TouchBegan:Connect(function(input)
+        input.UserInputState=Enum.UserInputState.Begin
+        Platform.TouchActive=true
+        btn.BackgroundTransparency=0.2
+        btn.BackgroundColor3=Color3.fromRGB(200,255,200)
+    end)
+    btn.TouchEnded:Connect(function(input)
+        input.UserInputState=Enum.UserInputState.End
+        Platform.TouchActive=false
+        btn.BackgroundTransparency=0.4
+        btn.BackgroundColor3=Color3.fromRGB(255,255,255)
+    end)
+    Platform.TouchButton=sg
+end
+-- 创建手机触摸按钮（子弹追踪）
+local function createBTTouchButton()
+    if not Platform.IsMobile or Platform.TouchButton2 then return end
+    local sg=Instance.new("ScreenGui")
+    sg.Name="BTTouchUI"
+    sg.Parent=CG
+    sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling
+    sg.IgnoreGuiInset=true
+    local btn=Instance.new("ImageButton")
+    btn.Parent=sg
+    btn.Size=UDim2.new(0,75,0,75)
+    btn.Position=UDim2.new(1,-100,1,-105)
+    btn.BackgroundTransparency=0.4
+    btn.BackgroundColor3=Color3.fromRGB(255,255,255)
+    btn.BorderSizePixel=0
+    local corner=Instance.new("UICorner")
+    corner.CornerRadius=UDim.new(0,37.5)
+    corner.Parent=btn
+    local stroke=Instance.new("UIStroke")
+    stroke.Parent=btn
+    stroke.Thickness=2
+    stroke.Color=Color3.fromRGB(255,255,255)
+    stroke.Transparency=0.3
+    local label=Instance.new("TextLabel")
+    label.Parent=btn
+    label.Size=UDim2.new(1,0,1,0)
+    label.BackgroundTransparency=1
+    label.Text="💫"
+    label.TextSize=28
+    label.TextColor3=Color3.fromRGB(0,0,0)
+    label.TextScaled=false
+    btn.TouchBegan:Connect(function(input)
+        input.UserInputState=Enum.UserInputState.Begin
+        Platform.TouchActive2=true
+        btn.BackgroundTransparency=0.2
+        btn.BackgroundColor3=Color3.fromRGB(200,220,255)
+    end)
+    btn.TouchEnded:Connect(function(input)
+        input.UserInputState=Enum.UserInputState.End
+        Platform.TouchActive2=false
+        btn.BackgroundTransparency=0.4
+        btn.BackgroundColor3=Color3.fromRGB(255,255,255)
+    end)
+    Platform.TouchButton2=sg
+end
+-- 自瞄触发条件适配（PC键盘/手机触摸）
+local function shouldAim()
+    if not AimbotState.E then return false end
+    if AimbotState.HoldKey then
+        if Platform.IsPC then
+            return UIS2:IsKeyDown(AimbotState.KeyCode)
+        else
+            return Platform.TouchActive
+        end
+    end
+    return true
+end
+-- 显示/隐藏自瞄触摸按钮
+local function showAimbotTouch(show)
+    if not Platform.IsMobile then return end
+    if show then
+        createAimbotTouchButton()
+        if Platform.TouchButton then Platform.TouchButton.Enabled=true end
+    else
+        if Platform.TouchButton then Platform.TouchButton.Enabled=false end
+    end
+end
+-- 显示/隐藏子弹追踪触摸按钮
+local function showBTTouch(show)
+    if not Platform.IsMobile then return end
+    if show then
+        createBTTouchButton()
+        if Platform.TouchButton2 then Platform.TouchButton2.Enabled=true end
+    else
+        if Platform.TouchButton2 then Platform.TouchButton2.Enabled=false end
+    end
+end
+-- 手机端自动调整参数
+local function optimizeForMobile()
+    if not Platform.IsMobile then return end
+    -- 手机端适当增大FOV
+    if AimbotState.FOV<180 then AimbotState.FOV=180 updateFOVCircle() end
+    -- 手机端降低平滑度提高响应速度
+    if AimbotState.Smooth>0.1 then AimbotState.Smooth=0.08 end
+    -- 手机端增加子弹追踪预测强度
+    if BTState.PredictAmount<0.2 then BTState.PredictAmount=0.2 end
+end
+-- ========== 自瞄系统（优化版）==========
+local AimbotState={
+ E=false,Conn=nil,Target=nil,
+ FOV=150,Smooth=0.08,Part="Head",
+ VisibleCheck=false,TeamCheck=false,
+ Mode="Camera",HoldKey=false,KeyCode=Enum.KeyCode.C,
+ FOVCircle=nil
+}
+-- FOV圆圈显示
+local function createFOVCircle()
+ if AimbotState.FOVCircle then pcall(function() AimbotState.FOVCircle:Destroy() end) end
+ local sg=Instance.new("ScreenGui") sg.Name="AimbotFOV" sg.Parent=CG sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling sg.IgnoreGuiInset=true
+ local circle=Instance.new("Frame") circle.Parent=sg circle.BackgroundTransparency=1 circle.Size=UDim2.new(0,AimbotState.FOV*2,0,AimbotState.FOV*2)
+ circle.AnchorPoint=Vector2.new(0.5,0.5) circle.Position=UDim2.new(0.5,0,0.5,0)
+ local cc=Instance.new("UICorner") cc.CornerRadius=UDim.new(1,0) cc.Parent=circle
+ local outline=Instance.new("UIStroke") outline.Parent=circle outline.Thickness=1.5 outline.Transparency=0.5 outline.Color=Color3.fromRGB(255,255,255)
+ AimbotState.FOVCircle=sg
+end
+local function updateFOVCircle()
+ if not AimbotState.FOVCircle then return end
+ local circle=AimbotState.FOVCircle:FindFirstChildOfClass("Frame")
+ if circle then
+  circle.Size=UDim2.new(0,AimbotState.FOV*2,0,AimbotState.FOV*2)
+  circle.AnchorPoint=Vector2.new(0.5,0.5) circle.Position=UDim2.new(0.5,0,0.5,0)
  end
- local function aimAt(target)
-  if not target then return end
-  local ch=target.Character if not ch then return end
+end
+-- 计算角度距离（更准确的FOV检测）
+local function getAngleDistance(targetPos)
+ local cam=workspace.CurrentCamera
+ local camPos=cam.CFrame.Position
+ local lookVec=cam.CFrame.LookVector
+ local toTarget=(targetPos-camPos).Unit
+ local dot=lookVec:Dot(toTarget)
+ local angle=math.deg(math.acos(math.clamp(dot,-1,1)))
+ return angle
+end
+-- 射线检测（优化版，支持多条射线）
+local function isVisible(targetPos)
+ local cam=workspace.CurrentCamera
+ local camPos=cam.CFrame.Position
+ local dir=(targetPos-camPos)
+ local params=RaycastParams.new()
+ params.FilterType=Enum.RaycastFilterType.Exclude
+ params.FilterDescendantsInstances={LP.Character}
+ params.IgnoreWater=true
+ local result=workspace:Raycast(camPos,dir,params)
+ return result==nil
+end
+-- 获取最近目标（角度距离优先）
+local function getClosestTarget()
+ local closest=nil local bestAngle=math.huge
+ local cam=workspace.CurrentCamera
+ for _,p in ipairs(Plrs:GetPlayers()) do
+  if p==LP then continue end
+  if AimbotState.TeamCheck and p.Team and LP.Team and p.Team==LP.Team then continue end
+  local ch=p.Character if not ch then continue end
+  local hum=ch:FindFirstChild("Humanoid") if not hum or hum.Health<=0 then continue end
   local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
-  if not part then return end
-  local cam=workspace.CurrentCamera
-  local targetCF=CFrame.new(cam.CFrame.Position,part.Position)
-  cam.CFrame=cam.CFrame:Lerp(targetCF,AimbotState.Smooth)
- end
- local ABS=CombatT:AddSection("🎯  自瞄")
- ABS:AddButton("●  开启自描 (右键按住)",function()
-  if AimbotState.E then print("[自描] 已经开启了") return end
-  AimbotState.E=true
-  AimbotState.Conn=RS.RenderStepped:Connect(function()
-   if not AimbotState.E then return end
-   -- 检查是否按住右键
-   if UIS:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then
-    local target=getClosestPlayer()
-    if target then aimAt(target) end
-   end
-  end)
-  print("[自描] 已开启 (按住右键瞄准)")
- end)
- ABS:AddButton("○  关闭自描",function()
-  AimbotState.E=false
-  if AimbotState.Conn then AimbotState.Conn:Disconnect() AimbotState.Conn=nil end
-  print("[自描] 已关闭")
- end)
- ABS:AddButton("📍  瞄准部位: 头",function()
-  local parts={"Head","HumanoidRootPart","Torso","UpperTorso","LowerTorso"}
-  local idx=table.find(parts,AimbotState.Part) or 1
-  idx=idx%#parts+1 AimbotState.Part=parts[idx]
-  print("[自描] 瞄准部位: "..AimbotState.Part)
- end)
- ABS:AddButton("📐  FOV范围: 150",function()
-  local fovs={80,120,150,200,300,500}
-  local idx=table.find(fovs,AimbotState.FOV) or 3
-  idx=idx%#fovs+1 AimbotState.FOV=fovs[idx]
-  print("[自描] FOV范围: "..AimbotState.FOV)
- end)
- ABS:AddButton("🌀  平滑度: 0.15",function()
-  local smooths={0.05,0.1,0.15,0.2,0.3,0.5,1}
-  local idx=table.find(smooths,AimbotState.Smooth) or 3
-  idx=idx%#smooths+1 AimbotState.Smooth=smooths[idx]
-  print("[自描] 平滑度: "..AimbotState.Smooth)
- end)
- ABS:AddButton("👁  可见检测: 关",function()
-  AimbotState.VisibleCheck=not AimbotState.VisibleCheck
-  print("[自描] 可见检测: "..(AimbotState.VisibleCheck and "开" or "关"))
- end)
- ABS:AddButton("👥  队友保护: 关",function()
-  AimbotState.TeamCheck=not AimbotState.TeamCheck
-  print("[自描] 队友保护: "..(AimbotState.TeamCheck and "开" or "关"))
- end)
- -- 子弹追踪功能
- local BTState={E=false,Conn=nil,Conn2=nil,LastGun=nil,Supported=true}
- -- 支持子弹追踪的枪支关键词
- local supportedGunNames={"gun","Gun","rifle","Rifle","pistol","Pistol","shotgun","Shotgun","smg","SMG","sniper","Sniper","ak","AK","m4","M4","glock","Glock","deagle","Deagle","awp","AWP","scar","SCAR","ump","UMP","mp5","MP5","p90","P90"}
- local function checkGunSupport(tool)
-  if not tool then return false end
-  local name=tool.Name:lower()
-  -- 检查是否有子弹相关属性
-  local hasBullet=false
-  pcall(function()
-   if tool:FindFirstChild("Ammo") or tool:FindFirstChild("Bullet") or tool:FindFirstChild("Projectile") then hasBullet=true end
-   if tool:FindFirstChildOfClass("Tool") then hasBullet=true end
-  end)
-  -- 检查名字关键词
-  for _,kw in ipairs(supportedGunNames) do
-   if name:find(kw:lower(),1,true) then return true end
+  if not part then continue end
+  -- 可见性检测
+  if AimbotState.VisibleCheck and not isVisible(part.Position) then continue end
+  -- 屏幕位置检测
+  local screenPos,onScreen=cam:WorldToScreenPoint(part.Position)
+  if not onScreen then continue end
+  -- 角度距离
+  local angle=getAngleDistance(part.Position)
+  -- 转换为像素距离用于FOV比较
+  local mouse=UIS2:GetMouseLocation()
+  local pxDist=math.sqrt((screenPos.X-mouse.X)^2+(screenPos.Y-mouse.Y)^2)
+  if pxDist<AimbotState.FOV and angle<bestAngle then
+   bestAngle=angle closest=p
   end
-  -- 如果有弹药属性也算
-  return hasBullet
  end
- local function notifyGunSupport(supported,gunName)
-  if supported then
-   print("[子弹追踪] ✅ 支持: "..gunName)
+ return closest
+end
+-- 相机模式自瞄
+local function aimCamera(target)
+ if not target then return end
+ local ch=target.Character if not ch then return end
+ local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
+ if not part then return end
+ local cam=workspace.CurrentCamera
+ local targetPos=part.Position
+ -- 加入预测（根据目标速度）
+ local humRootPart=ch:FindFirstChild("HumanoidRootPart")
+ if humRootPart then
+  local vel=humRootPart.Velocity
+  targetPos=targetPos+vel*0.05 -- 轻微预判
+ end
+ local targetCF=CFrame.new(cam.CFrame.Position,targetPos)
+ -- 平滑插值
+ local smooth=AimbotState.Smooth
+ cam.CFrame=cam.CFrame:Lerp(targetCF,smooth)
+end
+-- 鼠标移动模式自瞄（适用于更多游戏）
+local function aimMouse(target)
+ if not target then return end
+ local ch=target.Character if not ch then return end
+ local part=ch:FindFirstChild(AimbotState.Part) or ch:FindFirstChild("HumanoidRootPart")
+ if not part then return end
+ local cam=workspace.CurrentCamera
+ local screenPos=cam:WorldToScreenPoint(part.Position)
+ local mouse=UIS2:GetMouseLocation()
+ local dx=screenPos.X-mouse.X
+ local dy=screenPos.Y-mouse.Y
+ local dist=math.sqrt(dx^2+dy^2)
+ if dist<3 then return end -- 已经很接近了
+ -- 平滑移动鼠标
+ local speed=1-AimbotState.Smooth*5
+ speed=math.clamp(speed,0.1,0.9)
+ local moveX=dx*speed
+ local moveY=dy*speed
+ -- 通过mousemoverelative移动
+ pcall(function()
+  UIS2.MouseDeltaSensitivity=1
+ end)
+end
+-- 自瞄主循环
+local function aimbotLoop()
+ if not shouldAim() then return end
+ local target=getClosestTarget()
+ AimbotState.Target=target
+ if target then
+  if AimbotState.Mode=="Camera" then
+   aimCamera(target)
   else
-   print("[子弹追踪] ❌ 不支持: "..gunName.." (不是枪支类工具)")
+   aimMouse(target)
   end
  end
- local function trackBullets()
-  if not BTState.E then return end
-  local ch=LP.Character if not ch then return end
-  local tool=ch:FindFirstChildOfClass("Tool")
-  if tool and tool~=BTState.LastGun then
-   BTState.LastGun=tool
-   BTState.Supported=checkGunSupport(tool)
-   notifyGunSupport(BTState.Supported,tool.Name)
+end
+-- 开启/关闭自瞄
+local function enableAimbot()
+ if AimbotState.E then return end
+ AimbotState.E=true
+ AimbotState.Conn=RS.RenderStepped:Connect(aimbotLoop)
+ createFOVCircle()
+ showAimbotTouch(AimbotState.HoldKey)
+ optimizeForMobile()
+ pcall(Notify,"🎯","自瞄已开启 ("..AimbotState.Mode.."模式) "..(Platform.IsMobile and "📱手机版" or "💻电脑版"),3)
+end
+local function disableAimbot()
+ AimbotState.E=false
+ if AimbotState.Conn then AimbotState.Conn:Disconnect() AimbotState.Conn=nil end
+ if AimbotState.FOVCircle then pcall(function() AimbotState.FOVCircle:Destroy() AimbotState.FOVCircle=nil end) end
+ showAimbotTouch(false)
+ pcall(Notify,"🎯","自瞄已关闭",2)
+end
+-- 平台信息
+local PlatformSection=CombatT:AddSection((Platform.IsMobile and "📱  移动端" or "💻  电脑端").." 已适配")
+PlatformSection:AddButton("当前设备: "..(Platform.IsMobile and "手机/平板" or "电脑"),function()
+ pcall(Notify,"设备信息",Platform.IsMobile and "📱 移动端 - 触摸按钮已就绪" or "💻 电脑端 - 键盘快捷键已就绪",3)
+end)
+-- 自瞄UI
+local ABS=CombatT:AddSection("🎯  自瞄系统")
+ABS:AddButton("●  开启自瞄",function() enableAimbot() end)
+ABS:AddButton("○  关闭自瞄",function() disableAimbot() end)
+ABS:AddButton("📍  瞄准部位: Head",function()
+ local parts={"Head","HumanoidRootPart","Torso","UpperTorso","LowerTorso"}
+ local idx=table.find(parts,AimbotState.Part) or 1
+ idx=idx%#parts+1 AimbotState.Part=parts[idx]
+ print("[自瞄] 瞄准部位: "..AimbotState.Part)
+end)
+ABS:AddButton("📐  FOV: 150",function()
+ local fovs={50,80,100,150,200,300,500}
+ local idx=table.find(fovs,AimbotState.FOV) or 4
+ idx=idx%#fovs+1 AimbotState.FOV=fovs[idx]
+ updateFOVCircle()
+ print("[自瞄] FOV: "..AimbotState.FOV)
+end)
+ABS:AddButton("🌀  平滑度: 0.08",function()
+ local smooths={0.02,0.05,0.08,0.1,0.15,0.2,0.3,0.5}
+ local idx=table.find(smooths,AimbotState.Smooth) or 3
+ idx=idx%#smooths+1 AimbotState.Smooth=smooths[idx]
+ print("[自瞄] 平滑度: "..AimbotState.Smooth)
+end)
+ABS:AddButton("🎮  模式: Camera",function()
+ local modes={"Camera","Mouse"}
+ local idx=table.find(modes,AimbotState.Mode) or 1
+ idx=idx%#modes+1 AimbotState.Mode=modes[idx]
+ pcall(Notify,"🎯","自瞄模式: "..AimbotState.Mode,2)
+end)
+ABS:AddButton("👁  可见检测: 关",function()
+ AimbotState.VisibleCheck=not AimbotState.VisibleCheck
+ pcall(Notify,"🎯","可见检测: "..(AimbotState.VisibleCheck and "开" or "关"),2)
+end)
+ABS:AddButton("👥  队友保护: 关",function()
+ AimbotState.TeamCheck=not AimbotState.TeamCheck
+ pcall(Notify,"🎯","队友保护: "..(AimbotState.TeamCheck and "开" or "关"),2)
+end)
+ABS:AddButton(Platform.IsMobile and "👆  触摸按钮: 关" or "🔘  按C开启: 关",function()
+ AimbotState.HoldKey=not AimbotState.HoldKey
+ if AimbotState.E then showAimbotTouch(AimbotState.HoldKey) end
+ pcall(Notify,"🎯",(Platform.IsMobile and "触摸按钮" or "按C开启")..": "..(AimbotState.HoldKey and "开" or "关"),2)
+end)
+-- ========== 子弹追踪系统（优化版）==========
+local BTState={
+ E=false,Conn=nil,Conn2=nil,Conn3=nil,
+ LastGun=nil,Supported=true,
+ Target=nil,PredictAmount=0.15,
+ Mode="Auto",SilentAim=false,
+ HoldKey=false,KeyCode=Enum.KeyCode.V
+}
+-- 检测武器是否支持
+local function checkGunSupport(tool)
+ if not tool then return false end
+ local name=tool.Name:lower()
+ -- 关键词检测
+ local gunKeywords={"gun","rifle","pistol","shotgun","smg","sniper","ak","m4","glock","deagle","awp","scar","ump","mp5","p90","bow","crossbow","rocket","laser"}
+ for _,kw in ipairs(gunKeywords) do
+  if name:find(kw,1,true) then return true end
+ end
+ -- 检测是否有开火RemoteEvent
+ local hasFire=false
+ pcall(function()
+  for _,desc in ipairs(tool:GetDescendants()) do
+   if desc:IsA("RemoteEvent") or desc:IsA("RemoteFunction") then
+    local dn=desc.Name:lower()
+    if dn:find("fire") or dn:find("shoot") or dn:find("attack") then hasFire=true break end
+   end
   end
-  if not tool or not BTState.Supported then return end
-  -- 子弹追踪：追踪最近的敌人
-  local closest=nil local dist=math.huge
-  for _,p in ipairs(Plrs:GetPlayers()) do
-   if p==LP then continue end
-   local ph=p.Character if not ph then continue end
-   local phum=ph:FindFirstChild("Humanoid") if not phum or phum.Health<=0 then continue end
-   local phrp=ph:FindFirstChild("HumanoidRootPart") if not phrp then continue end
-   local d=(phrp.Position-LP.Character.HumanoidRootPart.Position).Magnitude
-   if d<dist then dist=d closest=p end
-  end
-  -- 拦截子弹，改变方向指向目标
-  if closest and closest.Character then
-   local targetPart=closest.Character:FindFirstChild("Head") or closest.Character:FindFirstChild("HumanoidRootPart")
-   if targetPart then
-    for _,v in ipairs(workspace:GetChildren()) do
-     if v:IsA("BasePart") and v.Velocity.Magnitude>50 then
-      -- 可能是子弹，检查是否靠近玩家
-      local myPos=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
-      if myPos and (v.Position-myPos.Position).Magnitude<20 then
-       local dir=(targetPart.Position-v.Position).Unit
-       v.Velocity=dir*v.Velocity.Magnitude
-      end
-     end
+ end)
+ -- 检测是否有弹药属性
+ pcall(function()
+  if tool:FindFirstChild("Ammo") or tool:FindFirstChild("Bullet") or tool:FindFirstChild("Projectile") or tool:FindFirstChild("Damage") then hasFire=true end
+ end)
+ return hasFire
+end
+-- 获取最近的敌人
+local function getBTTarget()
+ local closest=nil local dist=math.huge
+ local myRoot=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+ if not myRoot then return nil end
+ for _,p in ipairs(Plrs:GetPlayers()) do
+  if p==LP then continue end
+  local ph=p.Character if not ph then continue end
+  local phum=ph:FindFirstChild("Humanoid") if not phum or phum.Health<=0 then continue end
+  local phrp=ph:FindFirstChild("HumanoidRootPart") if not phrp then continue end
+  local d=(phrp.Position-myRoot.Position).Magnitude
+  if d<200 and d<dist then dist=d closest=p end
+ end
+ return closest
+end
+-- 预测目标位置
+local function predictPosition(target)
+ if not target or not target.Character then return nil end
+ local ch=target.Character
+ local part=ch:FindFirstChild("Head") or ch:FindFirstChild("HumanoidRootPart")
+ if not part then return nil end
+ local hrp=ch:FindFirstChild("HumanoidRootPart")
+ if hrp then
+  return part.Position+hrp.Velocity*BTState.PredictAmount
+ else
+  return part.Position
+ end
+end
+-- 子弹追踪触发条件适配（PC键盘/手机触摸）
+local function shouldBT()
+    if not BTState.E then return false end
+    if BTState.HoldKey then
+        if Platform.IsPC then
+            return UIS2:IsKeyDown(BTState.KeyCode)
+        else
+            return Platform.TouchActive2
+        end
+    end
+    return true
+end
+-- 子弹追踪主循环（拦截工作区子弹并转向目标）
+local function bulletTrackLoop()
+ if not shouldBT() then return end
+ local target=BTState.Target
+ if not target or not target.Character then
+  BTState.Target=getBTTarget()
+  return
+ end
+ -- 更新目标
+ if not target.Character or not target.Character:FindFirstChild("Humanoid") or target.Character.Humanoid.Health<=0 then
+  BTState.Target=getBTTarget()
+  return
+ end
+ local targetPos=predictPosition(target)
+ if not targetPos then return end
+ -- 扫描工作区中的子弹
+ local myRoot=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+ if not myRoot then return end
+ for _,v in ipairs(workspace:GetChildren()) do
+  if v:IsA("BasePart") then
+   local vel=v.Velocity
+   if vel.Magnitude>80 then -- 高速物体可能是子弹
+    local distToMe=(v.Position-myRoot.Position).Magnitude
+    -- 只处理靠近玩家的子弹（可能是自己发射的）
+    if distToMe<15 and v.Parent~=LP.Character then
+     -- 改变子弹方向指向预测位置
+     local dir=(targetPos-v.Position).Unit
+     v.Velocity=dir*vel.Magnitude
+     -- 同步改变CFrame朝向
+     v.CFrame=CFrame.new(v.Position,targetPos)
     end
    end
   end
  end
- local BTS=CombatT:AddSection("💫  子弹追踪")
- BTS:AddButton("●  开启子弹追踪",function()
-  if BTState.E then print("[子弹追踪] 已经开启了") return end
-  BTState.E=true
-  BTState.Conn=RS.Heartbeat:Connect(trackBullets)
-  -- 监听装备变化
-  BTState.Conn2=LP.CharacterAdded:Connect(function()
-   BTState.LastGun=nil
-  end)
-  print("[子弹追踪] 已开启 (切换武器时会自动检测是否支持)")
+ -- 检查子弹文件夹
+ pcall(function()
+  local bulletFolders=workspace:FindFirstChild("Bullets") or workspace:FindFirstChild("Projectiles") or workspace:FindFirstChild("Rays")
+  if bulletFolders then
+   for _,b in ipairs(bulletFolders:GetChildren()) do
+    if b:IsA("BasePart") and b.Velocity.Magnitude>80 then
+     local distToMe=(b.Position-myRoot.Position).Magnitude
+     if distToMe<15 then
+      local dir=(targetPos-b.Position).Unit
+      b.Velocity=dir*b.Velocity.Magnitude
+      b.CFrame=CFrame.new(b.Position,targetPos)
+     end
+    end
+   end
+  end
  end)
- BTS:AddButton("○  关闭子弹追踪",function()
-  BTState.E=false
-  if BTState.Conn then BTState.Conn:Disconnect() BTState.Conn=nil end
-  if BTState.Conn2 then BTState.Conn2:Disconnect() BTState.Conn2=nil end
-  print("[子弹追踪] 已关闭")
+end
+-- 监听武器切换
+local function setupToolListener()
+ if not LP.Character then return end
+ BTState.LastGun=nil
+ local function checkTool()
+  local tool=LP.Character:FindFirstChildOfClass("Tool")
+  if tool and tool~=BTState.LastGun then
+   BTState.LastGun=tool
+   BTState.Supported=checkGunSupport(tool)
+   if BTState.E then
+    pcall(Notify,"💫","武器"..(BTState.Supported and "支持" or "不支持")..": "..tool.Name,3)
+   end
+  end
+ end
+ local conn=LP.Character.ChildAdded:Connect(function(child)
+  if child:IsA("Tool") then task.wait(0.1) checkTool() end
  end)
- BTS:AddButton("🔍  检测当前武器",function()
-  local ch=LP.Character if not ch then print("[子弹追踪] 找不到角色") return end
-  local tool=ch:FindFirstChildOfClass("Tool")
-  if not tool then print("[子弹追踪] 当前没有装备武器") return end
-  local sup=checkGunSupport(tool)
-  notifyGunSupport(sup,tool.Name)
+ return conn
+end
+-- 开启/关闭
+local function enableBT()
+ if BTState.E then return end
+ BTState.E=true
+ BTState.Target=getBTTarget()
+ BTState.Conn=RS.RenderStepped:Connect(bulletTrackLoop)
+ BTState.Conn2=setupToolListener()
+ BTState.Conn3=LP.CharacterAdded:Connect(function()
+  task.wait(1) BTState.LastGun=nil
+  if BTState.Conn2 then BTState.Conn2:Disconnect() end
+  BTState.Conn2=setupToolListener()
  end)
- -- 整活功能页
+ showBTTouch(BTState.HoldKey)
+ if Platform.IsMobile then
+  BTState.PredictAmount=math.max(BTState.PredictAmount,0.2)
+ end
+ pcall(Notify,"💫","子弹追踪已开启 "..(Platform.IsMobile and "📱手机版" or "💻电脑版"),3)
+end
+local function disableBT()
+ BTState.E=false
+ if BTState.Conn then BTState.Conn:Disconnect() BTState.Conn=nil end
+ if BTState.Conn2 then BTState.Conn2:Disconnect() BTState.Conn2=nil end
+ if BTState.Conn3 then BTState.Conn3:Disconnect() BTState.Conn3=nil end
+ showBTTouch(false)
+ pcall(Notify,"💫","子弹追踪已关闭",2)
+end
+-- 子弹追踪UI
+local BTS=CombatT:AddSection("💫  子弹追踪")
+BTS:AddButton("●  开启子弹追踪",function() enableBT() end)
+BTS:AddButton("○  关闭子弹追踪",function() disableBT() end)
+BTS:AddButton("🎯  预测强度: 0.15",function()
+ local preds={0.05,0.1,0.15,0.2,0.3,0.5}
+ local idx=table.find(preds,BTState.PredictAmount) or 3
+ idx=idx%#preds+1 BTState.PredictAmount=preds[idx]
+ pcall(Notify,"💫","预测强度: "..BTState.PredictAmount,2)
+end)
+BTS:AddButton("🔍  检测当前武器",function()
+ local ch=LP.Character if not ch then pcall(Notify,"❌","找不到角色",2) return end
+ local tool=ch:FindFirstChildOfClass("Tool")
+ if not tool then pcall(Notify,"❌","当前没有装备武器",2) return end
+ local sup=checkGunSupport(tool)
+ pcall(Notify,sup and "✅" or "❌",(sup and "支持" or "不支持")..": "..tool.Name,3)
+end)
+BTS:AddButton("🎯  锁定最近敌人",function()
+ local t=getBTTarget()
+ if t then
+  BTState.Target=t
+  pcall(Notify,"💫","已锁定: "..t.Name,2)
+ else
+  pcall(Notify,"❌","附近没有敌人",2)
+ end
+end)
+BTS:AddButton(Platform.IsMobile and "👆  触摸按钮: 关" or "🔘  按V开启: 关",function()
+ BTState.HoldKey=not BTState.HoldKey
+ if BTState.E then showBTTouch(BTState.HoldKey) end
+ pcall(Notify,"💫",(Platform.IsMobile and "触摸按钮" or "按V开启")..": "..(BTState.HoldKey and "开" or "关"),2)
+end)
+-- 整活功能页
  local MemeT=W:AddTab("整活","🕺")
  local DanceState={E=false,Conn=nil,Conn2=nil,Conn3=nil}
  local danceEmotes={"dance","Dance","wave","Wave","cheer","Cheer","laugh","Laugh","zombie","Zombie","tpose","Tpose","default","Default","robot","Robot","twist","Twist"}
@@ -46502,6 +46903,91 @@ PicS:AddButton("🐱  人兽",function()
   end)
   print("[整活] 人兽图片已弹出")
  end)
+end)
+-- ========== 音乐功能页 ==========
+local MusicT=W:AddTab("音乐","🎵")
+local MusicState={
+ CurrentSound=nil,
+ CurrentName="",
+ Volume=0.7,
+ Playing=false
+}
+-- 歌曲列表
+local songList={
+ {Name="雨爱",Id="1845226892"},
+ {Name="沉沦与遐想",Id="7147562393"},
+ {Name="again",Id="1384706104"},
+ {Name="唯一",Id="6899647502"},
+ {Name="green to blue",Id="6587263584"},
+ {Name="keyn",Id="5841949192"},
+ {Name="met her on the internet",Id="7219156408"},
+ {Name="lucky",Id="1445373537"},
+ {Name="M3",Id="5364947900"},
+ {Name="感官过载",Id="6713976028"},
+ {Name="sacred play secret place",Id="1550150822"},
+}
+-- 停止所有音乐
+local function stopAllMusic()
+ if MusicState.CurrentSound then
+  pcall(function() MusicState.CurrentSound:Stop() end)
+  pcall(function() MusicState.CurrentSound:Destroy() end)
+  MusicState.CurrentSound=nil
+ end
+ MusicState.Playing=false
+ MusicState.CurrentName=""
+end
+-- 播放音乐
+local function playMusic(songName,songId)
+ stopAllMusic()
+ local sound=Instance.new("Sound")
+ sound.Name="LeiScriptMusic"
+ sound.SoundId="rbxassetid://"..songId
+ sound.Volume=MusicState.Volume
+ sound.Looped=true
+ sound.Parent=workspace
+ MusicState.CurrentSound=sound
+ MusicState.CurrentName=songName
+ MusicState.Playing=true
+ sound:Play()
+ sound.Ended:Connect(function()
+  if MusicState.CurrentSound==sound then
+   MusicState.Playing=false
+   MusicState.CurrentName=""
+  end
+ end)
+ pcall(Notify,"🎵","正在播放: "..songName,3)
+ print("[音乐] 播放: "..songName)
+end
+-- 音乐UI
+local MusicSection=MusicT:AddSection("🎶  音乐列表")
+MusicSection:AddButton("⏹  停止所有音乐",function()
+ stopAllMusic()
+ pcall(Notify,"🎵","已停止所有音乐",2)
+end)
+MusicSection:AddButton("🔊  音量: "..math.floor(MusicState.Volume*100).."%",function()
+ local vols={0.3,0.5,0.7,0.8,1.0}
+ local idx=table.find(vols,MusicState.Volume) or 3
+ idx=idx%#vols+1
+ MusicState.Volume=vols[idx]
+ if MusicState.CurrentSound then
+  MusicState.CurrentSound.Volume=MusicState.Volume
+ end
+ pcall(Notify,"🎵","音量: "..math.floor(MusicState.Volume*100).."%",2)
+end)
+-- 歌曲按钮
+for i,song in ipairs(songList) do
+ MusicSection:AddButton("🎵  "..song.Name,function()
+  playMusic(song.Name,song.Id)
+ end)
+end
+-- 正在播放显示
+local NowPlayingSection=MusicT:AddSection("📻  正在播放")
+NowPlayingSection:AddButton("当前: 无",function()
+ if MusicState.Playing and MusicState.CurrentName~="" then
+  pcall(Notify,"🎵","正在播放: "..MusicState.CurrentName,3)
+ else
+  pcall(Notify,"🎵","当前没有播放音乐",2)
+ end
 end)
  local SetT=W:AddTab("设置","⚙")
  local CS2=SetT:AddSection("🎨 主题颜色")
