@@ -1945,18 +1945,33 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/sharksharksharkshark/
 ]=]
 
     ZMScripts['鸭脚本'] = [=[
-loadstring(game:HttpGet(utf8.char((function() return table.unpack({104,116,116,112,115,58,47,47,112,97,115,116,101,98,105,110,46,99,111,109,47,114,97,119,47,81,89,49,113,112,99,115,106})end)())))()
+-- 脚本已失效（pastebin 404），已移除
 ]=]
 
     for sname, scontent in pairs(ZMScripts) do
         local sec = OT:AddSection(sname,true)
         sec:AddButton("⭐  运行" .. sname, function()
             print("[" .. sname .. "] 正在加载...")
-            local ok, err = pcall(function() loadstring(scontent)() end)
+            pcall(Notify,"⏳","正在加载 "..sname,2)
+            -- 检查空内容或只有注释
+            local clean = scontent:gsub("%-%-[^\n]*",""):gsub("%s+","")
+            if #clean == 0 then
+                warn("[" .. sname .. "] 脚本为空或已失效")
+                pcall(Notify,"⚠️",sname.." 脚本为空或已失效",3)
+                return
+            end
+            local ok, err = pcall(function()
+                local fn,loadErr = loadstring(scontent)
+                if not fn then error("语法错误: "..tostring(loadErr)) end
+                fn()
+            end)
             if ok then
                 print("[" .. sname .. "] 加载成功！")
+                pcall(Notify,"✅",sname.." 加载成功",2)
             else
                 warn("[" .. sname .. "] 加载失败:", err)
+                local errStr = tostring(err)
+                pcall(Notify,"❌",sname.."失败: "..errStr:sub(1,50),4)
             end
         end)
     end
@@ -28625,7 +28640,7 @@ end)
 spawn(function()
     while wait(0.4) do
         if NinjaStates.GK then
-            loadstring(game:HttpGet(('https://pastebin.com/raw/AaqHqPyw'),true))()
+            pcall(function() loadstring(game:HttpGet(('https://pastebin.com/raw/AaqHqPyw'),true))() end)
         end
     end
 end)
@@ -28633,7 +28648,7 @@ end)
 spawn(function()
     while wait(0.4) do
         if NinjaStates.BK then
-            loadstring(game:HttpGet(('https://pastebin.com/raw/wEEB3nQt'),true))()	
+            pcall(function() loadstring(game:HttpGet(('https://pastebin.com/raw/wEEB3nQt'),true))() end)
         end
     end
 end)
