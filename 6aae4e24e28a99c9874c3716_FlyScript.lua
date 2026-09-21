@@ -4415,52 +4415,111 @@ YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https:/
     local role="未知"
     pcall(function()
      local ch=player.Character
-     if not ch then return end
-     -- 检测玩家属性中的职业
+     -- 方法1：检测玩家下的所有StringValue/NumberValue（职业常存在这里）
+     local function checkValue(val)
+      if not val then return end
+      local v=tostring(val.Value)
+      local vl=v:lower()
+      local mapped=nil
+      if vl:find("杀手") or vl:find("killer") or vl:find("assassin") then mapped="杀手"
+      elseif vl:find("强盗") or vl:find("bandit") or vl:find("robber") then mapped="强盗"
+      elseif vl:find("剃头") or vl:find("barber") or vl:find("理发师") then mapped="剃头师"
+      elseif vl:find("警察") or vl:find("police") or vl:find("cop") then mapped="警察"
+      elseif vl:find("炸弹") or vl:find("bomber") or vl:find("bomb") then mapped="炸弹客"
+      elseif vl:find("警长") or vl:find("sheriff") then mapped="警长"
+      elseif vl:find("医生") or vl:find("doctor") or vl:find("medic") then mapped="医生"
+      elseif vl:find("侦探") or vl:find("detective") then mapped="侦探"
+      elseif vl:find("黑客") or vl:find("hacker") or vl:find("hack") then mapped="黑客"
+      elseif vl:find("隐身") or vl:find("invisible") or vl:find("stealth") then mapped="隐身人"
+      elseif vl:find("小丑") or vl:find("clown") then mapped="小丑"
+      end
+      if mapped then
+       role=mapped
+       return true
+      end
+      return false
+     end
+     -- 扫描玩家所有子对象的Value
+     for _,v in ipairs(player:GetChildren()) do
+      if v:IsA("StringValue") or v:IsA("NumberValue") or v:IsA("IntValue") then
+       if checkValue(v) then return end
+      end
+     end
+     -- 方法2：检测leaderstats
      local leaderstats=player:FindFirstChild("leaderstats")
      if leaderstats then
-      local roleVal=leaderstats:FindFirstChild("Role") or leaderstats:FindFirstChild("职业") or leaderstats:FindFirstChild("Team")
-      if roleVal then
-       local v=tostring(roleVal.Value)
-       local vl=v:lower()
-       if vl:find("杀手") or vl:find("killer") or vl:find("assassin") then role="杀手"
-       elseif vl:find("强盗") or vl:find("bandit") or vl:find("robber") then role="强盗"
-       elseif vl:find("剃头") or vl:find("barber") or vl:find("理发师") then role="剃头师"
-       elseif vl:find("警察") or vl:find("police") or vl:find("cop") then role="警察"
-       elseif vl:find("炸弹") or vl:find("bomber") or vl:find("bomb") then role="炸弹客"
-       elseif vl:find("警长") or vl:find("sheriff") then role="警长"
-       elseif vl:find("医生") or vl:find("doctor") or vl:find("medic") then role="医生"
-       elseif vl:find("侦探") or vl:find("detective") then role="侦探"
-       elseif vl:find("黑客") or vl:find("hacker") or vl:find("hack") then role="黑客"
-       elseif vl:find("隐身") or vl:find("invisible") or vl:find("stealth") then role="隐身人"
-       elseif vl:find("小丑") or vl:find("clown") then role="小丑"
+      for _,v in ipairs(leaderstats:GetChildren()) do
+       if v:IsA("StringValue") or v:IsA("NumberValue") or v:IsA("IntValue") then
+        if checkValue(v) then return end
        end
       end
      end
-     -- 如果没找到，尝试检测背包武器
-     if role=="未知" then
+     -- 方法3：检测Team
+     if player.Team then
+      local tn=player.Team.Name:lower()
+      local tnames={
+       {name="杀手",kw={"killer","assassin","杀手"}},
+       {name="强盗",kw={"bandit","robber","强盗"}},
+       {name="剃头师",kw={"barber","剃头","理发师"}},
+       {name="警察",kw={"police","cop","警察"}},
+       {name="炸弹客",kw={"bomber","bomb","炸弹"}},
+       {name="警长",kw={"sheriff","警长"}},
+       {name="医生",kw={"doctor","medic","医生"}},
+       {name="侦探",kw={"detective","侦探"}},
+       {name="黑客",kw={"hacker","黑客"}},
+       {name="隐身人",kw={"invisible","stealth","隐身"}},
+       {name="小丑",kw={"clown","小丑"}},
+      }
+      for _,t in ipairs(tnames) do
+       for _,k in ipairs(t.kw) do
+        if tn:find(k) then
+         role=t.name
+         break
+        end
+       end
+       if role~="未知" then break end
+      end
+     end
+     -- 方法4：检测角色中的职业标记/衣服
+     if ch and role=="未知" then
+      for _,child in ipairs(ch:GetChildren()) do
+       if child:IsA("StringValue") or child:IsA("BoolValue") then
+        local cname=child.Name:lower()
+        if cname:find("role") or cname:find("职业") or cname:find("team") then
+         if checkValue(child) then return end
+        end
+       end
+      end
+     end
+     -- 方法5：检测背包武器（兜底）
+     if role=="未知" and ch then
       local backpack=player:FindFirstChild("Backpack")
       if backpack then
        for _,tool in ipairs(backpack:GetChildren()) do
         if tool:IsA("Tool") then
          local tname=tool.Name:lower()
-         if tname:find("knife") or tname:find("刀") or tname:find("sword") then
+         if tname:find("knife") or tname:find("刀") or tname:find("sword") or tname:find("dagger") then
           if role=="未知" then role="杀手" end
-         elseif tname:find("gun") or tname:find("pistol") or tname:find("警") then
+         elseif tname:find("gun") or tname:find("pistol") or tname:find("revolver") or tname:find("警") then
           if role=="未知" then role="警察" end
          elseif tname:find("bomb") or tname:find("炸弹") or tname:find("grenade") then
           role="炸弹客"
-         elseif tname:find("heal") or tname:find("med") or tname:find("医") then
+         elseif tname:find("heal") or tname:find("medkit") or tname:find("医") or tname:find("药") then
           role="医生"
-         elseif tname:find("hack") or tname:find("黑客") then
+         elseif tname:find("hack") or tname:find("黑客") or tname:find("laptop") then
           role="黑客"
-         elseif tname:find("clown") or tname:find("小丑") then
+         elseif tname:find("clown") or tname:find("小丑") or tname:find("pie") then
           role="小丑"
-         elseif tname:find("sheriff") or tname:find("警长") then
+         elseif tname:find("sheriff") or tname:find("警长") or tname:find("deagle") then
           role="警长"
-         elseif tname:find("bandit") or tname:find("强盗") then
+         elseif tname:find("bandit") or tname:find("强盗") or tname:find("bat") then
           role="强盗"
-         end
+         elseif tname:find("barber") or tname:find("剃头") or tname:find("razor") then
+          role="剃头师"
+         elseif tname:find("detective") or tname:find("侦探") or tname:find("magnify") then
+          role="侦探"
+         elseif tname:find("invisible") or tname:find("隐身") or tname:find("stealth") then
+          role="隐身人"
         end
        end
       end
@@ -4468,15 +4527,16 @@ YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https:/
       local tool=ch:FindFirstChildOfClass("Tool")
       if tool then
        local tname=tool.Name:lower()
-       if tname:find("knife") or tname:find("刀") then
+       if tname:find("knife") or tname:find("刀") or tname:find("dagger") then
         if role=="未知" then role="杀手" end
-       elseif tname:find("gun") or tname:find("pistol") then
+       elseif tname:find("gun") or tname:find("pistol") or tname:find("revolver") then
         if role=="未知" then role="警察" end
        elseif tname:find("bomb") or tname:find("grenade") then
         role="炸弹客"
-       elseif tname:find("sheriff") or tname:find("警长") then
+       elseif tname:find("sheriff") or tname:find("deagle") then
         role="警长"
-       end
+       elseif tname:find("clown") or tname:find("pie") then
+        role="小丑"
       end
      end
     end)
