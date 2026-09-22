@@ -46013,16 +46013,30 @@ v:FireServer()]=]
   sound.SoundId="rbxassetid://"..songId
   sound.Volume=MusicState.Volume
   sound.Looped=true
-  sound.Parent=CG -- 放到CoreGui里更稳定
+  -- 尝试多个父级，确保能播放
+  pcall(function() sound.Parent=CG end)
+  if not sound.Parent then
+   pcall(function() sound.Parent=workspace end)
+  end
+  if not sound.Parent then
+   pcall(function() sound.Parent=game:GetService("SoundService") end)
+  end
+  if not sound.Parent then
+   sound.Parent=LP:FindFirstChild("PlayerGui") or LP:WaitForChild("PlayerGui")
+  end
   MusicState.CurrentSound=sound
   MusicState.CurrentName=songName
-  -- 等待音频加载
+  -- 直接播放（不依赖Loaded事件）
+  pcall(function() sound:Play() end)
+  MusicState.Playing=true
+  pcall(Notify,"🎵","正在播放: "..songName,3)
+  print("[音乐] 播放: "..songName)
+  -- 如果直接播放失败，等待加载后重试
   sound.Loaded:Connect(function()
    if MusicState.CurrentSound==sound then
-    sound:Play()
+    pcall(function() sound:Play() end)
     MusicState.Playing=true
-    pcall(Notify,"🎵","正在播放: "..songName,3)
-    print("[音乐] 播放: "..songName)
+    print("[音乐] 音频已加载，播放中: "..songName)
    end
   end)
   -- 加载失败提示
@@ -46042,10 +46056,10 @@ v:FireServer()]=]
     end
    end
   end)
-  -- 超时检测（5秒还没加载出来就提示失败）
-  task.delay(5,function()
+  -- 超时检测
+  task.delay(3,function()
    if MusicState.CurrentSound==sound and not sound.IsLoaded then
-    pcall(Notify,"⚠️","音乐加载超时，请检查网络",3)
+    pcall(Notify,"⚠️","音乐加载较慢，请稍等...",2)
    end
   end)
  end
@@ -46071,8 +46085,12 @@ v:FireServer()]=]
   sound.Name="TestSound"
   sound.SoundId="rbxassetid://12222076"
   sound.Volume=MusicState.Volume
-  sound.Parent=CG
-  sound:Play()
+  pcall(function() sound.Parent=CG end)
+  if not sound.Parent then pcall(function() sound.Parent=workspace end) end
+  if not sound.Parent then pcall(function() sound.Parent=game:GetService("SoundService") end) end
+  if not sound.Parent then sound.Parent=LP:FindFirstChild("PlayerGui") or LP:WaitForChild("PlayerGui") end
+  pcall(function() sound:Play() end)
+  sound.Loaded:Connect(function() pcall(function() sound:Play() end) end)
   sound.Ended:Connect(function() sound:Destroy() end)
   pcall(Notify,"🔧","音效测试中，听到声音说明音乐功能正常",3)
  end)
