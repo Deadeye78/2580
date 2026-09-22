@@ -2596,8 +2596,9 @@ DKX:AddButton("👁  透视职业脚本",function()
            end
           end)
          end
-      end
+        end
        end
+      end
      end)
      -- 方法7: 背包武器检测
      if role=="未知" then
@@ -2879,7 +2880,7 @@ DKX:AddButton("📋  列出所有职业",function()
           local r=matchRole(desc.Text)
           if r then role=r return end
          end
-        })
+        end)
        end
       end
      end)
@@ -2944,8 +2945,9 @@ DKX:AddButton("📋  列出所有职业",function()
            end
           end)
          end
+        end
        end
-       end
+      end
      end)
      if role=="未知" then
       local toolWeapons={
