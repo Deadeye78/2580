@@ -325,7 +325,7 @@ function Lib:CreateWindow(title)
  local TLS=Instance.new("UIStroke") TLS.Parent=TL2 TLS.Thickness=1.5 TLS.Transparency=0.6 TLS.Color=Color3.fromRGB(255,255,255)
  local ST2=Instance.new("TextLabel") ST2.Parent=TB ST2.BackgroundTransparency=1 ST2.Position=UDim2.new(0,50,0,28) ST2.Size=UDim2.new(0,200,0,16)
  ST2.Font=Enum.Font.Gotham ST2.Text="PREMIUM · 尊享版" ST2.TextColor3=Color3.fromRGB(180,180,190) ST2.TextSize=11 ST2.TextXAlignment=Enum.TextXAlignment.Left ST2.ZIndex=3
- local VT=Instance.new("TextLabel") VT.Parent=TB VT.BackgroundColor3=Color3.fromRGB(25,25,30) VT.Position=UDim2.new(0,210,0,13) VT.Size=UDim2.new(0,60,0,22) VT.Font=Enum.Font.GothamSemibold VT.Text="v4.0" VT.TextColor3=Color3.fromRGB(255,255,255) VT.TextSize=11 VT.ZIndex=3
+ local VT=Instance.new("TextLabel") VT.Parent=TB VT.BackgroundColor3=Color3.fromRGB(25,25,30) VT.Position=UDim2.new(0,210,0,13) VT.Size=UDim2.new(0,60,0,22) VT.Font=Enum.Font.GothamSemibold VT.Text="v1.25" VT.TextColor3=Color3.fromRGB(255,255,255) VT.TextSize=11 VT.ZIndex=3
  Instance.new("UICorner",VT).CornerRadius=UDim.new(0,6)
  local VTS=Instance.new("UIStroke") VTS.Parent=VT VTS.Thickness=0.8 VTS.Transparency=0.5 VTS.Color=Color3.fromRGB(255,255,255)
  local X=Instance.new("TextButton") X.Parent=TB X.BackgroundTransparency=1 X.Position=UDim2.new(1,-35,0,12) X.Size=UDim2.new(0,24,0,24)
@@ -922,7 +922,9 @@ buildUI=function()
  NS:AddButton("完全免费，请勿付费购买",function() end)
  NS:AddButton("如已付费请向买家退款",function() end)
  local US=MT:AddSection("📋 更新日志")
- US:AddButton("v1.25 · 移除失效404脚本，优化加载体验",function() end)
+ US:AddButton("v1.25 · 重写迪克刺客X检测+高级ESP显示",function() end)
+ US:AddButton("v1.25 · 修复针ESP/自动捡针+添加7y7d动作脚本",function() end)
+ US:AddButton("v1.25 · 清理无用ZMScripts+修复标题版本号",function() end)
  US:AddButton("v1.20 · 新增秋天·镰刀职业专属脚本",function() end)
  US:AddButton("v1.15 · 修复迪克刺客X职业透视检测",function() end)
  US:AddButton("v1.10 · 修复音乐播放及加载动画问题",function() end)
@@ -1884,68 +1886,31 @@ end)
     local ZMScripts = {}
 
     ZMScripts['XK脚本'] = [=[
---群聊:915207093--云端更新，请复制下面链接
-loadstring("\108\111\97\100\115\116\114\105\110\103\40\103\97\109\101\58\72\116\116\112\71\101\116\40\34\104\116\116\112\115\58\47\47\114\97\119\46\103\105\116\104\117\98\117\115\101\114\99\111\110\116\101\110\116\46\99\111\109\47\66\73\78\106\105\97\111\98\122\120\54\47\66\73\78\106\105\97\111\47\109\97\105\110\47\88\75\46\84\88\84\34\41\41\40\41\10")()
-]=]
-
-    ZMScripts['云脚本最新'] = [=[
-_G.CloudScript = "云脚本主群号526684389"
-]=]
-
-    ZMScripts['剑客脚本'] = [=[
-]=]
-
-    ZMScripts['小魔脚本'] = [=[
-]=]
-
-    ZMScripts['小黑子脚本'] = [=[
--- 脚本已失效（Rayfield UI 404），已移除
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BINjiaobzx6/BINjiao/main/XK.TXT"))()
 ]=]
 
     ZMScripts['岁脚本'] = [=[
-loadstring(game:HelpGet("/104/116/116/112/115/58/47/47/112/97/115/116/101/98/105/110/46/99/111/109/47/114/97/119/47/112/103/76/67/122/87/85/113"))()
+loadstring(game:HttpGet("https://pastebin.com/raw/pgLCzWUq"))()
 ]=]
 
     ZMScripts['情云脚本'] = [=[
-loadstring(utf8.char((function() return table.unpack({108,111,97,100,115,116,114,105,110,103,40,103,97,109,101,58,72,116,116,112,71,101,116,40,34,104,116,116,112,115,58,47,47,114,97,119,46,103,105,116,104,117,98,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109,47,67,104,105,110,97,81,89,47,45,47,109,97,105,110,47,37,69,54,37,56,51,37,56,53,37,69,52,37,66,65,37,57,49,34,41,41,40,41})end)()))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ChinaQY/-/main/%E6%83%85%E4%BA%91"))()
 ]=]
 
     ZMScripts['林脚本'] = [=[
-lin = "作者林"lin ="林QQ群 747623342"loadstring(game:HttpGet("https://raw.githubusercontent.com/linnblin/lin/main/lin"))()
-]=]
-
-    ZMScripts['猫脚本'] = [=[
-getgenv().MAO = "猫猫王者脚本群935143896"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/linnblin/lin/main/lin"))()
 ]=]
 
     ZMScripts['皮脚本'] = [=[
-getgenv().XiaoPi="皮脚本QQ群1002100032" loadstring(game:HttpGet("https://raw.githubusercontent.com/xiaopi77/xiaopi77/main/QQ1002100032-Roblox-Pi-script.lua"))()
-]=]
-
-    ZMScripts['羽脚本'] = [=[
-]=]
-
-    ZMScripts['落叶脚本'] = [=[
-]=]
-
-    ZMScripts['退休脚本'] = [=[
-TUIXUI="作者退休☯︎"JIAOBEN="永久免费缝合"
-qun="809771141"
-]=]
-
-    ZMScripts['霖溺脚本'] = [=[
-]=]
-
-    ZMScripts['青脚本'] = [=[
--- 脚本已失效（404），已移除
+loadstring(game:HttpGet("https://raw.githubusercontent.com/xiaopi77/xiaopi77/main/QQ1002100032-Roblox-Pi-script.lua"))()
 ]=]
 
     ZMScripts['鲨脚本'] = [=[
-loadstring(game:HttpGet("https://raw.githubusercontent.com/sharksharksharkshark/shark-shark-shark-shark-shark/main/shark-scriptlollol.txt",true))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/sharksharksharkshark/shark-shark-shark-shark-shark/main/shark-scriptlollol.txt"))()
 ]=]
 
-    ZMScripts['鸭脚本'] = [=[
--- 脚本已失效（pastebin 404），已移除
+    ZMScripts['7y7d动作脚本'] = [=[
+loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-7yd7-I-Emote-Script-48024"))()
 ]=]
 
     for sname, scontent in pairs(ZMScripts) do
@@ -2261,425 +2226,798 @@ YX:AddButton("💎  格蕾丝脚本",function() runLS("格蕾丝脚本","https:/
   pcall(Notify,"🍂 秋天","所有功能已重置",2)
  end)
  -- 🧵 找出1根针
- local ZN=SV:AddSection("🧵  找出1根针")
- local NeedleState={ESPEnabled=false,AutoTake=false,Drawings={},Conn=nil,AutoConn=nil}
- -- 找针的函数
- local function findNeedles()
-  local needles={}
-  pcall(function()
-   for _,v in ipairs(workspace:GetDescendants()) do
-    pcall(function()
+local ZN=SV:AddSection("🧵  找出1根针")
+local NeedleState={ESPEnabled=false,AutoTake=false,Drawings={},Conn=nil,AutoConn=nil,Notified={}}
+
+-- 找针的函数（全面搜索）
+local function findNeedles()
+ local needles={}
+ local found={}
+ local function addNeedle(obj)
+  if obj and not found[obj] then
+   found[obj]=true
+   table.insert(needles,obj)
+  end
+ end
+ pcall(function()
+  -- 搜索workspace所有子孙
+  for _,v in ipairs(workspace:GetDescendants()) do
+   pcall(function()
+    local name=v.Name:lower()
+    local isNeedle=false
+    -- 匹配针相关名称
+    if name:find("needle") or name:find("针") or name:find("pin") or name:find("nail") then
+     isNeedle=true
+    end
+    if isNeedle then
      if v:IsA("BasePart") then
-      local name=v.Name:lower()
-      if name:find("needle") or name:find("针") then
-       table.insert(needles,v)
-      end
+      addNeedle(v)
      elseif v:IsA("Model") then
-      local name=v.Name:lower()
-      if name:find("needle") or name:find("针") then
-       local hrp=v.PrimaryPart or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChildWhichIsA("BasePart")
-       if hrp then table.insert(needles,hrp) end
-      end
+      local p=v.PrimaryPart or v:FindFirstChild("HumanoidRootPart") or v:FindFirstChildWhichIsA("BasePart")
+      addNeedle(p)
+     elseif v:IsA("Tool") then
+      local h=v:FindFirstChild("Handle")
+      addNeedle(h or v:FindFirstChildWhichIsA("BasePart"))
      end
+    end
+   end)
+  end
+  -- 搜索Lighting和ReplicatedStorage
+  for _,svc in ipairs({game:GetService("Lighting"),game:GetService("ReplicatedStorage")}) do
+   pcall(function()
+    for _,v in ipairs(svc:GetDescendants()) do
+     pcall(function()
+      local name=v.Name:lower()
+      if (name:find("needle") or name:find("针")) and v:IsA("BasePart") then
+       addNeedle(v)
+      end
+     end)
+    end
+   end)
+  end
+ end)
+ return needles
+end
+
+-- 针ESP
+ZN:AddButton("👁  针ESP",function()
+ if NeedleState.ESPEnabled then pcall(Notify,"⚠️","针ESP已经开启了",2) return end
+ safeSpawn(function()
+  NeedleState.ESPEnabled=true
+  local RS=game:GetService("RunService")
+  local cam=workspace.CurrentCamera
+  local LP=game.Players.LocalPlayer
+  local function clearDrawings()
+   for _,d in pairs(NeedleState.Drawings) do
+    pcall(function() d:Remove() end)
+   end
+   NeedleState.Drawings={}
+  end
+  local function updateESP()
+   if not NeedleState.ESPEnabled then return end
+   clearDrawings()
+   local needles=findNeedles()
+   for _,needle in ipairs(needles) do
+    pcall(function()
+     local pos,onScreen=cam:WorldToViewportPoint(needle.Position)
+     if not onScreen then return end
+     -- 文字标签
+     local lbl=Drawing.new("Text")
+     lbl.Center=true lbl.Outline=true lbl.OutlineColor=Color3.fromRGB(0,0,0)
+     lbl.Color=Color3.fromRGB(255,215,0) lbl.Size=16 lbl.Font=2
+     lbl.Text="🧵 针"
+     lbl.Position=Vector2.new(pos.X,pos.Y-25)
+     lbl.Visible=true
+     table.insert(NeedleState.Drawings,lbl)
+     -- 距离
+     if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+      local dist=(needle.Position-LP.Character.HumanoidRootPart.Position).Magnitude
+      local dlbl=Drawing.new("Text")
+      dlbl.Center=true dlbl.Outline=true dlbl.OutlineColor=Color3.fromRGB(0,0,0)
+      dlbl.Color=Color3.fromRGB(200,200,200) dlbl.Size=13 dlbl.Font=2
+      dlbl.Text=math.floor(dist).."m"
+      dlbl.Position=Vector2.new(pos.X,pos.Y-8)
+      dlbl.Visible=true
+      table.insert(NeedleState.Drawings,dlbl)
+     end
+     -- 方框
+     local box=Drawing.new("Square")
+     box.Filled=false box.Thickness=2
+     box.Color=Color3.fromRGB(255,215,0)
+     box.Size=Vector2.new(24,24)
+     box.Position=Vector2.new(pos.X-12,pos.Y-12)
+     box.Visible=true
+     table.insert(NeedleState.Drawings,box)
+     -- 圆点
+     local dot=Drawing.new("Square")
+     dot.Filled=true dot.Color=Color3.fromRGB(255,215,0)
+     dot.Size=Vector2.new(5,5)
+     dot.Position=Vector2.new(pos.X-2,pos.Y-2)
+     dot.Visible=true
+     table.insert(NeedleState.Drawings,dot)
     end)
    end
-   -- 如果没找到，尝试找小物体
-   if #needles==0 then
-    for _,v in ipairs(workspace:GetDescendants()) do
-     pcall(function()
-      if v:IsA("BasePart") and not v.Anchored then
-       local sz=v.Size
-       if (sz.X+sz.Y+sz.Z)<3 and v.Name~="Baseplate" then
-        -- 可能是针的小物体
-       end
-      end
-     end)
-    end
-   end
-  end)
-  return needles
- end
- -- 针ESP
- ZN:AddButton("👁  针ESP",function()
-  if NeedleState.ESPEnabled then pcall(Notify,"⚠️","针ESP已经开启了",2) return end
-  safeSpawn(function()
-   NeedleState.ESPEnabled=true
-   local RS=game:GetService("RunService")
-   local cam=workspace.CurrentCamera
-   local LP=game.Players.LocalPlayer
-   local function clearDrawings()
-    for _,d in pairs(NeedleState.Drawings) do
-     pcall(function() d:Remove() end)
-    end
-    NeedleState.Drawings={}
-   end
-   local function updateESP()
-    if not NeedleState.ESPEnabled then return end
-    clearDrawings()
-    local needles=findNeedles()
-    for i,needle in ipairs(needles) do
-     pcall(function()
-      local pos,onScreen=cam:WorldToViewportPoint(needle.Position)
-      if not onScreen then return end
-      -- 文字标签
-      local lbl=Drawing.new("Text")
-      lbl.Center=true
-      lbl.Outline=true
-      lbl.OutlineColor=Color3.fromRGB(0,0,0)
-      lbl.Color=Color3.fromRGB(255,215,0)
-      lbl.Size=14
-      lbl.Font=2
-      lbl.Text="🧵 针"
-      lbl.Position=Vector2.new(pos.X,pos.Y-20)
-      lbl.Visible=true
-      table.insert(NeedleState.Drawings,lbl)
-      -- 距离
-      if LP.Character and LP.Character.HumanoidRootPart then
-       local dist=(needle.Position-LP.Character.HumanoidRootPart.Position).Magnitude
-       local dlbl=Drawing.new("Text")
-       dlbl.Center=true
-       dlbl.Outline=true
-       dlbl.OutlineColor=Color3.fromRGB(0,0,0)
-       dlbl.Color=Color3.fromRGB(200,200,200)
-       dlbl.Size=12
-       dlbl.Font=2
-       dlbl.Text=math.floor(dist).." studs"
-       dlbl.Position=Vector2.new(pos.X,pos.Y-5)
-       dlbl.Visible=true
-       table.insert(NeedleState.Drawings,dlbl)
-      end
-      -- 方框/圆点
-      local dot=Drawing.new("Square")
-      dot.Filled=true
-      dot.Color=Color3.fromRGB(255,215,0)
-      dot.Size=Vector2.new(6,6)
-      dot.Position=Vector2.new(pos.X-3,pos.Y-3)
-      dot.Visible=true
-      table.insert(NeedleState.Drawings,dot)
-      -- 框
-      local box=Drawing.new("Square")
-      box.Filled=false
-      box.Thickness=1.5
-      box.Color=Color3.fromRGB(255,215,0)
-      box.Size=Vector2.new(20,20)
-      box.Position=Vector2.new(pos.X-10,pos.Y-10)
-      box.Visible=true
-      table.insert(NeedleState.Drawings,box)
-     end)
-    end
-   end
-   NeedleState.Conn=RS.RenderStepped:Connect(updateESP)
-   pcall(Notify,"🧵","针ESP已开启",3)
-  end)
- end)
- ZN:AddButton("⏹  关闭ESP",function()
-  if not NeedleState.ESPEnabled then pcall(Notify,"⚠️","ESP还没开启",2) return end
-  NeedleState.ESPEnabled=false
-  if NeedleState.Conn then NeedleState.Conn:Disconnect() NeedleState.Conn=nil end
-  for _,d in pairs(NeedleState.Drawings) do
-   pcall(function() d:Remove() end)
   end
-  NeedleState.Drawings={}
-  pcall(Notify,"🧵","针ESP已关闭",2)
+  NeedleState.Conn=RS.RenderStepped:Connect(updateESP)
+  local cnt=#findNeedles()
+  pcall(Notify,"🧵","针ESP已开启\n找到 "..cnt.." 根针",3)
  end)
- -- 自动拿取
- ZN:AddButton("🤖  自动拿取",function()
-  if NeedleState.AutoTake then pcall(Notify,"⚠️","自动拿取已经开启了",2) return end
-  NeedleState.AutoTake=true
-  safeSpawn(function()
-   local LP=game.Players.LocalPlayer
-   local takenCount=0
-   local function tryTake(needle)
+end)
+ZN:AddButton("⏹  关闭ESP",function()
+ if not NeedleState.ESPEnabled then pcall(Notify,"⚠️","ESP还没开启",2) return end
+ NeedleState.ESPEnabled=false
+ if NeedleState.Conn then NeedleState.Conn:Disconnect() NeedleState.Conn=nil end
+ for _,d in pairs(NeedleState.Drawings) do pcall(function() d:Remove() end) end
+ NeedleState.Drawings={}
+ pcall(Notify,"🧵","针ESP已关闭",2)
+end)
+-- 自动捡针（改进版）
+ZN:AddButton("🤖  自动捡针",function()
+ if NeedleState.AutoTake then pcall(Notify,"⚠️","自动捡针已经开启了",2) return end
+ NeedleState.AutoTake=true
+ safeSpawn(function()
+  local LP=game.Players.LocalPlayer
+  local takenCount=0
+  local function tryTake(needle)
+   pcall(function()
+    local ch=LP.Character
+    if not ch then return end
+    local hrp=ch:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    -- 传送到针旁边
+    if (needle.Position-hrp.Position).Magnitude>15 then
+     hrp.CFrame=CFrame.new(needle.Position+Vector3.new(0,3,0))
+     task.wait(0.1)
+    end
+    -- 方法1: firetouchinterest
     pcall(function()
-     -- 尝试触发触碰
-     local ch=LP.Character
-     if not ch then return end
-     local hrp=ch:FindFirstChild("HumanoidRootPart")
-     if not hrp then return end
-     -- 方法1：直接触发Touched事件
-     if needle.Touched then
-      needle.Touched:Fire(hrp)
-     end
-     -- 方法2：尝试触发点击
-     local click=needle.Parent and needle.Parent:FindFirstChildWhichIsA("ClickDetector")
-     if click then
-      click.MouseClick:FireServer(LP)
-     end
-     -- 方法3：尝试用ProximityPrompt
-     local prompt=needle:FindFirstChildWhichIsA("ProximityPrompt")
+     firetouchinterest(hrp,needle,0)
+     task.wait(0.05)
+     firetouchinterest(hrp,needle,1)
+    end)
+    -- 方法2: Fire Touched
+    pcall(function()
+     if needle.Touched then needle.Touched:Fire(hrp) end
+    end)
+    -- 方法3: ProximityPrompt
+    pcall(function()
+     local prompt=needle:FindFirstChildWhichIsA("ProximityPrompt") or (needle.Parent and needle.Parent:FindFirstChildWhichIsA("ProximityPrompt"))
      if prompt then
-      prompt:InputHoldBegin()
+      -- 设置触发距离为无限
+      local origMax=prompt.MaxActivationDistance
+       prompt.MaxActivationDistance=math.huge
+      fireproximityprompt(prompt)
       task.wait(0.1)
-      prompt:InputHoldEnd()
+      prompt.MaxActivationDistance=origMax
      end
-     -- 方法4：如果是工具，直接放进背包
+    end)
+    -- 方法4: ClickDetector
+    pcall(function()
+     local click=needle:FindFirstChildWhichIsA("ClickDetector") or (needle.Parent and needle.Parent:FindFirstChildWhichIsA("ClickDetector"))
+     if click then fireclickdetector(click) end
+    end)
+    -- 方法5: Tool pickup
+    pcall(function()
      if needle.Parent and needle.Parent:IsA("Tool") then
       needle.Parent.Parent=LP.Backpack
       takenCount=takenCount+1
      end
     end)
-   end
-   NeedleState.AutoConn=game:GetService("RunService").Heartbeat:Connect(function()
-    if not NeedleState.AutoTake then return end
-    local needles=findNeedles()
+   end)
+  end
+  local tick0=0
+  NeedleState.AutoConn=game:GetService("RunService").Heartbeat:Connect(function()
+   if not NeedleState.AutoTake then return end
+   tick0=tick0+1
+   if tick0%10~=0 then return end -- 每10帧执行一次
+   local needles=findNeedles()
+   if #needles>0 then
     for _,needle in ipairs(needles) do
      tryTake(needle)
     end
-   end)
-   pcall(Notify,"🧵","自动拿取已开启\n持续发包中...",3)
-   -- 统计
-   task.spawn(function()
-    while NeedleState.AutoTake do
-     task.wait(5)
+   end
+  end)
+  pcall(Notify,"🧵","自动捡针已开启\n持续发包+传送捡取中...",3)
+ end)
+end)
+ZN:AddButton("⏹  停止捡针",function()
+ if not NeedleState.AutoTake then pcall(Notify,"⚠️","自动捡针还没开启",2) return end
+ NeedleState.AutoTake=false
+ if NeedleState.AutoConn then NeedleState.AutoConn:Disconnect() NeedleState.AutoConn=nil end
+ pcall(Notify,"🧵","自动捡针已停止",2)
+end)
+ZN:AddButton("🔍  扫描针数量",function()
+ safeSpawn(function()
+  local needles=findNeedles()
+  pcall(Notify,"🧵","找到 "..#needles.." 根针",3)
+  print("[找针] 找到"..#needles.."根针")
+ end)
+end)
+-- 🥷 迪克刺客X
+local DKX=SV:AddSection("🥷  迪克刺客X")
+local DKX_ESP={Enabled=false,Drawings={},Conn=nil,Notified={},KnownRoles={}}
+DKX:AddButton("👁  透视职业脚本",function()
+ if DKX_ESP.Enabled then pcall(Notify,"⚠️","透视已经开启了",2) return end
+ safeSpawn(function()
+  DKX_ESP.Enabled=true
+  local Plrs=game:GetService("Players")
+  local LP=Plrs.LocalPlayer
+  local RS=game:GetService("RunService")
+  local cam=workspace.CurrentCamera
+  -- 职业颜色（高级配色）
+  local roleColors={
+   ["杀手"]=Color3.fromRGB(255,40,40),
+   ["强盗"]=Color3.fromRGB(255,140,0),
+   ["剃头师"]=Color3.fromRGB(255,200,80),
+   ["警察"]=Color3.fromRGB(40,150,255),
+   ["炸弹客"]=Color3.fromRGB(255,60,60),
+   ["警长"]=Color3.fromRGB(80,170,255),
+   ["医生"]=Color3.fromRGB(255,100,150),
+   ["侦探"]=Color3.fromRGB(170,130,255),
+   ["黑客"]=Color3.fromRGB(0,255,180),
+   ["隐身人"]=Color3.fromRGB(180,180,200),
+   ["小丑"]=Color3.fromRGB(255,100,255),
+   ["未知"]=Color3.fromRGB(140,140,140),
+  }
+  local roleIcons={
+   ["杀手"]="🔪",["强盗"]="💰",["剃头师"]="💈",["警察"]="👮",
+   ["炸弹客"]="💣",["警长"]="⭐",["医生"]="⚕️",["侦探"]="🔍",
+   ["黑客"]="💻",["隐身人"]="👻",["小丑"]="🤡",["未知"]="?",
+  }
+  -- 职业关键词映射
+  local roleMap={
+   {"杀手",{"killer","assassin","杀手","刺客"}},
+   {"强盗",{"bandit","robber","强盗","抢劫"}},
+   {"剃头师",{"barber","剃头","理发","razor","shave"}},
+   {"警察",{"police","cop","警察","officer"}},
+   {"炸弹客",{"bomber","bomb","炸弹","炸药","c4"}},
+   {"警长",{"sheriff","警长","deputy"}},
+   {"医生",{"doctor","medic","医生","healer","nurse"}},
+   {"侦探",{"detective","侦探","investigator"}},
+   {"黑客",{"hacker","黑客","hack","laptop","电脑"}},
+   {"隐身人",{"invisible","stealth","隐身","ghost","幻影"}},
+   {"小丑",{"clown","小丑","joker","jester"}},
+  }
+  local function matchRole(text)
+   if not text or type(text)~="string" then return nil end
+   local tl=text:lower()
+   for _,rm in ipairs(roleMap) do
+    for _,kw in ipairs(rm[2]) do
+     if tl:find(kw,1,true) then return rm[1] end
     end
-   end)
-  end)
- end)
- ZN:AddButton("⏹  停止拿取",function()
-  if not NeedleState.AutoTake then pcall(Notify,"⚠️","自动拿取还没开启",2) return end
-  NeedleState.AutoTake=false
-  if NeedleState.AutoConn then NeedleState.AutoConn:Disconnect() NeedleState.AutoConn=nil end
-  pcall(Notify,"🧵","自动拿取已停止",2)
- end)
- ZN:AddButton("🔍  扫描针数量",function()
-  safeSpawn(function()
-   local needles=findNeedles()
-   pcall(Notify,"🧵","找到 "..#needles.." 根针",3)
-   print("[找针] 找到"..#needles.."根针")
-  end)
- end)
- -- 🥷 迪克刺客X
- local DKX=SV:AddSection("🥷  迪克刺客X")
- local DKX_ESP={Enabled=false,Drawings={},Conn=nil}
- DKX:AddButton("👁  透视职业脚本",function()
-  if DKX_ESP.Enabled then pcall(Notify,"⚠️","透视已经开启了",2) return end
-  safeSpawn(function()
-   DKX_ESP.Enabled=true
-   local Plrs=game:GetService("Players")
-   local LP=Plrs.LocalPlayer
-   local RS=game:GetService("RunService")
-   local cam=workspace.CurrentCamera
-   -- 职业颜色
-   local roleColors={
-    ["杀手"]=Color3.fromRGB(255,50,50),
-    ["强盗"]=Color3.fromRGB(255,140,0),
-    ["剃头师"]=Color3.fromRGB(255,200,100),
-    ["警察"]=Color3.fromRGB(50,150,255),
-    ["炸弹客"]=Color3.fromRGB(255,80,80),
-    ["警长"]=Color3.fromRGB(100,180,255),
-    ["医生"]=Color3.fromRGB(255,100,150),
-    ["侦探"]=Color3.fromRGB(180,140,255),
-    ["黑客"]=Color3.fromRGB(0,255,200),
-    ["隐身人"]=Color3.fromRGB(200,200,200),
-    ["小丑"]=Color3.fromRGB(255,100,255),
-    ["未知"]=Color3.fromRGB(160,160,160),
-   }
-   -- 检测职业
-   -- 检测职业
-   local function getRole(player)
-    local role="未知"
+   end
+   return nil
+  end
+  -- 深度检测职业（多层扫描）
+  local function getRole(player)
+   local role="未知"
+   pcall(function()
+    local ch=player.Character
+    -- 方法1: Player GetAttribute
     pcall(function()
-     local ch=player.Character
-     -- 职业映射表
-     local roleMap={
-      {"杀手",{"killer","assassin","杀手"}},
-      {"强盗",{"bandit","robber","强盗"}},
-      {"剃头师",{"barber","剃头","理发师"}},
-      {"警察",{"police","cop","警察"}},
-      {"炸弹客",{"bomber","bomb","炸弹"}},
-      {"警长",{"sheriff","警长"}},
-      {"医生",{"doctor","medic","医生"}},
-      {"侦探",{"detective","侦探"}},
-      {"黑客",{"hacker","黑客"}},
-      {"隐身人",{"invisible","stealth","隐身"}},
-      {"小丑",{"clown","小丑"}},
-     }
-     -- 检测文字匹配职业
-     local function matchRole(text)
-      local tl=text:lower()
-      for _,rm in ipairs(roleMap) do
-       for _,kw in ipairs(rm[2]) do
-        if tl:find(kw,1,true) then
-         return rm[1]
-        end
-       end
-      end
-      return nil
-     end
-     -- 方法1：扫描玩家所有Value对象
-     for _,v in ipairs(player:GetChildren()) do
-      if v:IsA("StringValue") or v:IsA("NumberValue") or v:IsA("IntValue") then
-       local r=matchRole(tostring(v.Value))
+     for _,attr in ipairs({"Role","role","Job","job","Class","class","Profession","profession"}) do
+      local v=player:GetAttribute(attr)
+      if v then
+       local r=matchRole(tostring(v))
        if r then role=r return end
       end
      end
-     -- 方法2：扫描leaderstats
-     local ls=player:FindFirstChild("leaderstats")
+    end)
+    -- 方法2: Player直接子对象
+    for _,v in ipairs(player:GetChildren()) do
+     pcall(function()
+      if v:IsA("StringValue") or v:IsA("IntValue") or v:IsA("NumberValue") or v:IsA("ObjectValue") then
+       local r=matchRole(tostring(v.Value))
+       if r then role=r return end
+       -- 名称也匹配
+       r=matchRole(v.Name)
+       if r then role=r return end
+      end
+      -- 检测BillboardGui/TextLabel中的文字
+      if v:IsA("BillboardGui") then
+       for _,desc in ipairs(v:GetDescendants()) do
+        pcall(function()
+         if desc:IsA("TextLabel") or desc:IsA("TextButton") then
+          local r=matchRole(desc.Text)
+          if r then role=r return end
+         end
+        end)
+       end
+      end
+     end)
+     if role~="未知" then return end
+    end
+    -- 方法3: leaderstats
+    pcall(function()
+     local ls=player:FindFirstChild("leaderstats") or player:FindFirstChild("stats")
      if ls then
       for _,v in ipairs(ls:GetChildren()) do
-       if v:IsA("StringValue") or v:IsA("NumberValue") or v:IsA("IntValue") then
-        local r=matchRole(tostring(v.Value))
-        if r then role=r return end
-       end
-      end
-     end
-     -- 方法3：检测Team
-     if player.Team then
-      local r=matchRole(player.Team.Name)
-      if r then role=r end
-     end
-     -- 方法4：检测角色中的Value
-     if ch and role=="未知" then
-      for _,child in ipairs(ch:GetChildren()) do
-       if child:IsA("StringValue") or child:IsA("NumberValue") then
-        local cn=child.Name:lower()
-        if cn:find("role") or cn:find("职业") or cn:find("team") then
-         local r=matchRole(tostring(child.Value))
-         if r then role=r return end
-        end
-       end
-      end
-     end
-     -- 方法5：检测背包武器（兜底）
-     if role=="未知" and ch then
-      local toolWeapons={
-       {"杀手",{"knife","刀","sword","dagger"}},
-       {"警察",{"gun","pistol","revolver","警"}},
-       {"炸弹客",{"bomb","炸弹","grenade"}},
-       {"警长",{"sheriff","警长","deagle"}},
-       {"小丑",{"clown","小丑","pie"}},
-       {"强盗",{"bandit","强盗","bat"}},
-       {"剃头师",{"barber","剃头","razor"}},
-       {"侦探",{"detective","侦探","magnify"}},
-       {"黑客",{"hacker","黑客","laptop"}},
-       {"隐身人",{"invisible","stealth","隐身"}},
-       {"医生",{"heal","medkit","医","药"}},
-      }
-      -- 检查背包
-      local bp=player:FindFirstChild("Backpack")
-      if bp then
-       for _,tool in ipairs(bp:GetChildren()) do
-        if tool:IsA("Tool") then
-         local tn=tool.Name:lower()
-         local found=false
-         for _,tw in ipairs(toolWeapons) do
-          for _,kw in ipairs(tw[2]) do
-           if tn:find(kw,1,true) then
-            role=tw[1]
-            found=true
-            break
-           end
-          end
-          if found then break end
-         end
-         if found then break end
-        end
-       end
-      end
-      -- 检查手里的武器
-      if role=="未知" then
-       local tool=ch:FindFirstChildOfClass("Tool")
-       if tool then
-        local tn=tool.Name:lower()
-        for _,tw in ipairs(toolWeapons) do
-         for _,kw in ipairs(tw[2]) do
-          if tn:find(kw,1,true) then
-           role=tw[1]
-           break
-          end
-         end
-         if role~="未知" then break end
-        end
-       end
+       local r=matchRole(tostring(v.Value))
+       if r then role=r return end
+       r=matchRole(v.Name)
+       if r then role=r return end
       end
      end
     end)
-    return role
-   end
-   -- 创建ESP显示
-   local function createESP(player)
-    if player==LP then return end
-    if DKX_ESP.Drawings[player.UserId] then return end
-    local draw={}
-    DKX_ESP.Drawings[player.UserId]=draw
-    -- 职业文字（头顶显示）
-    local roleLbl=Drawing.new("Text")
-    roleLbl.Center=true
-    roleLbl.Outline=true
-    roleLbl.OutlineColor=Color3.fromRGB(0,0,0)
-    roleLbl.Color=Color3.fromRGB(255,255,255)
-    roleLbl.Size=16
-    roleLbl.Font=2
-    roleLbl.Visible=false
-    draw.Role=roleLbl
-   end
-   -- 移除ESP
-   local function removeESP(player)
-    local draw=DKX_ESP.Drawings[player.UserId]
-    if draw then
-     for _,d in pairs(draw) do
-      pcall(function() d:Remove() end)
+    if role~="未知" then return end
+    -- 方法4: Team
+    pcall(function()
+     if player.Team then
+      local r=matchRole(player.Team.Name)
+      if r then role=r return end
+      -- TeamColor匹配
+      local tc=player.TeamColor
+      if tc then
+       local tcn=tostring(tc)
+       if tcn:find("Bright red",1,true) then role="杀手" return end
+       if tcn:find("Bright blue",1,true) then role="警察" return end
+       if tcn:find("Bright green",1,true) then role="医生" return end
+       if tcn:find("Bright yellow",1,true) then role="警长" return end
+      end
      end
-     DKX_ESP.Drawings[player.UserId]=nil
+    end)
+    if role~="未知" then return end
+    -- 方法5: 角色身上的Value对象
+    if ch then
+     for _,child in ipairs(ch:GetChildren()) do
+      pcall(function()
+       if child:IsA("StringValue") or child:IsA("IntValue") or child:IsA("NumberValue") then
+        local cn=child.Name:lower()
+        if cn:find("role") or cn:find("职业") or cn:find("team") or cn:find("job") or cn:find("class") then
+         local r=matchRole(tostring(child.Value))
+         if r then role=r return end
+        end
+        -- 也检测Value值
+        local r=matchRole(tostring(child.Value))
+        if r then role=r return end
+       end
+       -- 检测角色名
+       if child:IsA("Humanoid") then
+        local dn=child.DisplayName
+        if dn then
+         local r=matchRole(dn)
+         if r then role=r return end
+        end
+       end
+      end)
+      if role~="未知" then return end
+     end
+     -- 方法6: 角色头部BillboardGui
+     pcall(function()
+      local head=ch:FindFirstChild("Head")
+      if head then
+       for _,gui in ipairs(head:GetChildren()) do
+        if gui:IsA("BillboardGui") or gui:IsA("SurfaceGui") then
+         for _,desc in ipairs(gui:GetDescendants()) do
+          pcall(function()
+           if desc:IsA("TextLabel") or desc:IsA("TextButton") then
+            local r=matchRole(desc.Text)
+            if r then role=r return end
+           end
+          end)
+         end
+      end
+       end
+     end)
+     -- 方法7: 背包武器检测
+     if role=="未知" then
+      local toolWeapons={
+       {"杀手",{"knife","刀","sword","dagger","blade","katana"}},
+       {"警察",{"gun","pistol","revolver","警","firearm"}},
+       {"炸弹客",{"bomb","炸弹","grenade","c4","explosive"}},
+       {"警长",{"sheriff","警长","deagle","eagle"}},
+       {"小丑",{"clown","小丑","pie","horn"}},
+       {"强盗",{"bandit","强盗","bat","baton","crowbar"}},
+       {"剃头师",{"barber","剃头","razor","scissor","shave"}},
+       {"侦探",{"detective","侦探","magnify","clue"}},
+       {"黑客",{"hacker","黑客","laptop","电脑","device"}},
+       {"隐身人",{"invisible","stealth","隐身","cloak","ghost"}},
+       {"医生",{"heal","medkit","医","药","syringe","bandage","defibrillator"}},
+      }
+      pcall(function()
+       local bp=player:FindFirstChild("Backpack")
+       if bp then
+        for _,tool in ipairs(bp:GetChildren()) do
+         if tool:IsA("Tool") then
+          local tn=tool.Name:lower()
+          for _,tw in ipairs(toolWeapons) do
+           for _,kw in ipairs(tw[2]) do
+            if tn:find(kw,1,true) then role=tw[1] return end
+           end
+          end
+         end
+        end
+       end
+      end)
+      -- 方法8: 手里的武器
+      if role=="未知" then
+       pcall(function()
+        local tool=ch:FindFirstChildOfClass("Tool")
+        if tool then
+         local tn=tool.Name:lower()
+         for _,tw in ipairs(toolWeapons) do
+          for _,kw in ipairs(tw[2]) do
+           if tn:find(kw,1,true) then role=tw[1] return end
+          end
+         end
+        end
+       end)
+      end
+     end
+     -- 方法9: 检测Humanoid名字/角色名
+     if role=="未知" then
+      pcall(function()
+       local hum=ch:FindFirstChild("Humanoid")
+       if hum then
+        local r=matchRole(hum.DisplayName) or matchRole(ch.Name)
+        if r then role=r end
+       end
+      end)
+     end
+    end
+   end)
+   return role
+  end
+  -- 创建ESP显示（高级版）
+  local function createESP(player)
+   if player==LP then return end
+   if DKX_ESP.Drawings[player.UserId] then return end
+   local draw={}
+   DKX_ESP.Drawings[player.UserId]=draw
+   -- 职业文字
+   local roleLbl=Drawing.new("Text")
+   roleLbl.Center=true roleLbl.Outline=true roleLbl.OutlineColor=Color3.fromRGB(0,0,0)
+   roleLbl.Color=Color3.fromRGB(255,255,255) roleLbl.Size=16 roleLbl.Font=2
+   roleLbl.Visible=false
+   draw.Role=roleLbl
+   -- 距离文字
+   local distLbl=Drawing.new("Text")
+   distLbl.Center=true distLbl.Outline=true distLbl.OutlineColor=Color3.fromRGB(0,0,0)
+   distLbl.Color=Color3.fromRGB(180,180,180) distLbl.Size=13 distLbl.Font=2
+   distLbl.Visible=false
+   draw.Dist=distLbl
+   -- 血量文字
+   local hpLbl=Drawing.new("Text")
+   hpLbl.Center=true hpLbl.Outline=true hpLbl.OutlineColor=Color3.fromRGB(0,0,0)
+   hpLbl.Color=Color3.fromRGB(100,255,100) hpLbl.Size=13 hpLbl.Font=2
+   hpLbl.Visible=false
+   draw.HP=hpLbl
+   -- 方框
+   local box=Drawing.new("Square")
+   box.Filled=false box.Thickness=2 box.Color=Color3.fromRGB(255,255,255)
+   box.Visible=false
+   draw.Box=box
+   -- 血量条背景
+   local hpBg=Drawing.new("Square")
+   hpBg.Filled=true hpBg.Color=Color3.fromRGB(40,40,40)
+   hpBg.Visible=false
+   draw.HPBg=hpBg
+   -- 血量条
+   local hpBar=Drawing.new("Square")
+   hpBar.Filled=true hpBar.Color=Color3.fromRGB(0,255,0)
+   hpBar.Visible=false
+   draw.HPBar=hpBar
+   -- 追踪线
+   local tracer=Drawing.new("Line")
+   tracer.Thickness=1 tracer.Color=Color3.fromRGB(100,100,100)
+   tracer.Visible=false
+   draw.Tracer=tracer
+  end
+  local function removeESP(player)
+   local draw=DKX_ESP.Drawings[player.UserId]
+   if draw then
+    for _,d in pairs(draw) do pcall(function() d:Remove() end) end
+    DKX_ESP.Drawings[player.UserId]=nil
+   end
+  end
+  -- 更新ESP
+  local function updateESP()
+   if not DKX_ESP.Enabled then return end
+   for _,player in ipairs(Plrs:GetPlayers()) do
+    if player~=LP then
+     local ch=player.Character
+     local head=ch and ch:FindFirstChild("Head")
+     local hum=ch and ch:FindFirstChild("Humanoid")
+     local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+     local draw=DKX_ESP.Drawings[player.UserId]
+     if not draw then createESP(player) draw=DKX_ESP.Drawings[player.UserId] end
+     if not ch or not head or not hum or hum.Health<=0 then
+      if draw then
+       draw.Role.Visible=false draw.Dist.Visible=false
+       draw.HP.Visible=false draw.Box.Visible=false
+       draw.HPBg.Visible=false draw.HPBar.Visible=false
+       draw.Tracer.Visible=false
+      end
+     else
+      local headPos,onScreen=cam:WorldToViewportPoint(head.Position+Vector3.new(0,2,0))
+      if not onScreen then
+       draw.Role.Visible=false draw.Dist.Visible=false
+       draw.HP.Visible=false draw.Box.Visible=false
+       draw.HPBg.Visible=false draw.HPBar.Visible=false
+       draw.Tracer.Visible=false
+      else
+       -- 获取职业
+       local role=getRole(player)
+       local roleColor=roleColors[role] or roleColors["未知"]
+       local icon=roleIcons[role] or roleIcons["未知"]
+       -- 首次检测到职业时通知
+       if role~="未知" and not DKX_ESP.Notified[player.UserId..role] then
+        DKX_ESP.Notified[player.UserId..role]=true
+        DKX_ESP.KnownRoles[player.UserId]=role
+        pcall(Notify,"🥷","检测到 "..player.Name.." 是 "..icon.." "..role,4)
+        print("[迪克刺客X] "..player.Name.." → "..role)
+       end
+       -- 计算屏幕位置
+       local rootPos=cam:WorldToViewportPoint(hrp.Position)
+       local topPos=cam:WorldToViewportPoint(head.Position+Vector3.new(0,1.5,0))
+       local botPos=cam:WorldToViewportPoint(hrp.Position-Vector3.new(0,3,0))
+       local boxH=math.abs(topPos.Y-botPos.Y)
+       local boxW=boxH*0.6
+       local boxX=topPos.X-boxW/2
+       local boxY=topPos.Y
+       -- 方框
+       draw.Box.Position=Vector2.new(boxX,boxY)
+       draw.Box.Size=Vector2.new(boxW,boxH)
+       draw.Box.Color=roleColor
+       draw.Box.Visible=true
+       -- 职业
+       draw.Role.Position=Vector2.new(topPos.X,boxY-18)
+       draw.Role.Color=roleColor
+       draw.Role.Text=icon.." "..role.."  "..player.Name:sub(1,12)
+       draw.Role.Visible=true
+       -- 距离
+       local dist=0
+       if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+        dist=(hrp.Position-LP.Character.HumanoidRootPart.Position).Magnitude
+       end
+       draw.Dist.Position=Vector2.new(topPos.X,boxY+boxH+2)
+       draw.Dist.Text=math.floor(dist).."m"
+       draw.Dist.Visible=true
+       -- 血量
+       local hpPct=math.clamp(hum.Health/math.max(hum.MaxHealth,1),0,1)
+       draw.HP.Position=Vector2.new(topPos.X,boxY+boxH+16)
+       draw.HP.Text="HP: "..math.floor(hum.Health).."/"..math.floor(hum.MaxHealth)
+       draw.HP.Color=Color3.fromRGB(255-hpPct*255,hpPct*255,0)
+       draw.HP.Visible=true
+       -- 血量条
+       local barW=boxW
+       local barH=3
+       draw.HPBg.Position=Vector2.new(boxX,boxY-4)
+       draw.HPBg.Size=Vector2.new(barW,barH)
+       draw.HPBg.Visible=true
+       draw.HPBar.Position=Vector2.new(boxX,boxY-4)
+       draw.HPBar.Size=Vector2.new(barW*hpPct,barH)
+       draw.HPBar.Color=Color3.fromRGB(255-hpPct*255,hpPct*255,0)
+       draw.HPBar.Visible=true
+       -- 追踪线
+       draw.Tracer.From=Vector2.new(cam.ViewportSize.X/2,cam.ViewportSize.Y)
+       draw.Tracer.To=Vector2.new(topPos.X,boxY+boxH/2)
+       draw.Tracer.Color=roleColor
+       draw.Tracer.Visible=true
+      end
+     end
     end
    end
-   -- 更新ESP
-   local function updateESP()
-    if not DKX_ESP.Enabled then return end
-    for _,player in ipairs(Plrs:GetPlayers()) do
-     if player~=LP then
-      local ch=player.Character
-      local head=ch and ch:FindFirstChild("Head")
-      local hum=ch and ch:FindFirstChild("Humanoid")
-      local draw=DKX_ESP.Drawings[player.UserId]
-      if not draw then
-       createESP(player)
-       draw=DKX_ESP.Drawings[player.UserId]
+  end
+  -- 清理离开的玩家
+  Plrs.PlayerRemoving:Connect(function(p) removeESP(p) end)
+  -- 主循环
+  DKX_ESP.Conn=RS.RenderStepped:Connect(updateESP)
+  pcall(Notify,"🥷","迪克刺客X透视已开启\n检测到职业会自动通知",4)
+  print("[迪克刺客X] 透视已启用")
+ end)
+end)
+DKX:AddButton("⏹  关闭透视",function()
+ if not DKX_ESP.Enabled then pcall(Notify,"⚠️","透视还没开启",2) return end
+ safeSpawn(function()
+  DKX_ESP.Enabled=false
+  if DKX_ESP.Conn then DKX_ESP.Conn:Disconnect() DKX_ESP.Conn=nil end
+  for _,draw in pairs(DKX_ESP.Drawings) do
+   for _,d in pairs(draw) do pcall(function() d:Remove() end) end
+  end
+  DKX_ESP.Drawings={}
+  DKX_ESP.Notified={}
+  pcall(Notify,"🥷","迪克刺客X透视已关闭",2)
+ end)
+end)
+DKX:AddButton("📋  列出所有职业",function()
+ safeSpawn(function()
+  local Plrs=game:GetService("Players")
+  local LP=Plrs.LocalPlayer
+  local list={}
+  local colors={
+   ["杀手"]="🔴",["强盗"]="🟠",["剃头师"]="🟡",["警察"]="🔵",
+   ["炸弹客"]="🔴",["警长"]="🔵",["医生"]="🟣",["侦探"]="🟣",
+   ["黑客"]="🟢",["隐身人"]="⚪",["小丑"]="🟣",
+  }
+  -- 职业关键词映射（和主函数一样）
+  local roleMap={
+   {"杀手",{"killer","assassin","杀手","刺客"}},
+   {"强盗",{"bandit","robber","强盗","抢劫"}},
+   {"剃头师",{"barber","剃头","理发","razor","shave"}},
+   {"警察",{"police","cop","警察","officer"}},
+   {"炸弹客",{"bomber","bomb","炸弹","炸药","c4"}},
+   {"警长",{"sheriff","警长","deputy"}},
+   {"医生",{"doctor","medic","医生","healer","nurse"}},
+   {"侦探",{"detective","侦探","investigator"}},
+   {"黑客",{"hacker","黑客","hack","laptop","电脑"}},
+   {"隐身人",{"invisible","stealth","隐身","ghost","幻影"}},
+   {"小丑",{"clown","小丑","joker","jester"}},
+  }
+  local function matchRole(text)
+   if not text or type(text)~="string" then return nil end
+   local tl=text:lower()
+   for _,rm in ipairs(roleMap) do
+    for _,kw in ipairs(rm[2]) do
+     if tl:find(kw,1,true) then return rm[1] end
+    end
+   end
+   return nil
+  end
+  local function getRole(player)
+   local role="未知"
+   pcall(function()
+    local ch=player.Character
+    pcall(function()
+     for _,attr in ipairs({"Role","role","Job","job","Class","class"}) do
+      local v=player:GetAttribute(attr)
+      if v then local r=matchRole(tostring(v)) if r then role=r return end end
+     end
+    end)
+    for _,v in ipairs(player:GetChildren()) do
+     pcall(function()
+      if v:IsA("StringValue") or v:IsA("IntValue") then
+       local r=matchRole(tostring(v.Value))
+       if r then role=r return end
+       r=matchRole(v.Name)
+       if r then role=r return end
       end
-      if not ch or not head or not hum or hum.Health<=0 then
-       draw.Role.Visible=false
-      else
-       -- 获取头顶位置
-       local headPos,onScreen=cam:WorldToViewportPoint(head.Position+Vector3.new(0,1.5,0))
-       if not onScreen then
-        draw.Role.Visible=false
-       else
-        -- 职业
-        local role=getRole(player)
-        local roleColor=roleColors[role] or roleColors["未知"]
-        -- 更新显示
-        draw.Role.Position=Vector2.new(headPos.X,headPos.Y)
-        draw.Role.Color=roleColor
-        draw.Role.Text=role
-        draw.Role.Visible=true
+      if v:IsA("BillboardGui") then
+       for _,desc in ipairs(v:GetDescendants()) do
+        pcall(function()
+         if desc:IsA("TextLabel") or desc:IsA("TextButton") then
+          local r=matchRole(desc.Text)
+          if r then role=r return end
+         end
+        })
        end
       end
+     end)
+     if role~="未知" then return end
+    end
+    pcall(function()
+     local ls=player:FindFirstChild("leaderstats") or player:FindFirstChild("stats")
+     if ls then
+      for _,v in ipairs(ls:GetChildren()) do
+       local r=matchRole(tostring(v.Value))
+       if r then role=r return end
+       r=matchRole(v.Name)
+       if r then role=r return end
+      end
+     end
+    end)
+    if role~="未知" then return end
+    pcall(function()
+     if player.Team then
+      local r=matchRole(player.Team.Name)
+      if r then role=r return end
+      local tc=player.TeamColor
+      if tc then
+       local tcn=tostring(tc)
+       if tcn:find("Bright red",1,true) then role="杀手" return end
+       if tcn:find("Bright blue",1,true) then role="警察" return end
+       if tcn:find("Bright green",1,true) then role="医生" return end
+       if tcn:find("Bright yellow",1,true) then role="警长" return end
+      end
+     end
+    end)
+    if role~="未知" then return end
+    if ch then
+     for _,child in ipairs(ch:GetChildren()) do
+      pcall(function()
+       if child:IsA("StringValue") or child:IsA("IntValue") or child:IsA("NumberValue") then
+        local cn=child.Name:lower()
+        if cn:find("role") or cn:find("职业") or cn:find("team") or cn:find("job") or cn:find("class") then
+         local r=matchRole(tostring(child.Value))
+         if r then role=r return end
+        end
+        local r=matchRole(tostring(child.Value))
+        if r then role=r return end
+       end
+       if child:IsA("Humanoid") then
+        local dn=child.DisplayName
+        if dn then local r=matchRole(dn) if r then role=r return end end
+       end
+      end)
+      if role~="未知" then return end
+     end
+     pcall(function()
+      local head=ch:FindFirstChild("Head")
+      if head then
+       for _,gui in ipairs(head:GetChildren()) do
+        if gui:IsA("BillboardGui") or gui:IsA("SurfaceGui") then
+         for _,desc in ipairs(gui:GetDescendants()) do
+          pcall(function()
+           if desc:IsA("TextLabel") or desc:IsA("TextButton") then
+            local r=matchRole(desc.Text)
+            if r then role=r return end
+           end
+          end)
+         end
+       end
+       end
+     end)
+     if role=="未知" then
+      local toolWeapons={
+       {"杀手",{"knife","刀","sword","dagger","blade","katana"}},
+       {"警察",{"gun","pistol","revolver","警","firearm"}},
+       {"炸弹客",{"bomb","炸弹","grenade","c4","explosive"}},
+       {"警长",{"sheriff","警长","deagle","eagle"}},
+       {"小丑",{"clown","小丑","pie","horn"}},
+       {"强盗",{"bandit","强盗","bat","baton","crowbar"}},
+       {"剃头师",{"barber","剃头","razor","scissor","shave"}},
+       {"侦探",{"detective","侦探","magnify","clue"}},
+       {"黑客",{"hacker","黑客","laptop","电脑","device"}},
+       {"隐身人",{"invisible","stealth","隐身","cloak","ghost"}},
+       {"医生",{"heal","medkit","医","药","syringe","bandage","defibrillator"}},
+      }
+      pcall(function()
+       local bp=player:FindFirstChild("Backpack")
+       if bp then
+        for _,tool in ipairs(bp:GetChildren()) do
+         if tool:IsA("Tool") then
+          local tn=tool.Name:lower()
+          for _,tw in ipairs(toolWeapons) do
+           for _,kw in ipairs(tw[2]) do
+            if tn:find(kw,1,true) then role=tw[1] return end
+           end
+          end
+         end
+        end
+       end
+      end)
+      if role=="未知" then
+       pcall(function()
+        local tool=ch:FindFirstChildOfClass("Tool")
+        if tool then
+         local tn=tool.Name:lower()
+         for _,tw in ipairs(toolWeapons) do
+          for _,kw in ipairs(tw[2]) do
+           if tn:find(kw,1,true) then role=tw[1] return end
+          end
+         end
+        end
+       end)
+      end
+     end
+     if role=="未知" then
+      pcall(function()
+       local hum=ch:FindFirstChild("Humanoid")
+       if hum then
+        local r=matchRole(hum.DisplayName) or matchRole(ch.Name)
+        if r then role=r end
+       end
+      end)
      end
     end
+   end)
+   return role
+  end
+  local msg=""
+  for _,p in ipairs(Plrs:GetPlayers()) do
+   if p~=LP then
+    local r=getRole(p)
+    local icon=colors[r] or "⚪"
+    msg=msg..icon.." "..p.Name:sub(1,12).." = "..r.."\n"
    end
-   -- 清理离开的玩家
-   Plrs.PlayerRemoving:Connect(function(p) removeESP(p) end)
-   -- 主循环
-   RS.RenderStepped:Connect(updateESP)
-   pcall(Notify,"🥷","迪克刺客X透视已开启",3)
-   print("[迪克刺客X] 透视已启用")
-  end)
+  end
+  if msg=="" then msg="没有其他玩家" end
+  pcall(Notify,"🥷","职业列表:\n"..msg,6)
+  print("[迪克刺客X]\n"..msg)
  end)
- DKX:AddButton("⏹  关闭透视",function()
-  if not DKX_ESP.Enabled then pcall(Notify,"⚠️","透视还没开启",2) return end
-  safeSpawn(function()
-   DKX_ESP.Enabled=false
-   if DKX_ESP.Conn then DKX_ESP.Conn:Disconnect() DKX_ESP.Conn=nil end
-   for _,draw in pairs(DKX_ESP.Drawings) do
-    for _,d in pairs(draw) do
-     pcall(function() d:Remove() end)
-    end
-   end
-   DKX_ESP.Drawings={}
-   pcall(Notify,"🥷","迪克刺客X透视已关闭",2)
-  end)
- end)
- -- 🚂 死铁轨合集
+end)
+
+-- 🚂 死铁轨合集
  local DRS=SV:AddSection("🚂 死铁轨合集")
  DRS:AddButton("🛤️  死铁轨国人脚本",function()
   safeSpawn(function()
