@@ -45983,19 +45983,41 @@ v:FireServer()]=]
   Volume=0.7,
   Playing=false
  }
- -- 歌曲列表
+ -- 歌曲列表（2025年确认可用）
  local songList={
-  {Name="雨爱",Id="1845226892"},
-  {Name="沉沦与遐想",Id="7147562393"},
-  {Name="again",Id="1384706104"},
-  {Name="唯一",Id="6899647502"},
-  {Name="green to blue",Id="6587263584"},
-  {Name="keyn",Id="5841949192"},
-  {Name="met her on the internet",Id="7219156408"},
-  {Name="lucky",Id="1445373537"},
-  {Name="M3",Id="5364947900"},
-  {Name="感官过载",Id="6713976028"},
-  {Name="sacred play secret place",Id="1550150822"},
+  {Name="Raining Tacos",Id="142376088"},
+  {Name="Deja Vu",Id="1837021402"},
+  {Name="Tokyo Drift",Id="1837015626"},
+  {Name="Canon(卡农)",Id="1844159122"},
+  {Name="Fur Elise(致爱丽丝)",Id="1837626326"},
+  {Name="Paradise Falls",Id="1837879082"},
+  {Name="Squid Game",Id="7535587224"},
+  {Name="Sandstorm",Id="166562385"},
+  {Name="Lo-Fi Chill",Id="9043887091"},
+  {Name="Glowing Light",Id="9046865261"},
+  {Name="Savage Love",Id="5043596438"},
+  {Name="Bad Habits",Id="7202579511"},
+  {Name="Levitating",Id="6606223785"},
+  {Name="Without Me",Id="6689996382"},
+  {Name="Stadium Rave",Id="1846368080"},
+  {Name="雨爱 - 杨丞琳",Id="79277371759525"},
+  {Name="起风了",Id="1150231141591"},
+  {Name="安和桥",Id="120145064597801"},
+  {Name="小幸运",Id="81381619096029"},
+  {Name="演员 - 薛之谦",Id="110094177703357"},
+  {Name="Met Her On The Internet",Id="6708444383"},
+  {Name="Lucky - Jason Mraz",Id="5762139772"},
+  {Name="Lucky Twice - Lucky",Id="8183518804"},
+  {Name="Unhappy",Id="88523902860927"},
+  {Name="幻昼",Id="103093530102792"},
+  {Name="iQOO进行曲",Id="75047041148646"},
+  {Name="横冲直撞",Id="82696338249251"},
+  {Name="低皮质醇",Id="11091391228823"},
+  {Name="GreenScreen",Id="120922721061288"},
+  {Name="NIGHT DANCER",Id="113900088691832"},
+  {Name="莫问归期",Id="108296721251595"},
+  {Name="verity小曲",Id="116704489332329"},
+  {Name="关中王来了",Id="126545022150666"},
  }
  -- 停止所有音乐
  local function stopAllMusic()
@@ -46010,41 +46032,57 @@ v:FireServer()]=]
  -- 播放音乐
  local function playMusic(songName,songId)
   stopAllMusic()
+  pcall(Notify,"⏳","正在加载: "..songName,2)
   local sound=Instance.new("Sound")
   sound.Name="LeiScriptMusic"
   sound.SoundId="rbxassetid://"..songId
   sound.Volume=MusicState.Volume
   sound.Looped=true
-  -- 尝试多个父级，确保能播放
+  -- 放到CoreGui
   pcall(function() sound.Parent=CG end)
   if not sound.Parent then
-   pcall(function() sound.Parent=workspace end)
+   pcall(function() sound.Parent=LP:FindFirstChild("PlayerGui") end)
   end
   if not sound.Parent then
-   pcall(function() sound.Parent=game:GetService("SoundService") end)
-  end
-  if not sound.Parent then
-   sound.Parent=LP:FindFirstChild("PlayerGui") or LP:WaitForChild("PlayerGui")
+   sound.Parent=workspace
   end
   MusicState.CurrentSound=sound
   MusicState.CurrentName=songName
-  -- 直接播放（不依赖Loaded事件）
-  pcall(function() sound:Play() end)
-  MusicState.Playing=true
-  pcall(Notify,"🎵","正在播放: "..songName,3)
-  print("[音乐] 播放: "..songName)
-  -- 如果直接播放失败，等待加载后重试
-  sound.Loaded:Connect(function()
-   if MusicState.CurrentSound==sound then
-    pcall(function() sound:Play() end)
-    MusicState.Playing=true
-    print("[音乐] 音频已加载，播放中: "..songName)
-   end
-  end)
+  -- 如果已加载直接播放
+  if sound.IsLoaded then
+   sound:Play()
+   MusicState.Playing=true
+   pcall(Notify,"🎵","正在播放: "..songName,3)
+   print("[音乐] 播放(已缓存): "..songName)
+  else
+   -- 等待加载完成后播放
+   local loaded=false
+   local conn
+   conn=sound.Loaded:Connect(function()
+    loaded=true
+    if conn then conn:Disconnect() end
+    if MusicState.CurrentSound==sound then
+     sound:Play()
+     MusicState.Playing=true
+     pcall(Notify,"🎵","正在播放: "..songName,3)
+     print("[音乐] 播放(已加载): "..songName)
+    end
+   end)
+   -- 同时也直接尝试播放（有些客户端会自动加载）
+   task.spawn(function()
+    task.wait(0.5)
+    if not loaded and MusicState.CurrentSound==sound then
+     sound:Play()
+     MusicState.Playing=true
+     pcall(Notify,"🎵","正在播放: "..songName,3)
+     print("[音乐] 播放(延迟): "..songName)
+    end
+   end)
+  end
   -- 加载失败提示
   sound.LoadFailed:Connect(function(err)
    if MusicState.CurrentSound==sound then
-    pcall(Notify,"❌","音乐加载失败: "..songName.."\n可能是音频已被下架",4)
+    pcall(Notify,"❌","音乐加载失败: "..songName.."\n该音频可能已被下架",4)
     warn("[音乐] 加载失败:",songName,err)
     stopAllMusic()
    end
@@ -46059,7 +46097,7 @@ v:FireServer()]=]
    end
   end)
   -- 超时检测
-  task.delay(3,function()
+  task.delay(4,function()
    if MusicState.CurrentSound==sound and not sound.IsLoaded then
     pcall(Notify,"⚠️","音乐加载较慢，请稍等...",2)
    end
@@ -46102,7 +46140,86 @@ v:FireServer()]=]
    playMusic(song.Name,song.Id)
   end)
  end
- -- 正在播放显示
+-- 自定义音频ID播放
+local CustomSection=MusicT:AddSection("🎛  自定义音频ID")
+-- 用AddButton创建一个容器，然后替换内容为输入框
+local inputBtn=CustomSection:AddButton("",function() end)
+-- 找到按钮的父级Frame
+local inputFrame=inputBtn.Parent
+inputFrame.Size=UDim2.new(1,0,0,40)
+-- 清除按钮文字，放TextBox
+inputBtn.Text=""
+inputBtn.Active=false inputBtn.AutoButtonColor=false
+local CustomInput=Instance.new("TextBox")
+CustomInput.Name="CustomAudioId"
+CustomInput.Parent=inputFrame
+CustomInput.BackgroundColor3=Color3.fromRGB(35,35,45)
+CustomInput.Position=UDim2.new(0,8,0,4)
+CustomInput.Size=UDim2.new(1,-16,0,32)
+CustomInput.Font=Enum.Font.Gotham
+CustomInput.PlaceholderText="输入Roblox音频ID (如 142376088)"
+CustomInput.Text=""
+CustomInput.TextColor3=Color3.fromRGB(255,255,255)
+CustomInput.PlaceholderColor3=Color3.fromRGB(120,120,130)
+CustomInput.TextSize=13
+CustomInput.ClearTextOnFocus=false
+CustomInput.TextXAlignment=Enum.TextXAlignment.Center
+CustomInput.ZIndex=8
+Instance.new("UICorner",CustomInput).CornerRadius=UDim.new(0,6)
+local inputStroke=Instance.new("UIStroke") inputStroke.Parent=CustomInput inputStroke.Thickness=1 inputStroke.Transparency=0.7 inputStroke.Color=Settings.Accent
+-- 输入框焦点高亮
+CustomInput.Focused:Connect(function()
+ TS:Create(inputStroke,TweenInfo.new(0.2),{Transparency=0.3}):Play()
+end)
+CustomInput.FocusLost:Connect(function(enter)
+ TS:Create(inputStroke,TweenInfo.new(0.2),{Transparency=0.7}):Play()
+ if enter then
+  local id=CustomInput.Text:gsub("%s+","")
+  if id~="" and tonumber(id) then
+   playMusic("自定义["..id.."]",id)
+  end
+ end
+end)
+-- 播放按钮
+CustomSection:AddButton("▶  播放输入的ID",function()
+ local id=CustomInput.Text:gsub("%s+","")
+ if id=="" or #id<3 then
+  pcall(Notify,"⚠️","请先输入音频ID",2)
+  return
+ end
+ if not tonumber(id) then
+  pcall(Notify,"⚠️","音频ID只能是数字",2)
+  return
+ end
+ playMusic("自定义["..id.."]",id)
+end)
+-- 收藏功能
+local customFavorites={}
+CustomSection:AddButton("⭐  收藏当前ID",function()
+ local id=CustomInput.Text:gsub("%s+","")
+ if id=="" or #id<3 then
+  pcall(Notify,"⚠️","请先输入音频ID再收藏",2)
+  return
+ end
+ if not tonumber(id) then
+  pcall(Notify,"⚠️","音频ID只能是数字",2)
+  return
+ end
+ for _,f in ipairs(customFavorites) do
+  if f==id then
+   pcall(Notify,"⚠️","已经收藏过了",2)
+   return
+  end
+ end
+ table.insert(customFavorites,id)
+ pcall(Notify,"⭐","已收藏! 共 "..#customFavorites.." 首",2)
+ CustomSection:AddButton("🎵  收藏"..#customFavorites..": "..id,function()
+  playMusic("收藏["..id.."]",id)
+ end)
+end)
+CustomSection:AddButton("📋  如何找音频ID?",function()
+ pcall(Notify,"📋","1.打开 create.roblox.com/store/audio\n2.搜索歌曲名\n3.复制URL中的数字ID\n4.粘贴到上方输入框",6)
+end)
  local NowPlayingSection=MusicT:AddSection("📻  正在播放")
  NowPlayingSection:AddButton("当前: 无",function()
   if MusicState.Playing and MusicState.CurrentName~="" then
